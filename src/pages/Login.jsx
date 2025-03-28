@@ -1,39 +1,37 @@
 import { useState } from "react";
-import { useNavigate,Link } from "react-router-dom";
-import "./AuthForm.css"; // Asegúrate de importar el CSS
-import logo from "./logos.png"; // Ruta de la imagen
+import { useNavigate, Link } from "react-router-dom";
+import "./AuthForm.css";
+import logo from "./logos.png";
 import { api } from "./api/api";
 
 const Login = ({ setIsAuthenticated }) => {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const navigate = useNavigate();
-const getrol=async () => {
-  
-}
-
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await api.post("/login", { correo, contrasena });
-      console.log(response);
-      localStorage.setItem("token", response.data.token);
-      setIsAuthenticated(true);
-      alert("Login exitoso!");
-      navigate("/"); // Redirige a la tabla de usuarios
+
+      if (response.data?.token) {
+        localStorage.setItem("token", response.data.token);
+        setIsAuthenticated(true);
+        alert("Login exitoso!");
+        navigate("/"); // Redirige a la tabla de usuarios
+      } else {
+        throw new Error("Token no recibido");
+      }
     } catch (error) {
       console.error("Error en login:", error);
-      alert("Error al iniciar sesión");
+      alert(error.response?.data?.message || "Error al iniciar sesión");
     }
   };
 
   return (
     <div className="auth-container">
-       <div className="logo">
+      <div className="logo">
         <img src={logo} alt="Photobella Logo" className="logo-img" />
-        <div className="logo-text">
-        </div>
       </div>
       <div className="auth-box">
         <div className="title">
@@ -44,6 +42,7 @@ const getrol=async () => {
             <label htmlFor="email">Email</label>
             <input
               id="email"
+              type="email"  // Añadido para validación automática
               placeholder="Ingresa tu correo"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
@@ -55,6 +54,7 @@ const getrol=async () => {
             <label htmlFor="password">Password</label>
             <input
               id="password"
+              type="password"  // Ahora la contraseña es oculta
               placeholder="********"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
@@ -64,14 +64,14 @@ const getrol=async () => {
 
           <button type="submit">Login</button>
         </form>
+
         <div className="separator">
           <span>----------------------------- o ----------------------------</span>
         </div>
-      
 
-        <div  className="title">
-        <p className="register-text">
-          ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
+        <div className="title">
+          <p className="register-text">
+            ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
           </p>
         </div>
       </div>
