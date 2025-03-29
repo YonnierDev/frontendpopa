@@ -18,7 +18,7 @@ const Login = ({ setIsAuthenticated }) => {
         localStorage.setItem("token", response.data.token);
         setIsAuthenticated(true);
         alert("Login exitoso!");
-        navigate("/"); // Redirige a la tabla de usuarios
+        navigate("/reservas"); // Redirige a la tabla de usuarios
       } else {
         throw new Error("Token no recibido");
       }
