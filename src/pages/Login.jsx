@@ -22,7 +22,7 @@ const Login = ({ setIsAuthenticated }) => {
         setCorreo("");
         setContrasena("");
         
-        navigate("/");
+        navigate("/categorias");
       } else {
         throw new Error("Token no recibido");
       }

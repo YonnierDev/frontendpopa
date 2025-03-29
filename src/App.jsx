@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserListPage from "./pages/UserListPage";
+import Categorias from './pages/Categorias';
+import Lugares from './pages/Lugares';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,6 +26,8 @@ const App = () => {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/categorias" element={<Categorias />} />
+          <Route path="/lugares" element={<Lugares />} />
           <Route path="/usuarios" element={isAuthenticated ? <UserListPage /> : <Navigate to="/login" />} />
         </Routes>
       </div>
