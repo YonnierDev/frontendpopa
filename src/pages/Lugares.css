@@ -1,0 +1,145 @@
+.lugares-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.mensaje {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+}
+
+.lugar-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.lugar-form input,
+.lugar-form textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.lugar-form textarea {
+  grid-column: span 2;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.lugar-form button {
+  grid-column: span 2;
+  padding: 12px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 16px;
+}
+
+.lugar-form button:hover {
+  background-color: #45a049;
+}
+
+.lugares-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.lugar-item {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.lugar-item:hover {
+  transform: translateY(-2px);
+}
+
+.lugar-info h3 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 1.2em;
+}
+
+.lugar-info p {
+  margin: 0 0 15px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.lugar-detalles {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.lugar-botones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.lugar-botones button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.lugar-botones button:first-child {
+  background-color: #2196F3;
+  color: white;
+}
+
+.lugar-botones button:last-child {
+  background-color: #f44336;
+  color: white;
+}
+
+.lugar-botones button:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+  .lugar-form {
+    grid-template-columns: 1fr;
+  }
+
+  .lugar-form textarea,
+  .lugar-form button {
+    grid-column: 1;
+  }
+
+  .lugar-detalles {
+    flex-direction: column;
+    gap: 5px;
+  }
+} 
