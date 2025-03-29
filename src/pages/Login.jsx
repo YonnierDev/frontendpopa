@@ -19,6 +19,11 @@ const Login = ({ setIsAuthenticated }) => {
         setIsAuthenticated(true);
         alert("Login exitoso!");
         navigate("/reservas"); // Redirige a la tabla de usuarios
+        
+        setCorreo("");
+        setContrasena("");
+        
+        navigate("/");
       } else {
         throw new Error("Token no recibido");
       }
@@ -42,7 +47,7 @@ const Login = ({ setIsAuthenticated }) => {
             <label htmlFor="email">Email</label>
             <input
               id="email"
-              type="email"  // Añadido para validación automática
+              type="email"
               placeholder="Ingresa tu correo"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
@@ -54,7 +59,7 @@ const Login = ({ setIsAuthenticated }) => {
             <label htmlFor="password">Password</label>
             <input
               id="password"
-              type="password"  // Ahora la contraseña es oculta
+              type="password"
               placeholder="********"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
