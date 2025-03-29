@@ -27,6 +27,13 @@ const Register = () => {
       console.log("Usuario registrado:", response.data);
       alert("REGISTRADO EXITOSAMENTE!");
 
+      setNombre("");
+      setApellido("");
+      setCorreo("");
+      setFecha_nacimiento("");
+      setContrasena("");
+      setGenero("");
+
       navigate("/usuarios");
     } catch (error) {
       if (error.response) {
@@ -68,7 +75,7 @@ const Register = () => {
             required
           />
           <input
-            type="text"
+            type="date"
             placeholder="fecha de nacimiento"
             onChange={(e) => setFecha_nacimiento(e.target.value)}
             required
@@ -79,12 +86,13 @@ const Register = () => {
             onChange={(e) => setContrasena(e.target.value)}
             required
           />
-          <input
-            type="text"
-            placeholder="Genero"
-            onChange={(e) => setGenero(e.target.value)}
-            required
-          />
+          <select value={genero} onChange={(e) => setGenero(e.target.value)} required>
+            <option value="">Selecciona tu género</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+            <option value="Otro">Otro</option>
+          </select>
+
           <button type="submit">Registrarse</button>
         </form>
         <div className="separator">
