@@ -6,27 +6,20 @@
   background-color: #f8f9fa;
 }
 
-.page-header {
-  background-color: white;
-  padding: 20px 30px;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+h2 {
+  color: #ffcc00;
+  text-align: center;
   margin-bottom: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 28px;
-  font-weight: 600;
+  background-color: black;
+  padding: 20px;
+  border-radius: 15px;
 }
 
 .navigation-buttons {
   display: flex;
   gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .nav-button {
@@ -34,8 +27,8 @@
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: linear-gradient(135deg, #2196F3, #1976D2);
-  color: white;
+  background: linear-gradient(135deg, #ffcc00, #e6b800);
+  color: black;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -45,14 +38,10 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.nav-button .icon {
-  font-size: 20px;
-}
-
 .nav-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
-  background: linear-gradient(135deg, #1976D2, #1565C0);
+  box-shadow: 0 4px 10px rgba(255, 204, 0, 0.3);
+  background: linear-gradient(135deg, #e6b800, #cca300);
 }
 
 .content-section {
@@ -64,20 +53,19 @@
 
 .mensaje {
   padding: 15px;
-  margin: 0 0 20px 0;
+  margin: 10px 0;
   border-radius: 8px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: #ffcc00;
+  color: black;
   text-align: center;
   font-weight: 500;
-  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.2);
 }
 
 .categoria-form {
   display: flex;
   gap: 15px;
   margin-bottom: 30px;
-  background-color: #f8f9fa;
+  background-color: #333;
   padding: 20px;
   border-radius: 10px;
 }
@@ -85,21 +73,22 @@
 .categoria-form input {
   flex: 1;
   padding: 12px 15px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #ffcc00;
   border-radius: 8px;
   font-size: 16px;
-  transition: border-color 0.3s ease;
+  background-color: black;
+  color: #ffcc00;
 }
 
-.categoria-form input:focus {
-  border-color: #2196F3;
-  outline: none;
+.categoria-form input::placeholder {
+  color: #ffcc00;
+  opacity: 0.7;
 }
 
 .categoria-form button {
   padding: 12px 25px;
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  color: white;
+  background: linear-gradient(135deg, #ffcc00, #e6b800);
+  color: black;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -109,12 +98,15 @@
 
 .categoria-form button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 10px rgba(255, 204, 0, 0.3);
 }
 
 .categorias-lista {
   display: grid;
   gap: 15px;
+  background-color: black;
+  padding: 20px;
+  border-radius: 15px;
 }
 
 .categoria-item {
@@ -122,20 +114,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: #333;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease;
-}
-
-.categoria-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  border: 1px solid #ffcc00;
 }
 
 .categoria-item span {
   font-size: 16px;
-  color: #2c3e50;
+  color: #ffcc00;
   font-weight: 500;
 }
 
@@ -155,25 +142,24 @@
 }
 
 .categoria-botones button:first-child {
-  background: linear-gradient(135deg, #2196F3, #1976D2);
-  color: white;
+  background: linear-gradient(135deg, #ffcc00, #e6b800);
+  color: black;
 }
 
 .categoria-botones button:last-child {
-  background: linear-gradient(135deg, #f44336, #d32f2f);
-  color: white;
+  background: black;
+  color: #ffcc00;
+  border: 1px solid #ffcc00;
 }
 
 .categoria-botones button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(255, 204, 0, 0.2);
 }
 
 @media (max-width: 768px) {
-  .page-header {
+  .navigation-buttons {
     flex-direction: column;
-    gap: 15px;
-    text-align: center;
   }
 
   .categoria-form {
