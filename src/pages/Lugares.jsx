@@ -3,7 +3,25 @@ import { api } from "./api/api";
 import './Lugares.css';
 
 const Lugares = () => {
-  const [lugares, setLugares] = useState([]);
+  // Datos locales temporales
+  const lugaresIniciales = [
+    {
+      id: 1,
+      usuarioid: 1,
+      categoriaid: 1,
+      descripcion: "Restaurante italiano con terraza",
+      ubicacion: "Calle Principal #123"
+    },
+    {
+      id: 2,
+      usuarioid: 1,
+      categoriaid: 2,
+      descripcion: "Parque central con área infantil",
+      ubicacion: "Avenida Central #456"
+    }
+  ];
+
+  const [lugares, setLugares] = useState(lugaresIniciales);
   const [nuevoLugar, setNuevoLugar] = useState({
     usuarioid: '',
     categoriaid: '',
@@ -13,28 +31,22 @@ const Lugares = () => {
   const [lugarEditar, setLugarEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
 
-  useEffect(() => {
-    cargarLugares();
-  }, []);
-
-  const cargarLugares = async () => {
-    try {
-      const response = await api.get("/lugares");
-      setLugares(response.data);
-    } catch (error) {
-      console.error("Error al cargar lugares:", error);
-      setMensaje('Error al cargar los lugares');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (lugarEditar) {
-        await api.put(`/lugares/${lugarEditar.id}`, nuevoLugar);
+        // Actualización local
+        setLugares(lugares.map(lugar => 
+          lugar.id === lugarEditar.id ? { ...lugar, ...nuevoLugar } : lugar
+        ));
         setMensaje('Lugar actualizado exitosamente');
       } else {
-        await api.post("/lugares", nuevoLugar);
+        // Creación local
+        const nuevoLugarConId = {
+          ...nuevoLugar,
+          id: lugares.length + 1
+        };
+        setLugares([...lugares, nuevoLugarConId]);
         setMensaje('Lugar creado exitosamente');
       }
       setNuevoLugar({
@@ -44,7 +56,6 @@ const Lugares = () => {
         ubicacion: ''
       });
       setLugarEditar(null);
-      cargarLugares();
     } catch (error) {
       setMensaje('Error al procesar el lugar');
       console.error("Error:", error);
@@ -64,9 +75,9 @@ const Lugares = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este lugar?')) {
       try {
-        await api.delete(`/lugares/${id}`);
+        // Eliminación local
+        setLugares(lugares.filter(lugar => lugar.id !== id));
         setMensaje('Lugar eliminado exitosamente');
-        cargarLugares();
       } catch (error) {
         setMensaje('Error al eliminar el lugar');
         console.error("Error:", error);
