@@ -2,34 +2,35 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./AuthForm.css";
 import logo from "./logos.png";
-import { api } from "./api/api";
 
 const Login = ({ setIsAuthenticated }) => {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const navigate = useNavigate();
 
+  // Datos temporales de usuario
+  const usuarioTemporal = {
+    correo: "marloncollazos2@gmail.com",
+    contrasena: "marlon123"
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const response = await api.post("/login", { correo, contrasena });
-
-      if (response.data?.token) {
-        localStorage.setItem("token", response.data.token);
-        setIsAuthenticated(true);
-        alert("Login exitoso!");
-        
-        setCorreo("");
-        setContrasena("");
-        
-        navigate("/categorias");
-    }
-      } else {
-        throw new Error("Token no recibido");
-      }
-    } catch (error) {
-      console.error("Error en login:", error);
-      alert(error.response?.data?.message || "Error al iniciar sesión");
+    
+    // Verificación temporal con datos locales
+    if (correo === usuarioTemporal.correo && contrasena === usuarioTemporal.contrasena) {
+      // Simulamos un token
+      const tokenTemporal = "token_temporal_123456";
+      localStorage.setItem("token", tokenTemporal);
+      setIsAuthenticated(true);
+      alert("Login exitoso!");
+      
+      setCorreo("");
+      setContrasena("");
+      
+      navigate("/categorias");
+    } else {
+      alert("Credenciales incorrectas");
     }
   };
 
@@ -47,7 +48,7 @@ const Login = ({ setIsAuthenticated }) => {
             <label htmlFor="email">Email</label>
             <input
               id="email"
-              type="email"  // Añadido para validación automática
+              type="email"
               placeholder="Ingresa tu correo"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
@@ -59,7 +60,7 @@ const Login = ({ setIsAuthenticated }) => {
             <label htmlFor="password">Password</label>
             <input
               id="password"
-              type="password"  // Ahora la contraseña es oculta
+              type="password"
               placeholder="********"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}

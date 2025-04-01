@@ -4,39 +4,40 @@ import { useNavigate } from 'react-router-dom';
 import './Categorias.css';
 
 const Categorias = () => {
-  const [categorias, setCategorias] = useState([]);
+  // Datos locales temporales
+  const categoriasIniciales = [
+    { id: 1, tipo: "Restaurantes" },
+    { id: 2, tipo: "Parques" },
+    { id: 3, tipo: "Museos" },
+    { id: 4, tipo: "Hoteles" }
+  ];
+
+  const [categorias, setCategorias] = useState(categoriasIniciales);
   const [nuevaCategoria, setNuevaCategoria] = useState('');
   const [categoriaEditar, setCategoriaEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    cargarCategorias();
-  }, []);
-
-  const cargarCategorias = async () => {
-    try {
-      const response = await api.get("/categorias");
-      setCategorias(response.data);
-    } catch (error) {
-      console.error("Error al cargar categorías:", error);
-      setMensaje('Error al cargar las categorías');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (categoriaEditar) {
-        await api.put(`/categorias/${categoriaEditar.id}`, { tipo: nuevaCategoria });
+        // Actualización local
+        setCategorias(categorias.map(cat => 
+          cat.id === categoriaEditar.id ? { ...cat, tipo: nuevaCategoria } : cat
+        ));
         setMensaje('Categoría actualizada exitosamente');
       } else {
-        await api.post("/categorias", { tipo: nuevaCategoria });
+        // Creación local
+        const nuevaCat = {
+          id: categorias.length + 1,
+          tipo: nuevaCategoria
+        };
+        setCategorias([...categorias, nuevaCat]);
         setMensaje('Categoría creada exitosamente');
       }
       setNuevaCategoria('');
       setCategoriaEditar(null);
-      cargarCategorias();
     } catch (error) {
       setMensaje('Error al procesar la categoría');
       console.error("Error:", error);
@@ -51,9 +52,9 @@ const Categorias = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Está seguro de eliminar esta categoría?')) {
       try {
-        await api.delete(`/categorias/${id}`);
+        // Eliminación local
+        setCategorias(categorias.filter(cat => cat.id !== id));
         setMensaje('Categoría eliminada exitosamente');
-        cargarCategorias();
       } catch (error) {
         setMensaje('Error al eliminar la categoría');
         console.error("Error:", error);
@@ -72,6 +73,13 @@ const Categorias = () => {
           >
             <span className="icon">📍</span>
             <span className="text">Gestionar Lugares</span>
+          </button>
+          <button 
+            className="nav-button"
+            onClick={() => navigate('/comentarios')}
+          >
+            <span className="icon">💬</span>
+            <span className="text">Gestionar Comentarios</span>
           </button>
         </div>
       </div>

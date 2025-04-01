@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import UserListPage from "./pages/UserListPage";
 import Categorias from './pages/Categorias';
 import Lugares from './pages/Lugares';
+import Comentarios from './pages/Comentarios';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/lugares" element={<Lugares />} />
+          <Route path="/comentarios" element={<Comentarios />} />
           <Route path="/usuarios" element={isAuthenticated ? <UserListPage /> : <Navigate to="/login" />} />
         </Routes>
       </div>
