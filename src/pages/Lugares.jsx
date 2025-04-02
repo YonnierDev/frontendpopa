@@ -1,61 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { api } from "./api/api";
+import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
 
 const Lugares = () => {
-  // Datos locales temporales
-  const lugaresIniciales = [
-    {
-      id: 1,
-      usuarioid: 1,
-      categoriaid: 1,
-      descripcion: "Restaurante italiano con terraza",
-      ubicacion: "Calle Principal #123"
-    },
-    {
-      id: 2,
-      usuarioid: 1,
-      categoriaid: 2,
-      descripcion: "Parque central con área infantil",
-      ubicacion: "Avenida Central #456"
-    }
-  ];
-
-  const [lugares, setLugares] = useState(lugaresIniciales);
+  const [lugares, setLugares] = useState([]);
   const [nuevoLugar, setNuevoLugar] = useState({
-    usuarioid: '',
     categoriaid: '',
+    usuarioid: '',
+    nombre: '',
     descripcion: '',
-    ubicacion: ''
+    ubicacion: '',
+    estado: true
   });
   const [lugarEditar, setLugarEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    cargarLugares();
+  }, []);
+
+  const cargarLugares = async () => {
+    try {
+      const response = await api.get("/lugares");
+      console.log('Lugares cargados:', response.data);
+      setLugares(response.data);
+    } catch (error) {
+      console.error("Error al cargar lugares:", error);
+      setMensaje('Error al cargar los lugares');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (lugarEditar) {
-        // Actualización local
-        setLugares(lugares.map(lugar => 
-          lugar.id === lugarEditar.id ? { ...lugar, ...nuevoLugar } : lugar
-        ));
+        await api.put(`/lugar/${lugarEditar.id}`, nuevoLugar);
         setMensaje('Lugar actualizado exitosamente');
       } else {
-        // Creación local
-        const nuevoLugarConId = {
-          ...nuevoLugar,
-          id: lugares.length + 1
-        };
-        setLugares([...lugares, nuevoLugarConId]);
+        await api.post("/lugar", nuevoLugar);
         setMensaje('Lugar creado exitosamente');
       }
       setNuevoLugar({
-        usuarioid: '',
         categoriaid: '',
+        usuarioid: '',
+        nombre: '',
         descripcion: '',
-        ubicacion: ''
+        ubicacion: '',
+        estado: true
       });
       setLugarEditar(null);
+      cargarLugares();
     } catch (error) {
       setMensaje('Error al procesar el lugar');
       console.error("Error:", error);
@@ -65,19 +61,21 @@ const Lugares = () => {
   const handleEditar = (lugar) => {
     setLugarEditar(lugar);
     setNuevoLugar({
-      usuarioid: lugar.usuarioid,
       categoriaid: lugar.categoriaid,
+      usuarioid: lugar.usuarioid,
+      nombre: lugar.nombre,
       descripcion: lugar.descripcion,
-      ubicacion: lugar.ubicacion
+      ubicacion: lugar.ubicacion,
+      estado: lugar.estado
     });
   };
 
   const handleEliminar = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este lugar?')) {
       try {
-        // Eliminación local
-        setLugares(lugares.filter(lugar => lugar.id !== id));
+        await api.delete(`/lugar/${id}`);
         setMensaje('Lugar eliminado exitosamente');
+        cargarLugares();
       } catch (error) {
         setMensaje('Error al eliminar el lugar');
         console.error("Error:", error);
@@ -86,61 +84,97 @@ const Lugares = () => {
   };
 
   return (
-    <div className="lugares-container">
-      <h2>Gestión de Lugares</h2>
-      
-      {mensaje && <div className="mensaje">{mensaje}</div>}
+    <div className="app-container">
+      <div className="header">
+        <button className="cerrar-sesion" onClick={() => navigate('/login')}>Cerrar sesión</button>
+      </div>
 
-      <form onSubmit={handleSubmit} className="lugar-form">
-        <input
-          type="text"
-          value={nuevoLugar.usuarioid}
-          onChange={(e) => setNuevoLugar({...nuevoLugar, usuarioid: e.target.value})}
-          placeholder="ID Usuario"
-          required
-        />
-        <input
-          type="text"
-          value={nuevoLugar.categoriaid}
-          onChange={(e) => setNuevoLugar({...nuevoLugar, categoriaid: e.target.value})}
-          placeholder="ID Categoría"
-          required
-        />
-        <textarea
-          value={nuevoLugar.descripcion}
-          onChange={(e) => setNuevoLugar({...nuevoLugar, descripcion: e.target.value})}
-          placeholder="Descripción del lugar"
-          required
-        />
-        <input
-          type="text"
-          value={nuevoLugar.ubicacion}
-          onChange={(e) => setNuevoLugar({...nuevoLugar, ubicacion: e.target.value})}
-          placeholder="Ubicación"
-          required
-        />
-        <button type="submit">
-          {lugarEditar ? 'Actualizar' : 'Crear'} Lugar
+      <div className="sidebar">
+        <button className="nav-button" onClick={() => navigate('/categorias')}>
+          📝 Categorías
         </button>
-      </form>
+        <button className="nav-button active" onClick={() => navigate('/lugares')}>
+          📍 Lugares
+        </button>
+        <button className="nav-button" onClick={() => navigate('/comentarios')}>
+          💬 Comentarios
+        </button>
+      </div>
 
-      <div className="lugares-lista">
-        {lugares.map((lugar) => (
-          <div key={lugar.id} className="lugar-item">
-            <div className="lugar-info">
-              <h3>📍 {lugar.ubicacion}</h3>
-              <p>{lugar.descripcion}</p>
-              <div className="lugar-detalles">
-                <span>👤 Usuario ID: {lugar.usuarioid}</span>
-                <span>🏷️ Categoría ID: {lugar.categoriaid}</span>
+      <div className="main-content">
+        <h2>Lugares de Carantanta</h2>
+        
+        {mensaje && <div className="mensaje">{mensaje}</div>}
+
+        <form onSubmit={handleSubmit} className="form-container">
+          <div className="form-group">
+            <input
+              type="number"
+              value={nuevoLugar.categoriaid}
+              onChange={(e) => setNuevoLugar({...nuevoLugar, categoriaid: e.target.value})}
+              placeholder="ID Categoría"
+              required
+            />
+            <input
+              type="number"
+              value={nuevoLugar.usuarioid}
+              onChange={(e) => setNuevoLugar({...nuevoLugar, usuarioid: e.target.value})}
+              placeholder="ID Usuario"
+              required
+            />
+          </div>
+          <input
+            type="text"
+            value={nuevoLugar.nombre}
+            onChange={(e) => setNuevoLugar({...nuevoLugar, nombre: e.target.value})}
+            placeholder="Nombre del lugar"
+            required
+          />
+          <textarea
+            value={nuevoLugar.descripcion}
+            onChange={(e) => setNuevoLugar({...nuevoLugar, descripcion: e.target.value})}
+            placeholder="Descripción del lugar"
+            required
+          />
+          <input
+            type="text"
+            value={nuevoLugar.ubicacion}
+            onChange={(e) => setNuevoLugar({...nuevoLugar, ubicacion: e.target.value})}
+            placeholder="Ubicación"
+            required
+          />
+          <button type="submit" className="btn-crear">
+            {lugarEditar ? 'Actualizar' : 'Crear'} Lugar
+          </button>
+        </form>
+
+        <div className="items-list">
+          {lugares.map((lugar) => (
+            <div key={lugar.id} className="item-card">
+              <div className="item-header">
+                <h3>{lugar.nombre}</h3>
+                <span className="estado-badge">
+                  {lugar.estado ? '🟢 Activo' : '🔴 Inactivo'}
+                </span>
+              </div>
+              <div className="item-content">
+                <p><strong>📍 Ubicación:</strong> {lugar.ubicacion}</p>
+                <p>{lugar.descripcion}</p>
+                <div className="item-details">
+                  <span>👤 Usuario ID: {lugar.usuarioid}</span>
+                  <span>🏷️ Categoría ID: {lugar.categoriaid}</span>
+                </div>
+              </div>
+              <div className="item-footer">
+                <span>Actualizado: {new Date(lugar.updatedAt).toLocaleDateString()}</span>
+                <div className="item-actions">
+                  <button onClick={() => handleEditar(lugar)}>Editar</button>
+                  <button onClick={() => handleEliminar(lugar.id)}>Eliminar</button>
+                </div>
               </div>
             </div>
-            <div className="lugar-botones">
-              <button onClick={() => handleEditar(lugar)}>Editar</button>
-              <button onClick={() => handleEliminar(lugar.id)}>Eliminar</button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

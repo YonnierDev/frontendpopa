@@ -4,63 +4,50 @@ import { useNavigate } from 'react-router-dom';
 import './Comentarios.css';
 
 const Comentarios = () => {
-  // Datos locales temporales
-  const comentariosIniciales = [
-    {
-      id: 1,
-      id_user: 1,
-      id_evento: 1,
-      contenido: "¡Excelente lugar! Lo recomiendo.",
-      fecha_hora: new Date().toISOString()
-    },
-    {
-      id: 2,
-      id_user: 2,
-      id_evento: 1,
-      contenido: "Muy buen servicio y ambiente agradable.",
-      fecha_hora: new Date().toISOString()
-    }
-  ];
-
-  const [comentarios, setComentarios] = useState(comentariosIniciales);
+  const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState({
-    id_user: '',
-    id_evento: '',
-    contenido: ''
+    usuarioid: '',
+    contenido: '',
+    fecha_hora: new Date().toISOString(),
+    estado: true
   });
   const [comentarioEditar, setComentarioEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    cargarComentarios();
+  }, []);
+
+  const cargarComentarios = async () => {
+    try {
+      const response = await api.get("/comentarios");
+      console.log('Comentarios cargados:', response.data);
+      setComentarios(response.data);
+    } catch (error) {
+      console.error("Error al cargar comentarios:", error);
+      setMensaje('Error al cargar los comentarios');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (comentarioEditar) {
-        // Actualización local
-        setComentarios(comentarios.map(com => 
-          com.id === comentarioEditar.id ? { 
-            ...com, 
-            ...nuevoComentario,
-            fecha_hora: new Date().toISOString() 
-          } : com
-        ));
+        await api.put(`/comentario/${comentarioEditar.id}`, nuevoComentario);
         setMensaje('Comentario actualizado exitosamente');
       } else {
-        // Creación local
-        const nuevoComentarioCompleto = {
-          ...nuevoComentario,
-          id: comentarios.length + 1,
-          fecha_hora: new Date().toISOString()
-        };
-        setComentarios([...comentarios, nuevoComentarioCompleto]);
+        await api.post("/comentario", nuevoComentario);
         setMensaje('Comentario creado exitosamente');
       }
       setNuevoComentario({
-        id_user: '',
-        id_evento: '',
-        contenido: ''
+        usuarioid: '',
+        contenido: '',
+        fecha_hora: new Date().toISOString(),
+        estado: true
       });
       setComentarioEditar(null);
+      cargarComentarios();
     } catch (error) {
       setMensaje('Error al procesar el comentario');
       console.error("Error:", error);
@@ -70,18 +57,19 @@ const Comentarios = () => {
   const handleEditar = (comentario) => {
     setComentarioEditar(comentario);
     setNuevoComentario({
-      id_user: comentario.id_user,
-      id_evento: comentario.id_evento,
-      contenido: comentario.contenido
+      usuarioid: comentario.usuarioid,
+      contenido: comentario.contenido,
+      fecha_hora: comentario.fecha_hora,
+      estado: comentario.estado
     });
   };
 
   const handleEliminar = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este comentario?')) {
       try {
-        // Eliminación local
-        setComentarios(comentarios.filter(com => com.id !== id));
+        await api.delete(`/comentario/${id}`);
         setMensaje('Comentario eliminado exitosamente');
+        cargarComentarios();
       } catch (error) {
         setMensaje('Error al eliminar el comentario');
         console.error("Error:", error);
@@ -90,63 +78,65 @@ const Comentarios = () => {
   };
 
   return (
-    <div className="comentarios-container">
-      <div className="page-header">
-        <h2>Gestión de Comentarios</h2>
-        <div className="navigation-buttons">
-          <button 
-            className="nav-button"
-            onClick={() => navigate('/eventos')}
-          >
-            <span className="icon">📅</span>
-            <span className="text">Ver Eventos</span>
-          </button>
-        </div>
+    <div className="app-container">
+      <div className="header">
+        <button className="cerrar-sesion" onClick={() => navigate('/login')}>Cerrar sesión</button>
       </div>
-      
-      <div className="content-section">
+
+      <div className="sidebar">
+        <button className="nav-button" onClick={() => navigate('/categorias')}>
+          📝 Categorías
+        </button>
+        <button className="nav-button" onClick={() => navigate('/lugares')}>
+          📍 Lugares
+        </button>
+        <button className="nav-button active" onClick={() => navigate('/comentarios')}>
+          💬 Comentarios
+        </button>
+      </div>
+
+      <div className="main-content">
+        <h2>Comentarios de Carantanta</h2>
+        
         {mensaje && <div className="mensaje">{mensaje}</div>}
 
-        <form onSubmit={handleSubmit} className="comentario-form">
-          <input
-            type="number"
-            value={nuevoComentario.id_user}
-            onChange={(e) => setNuevoComentario({...nuevoComentario, id_user: e.target.value})}
-            placeholder="ID Usuario"
-            required
-          />
-          <input
-            type="number"
-            value={nuevoComentario.id_evento}
-            onChange={(e) => setNuevoComentario({...nuevoComentario, id_evento: e.target.value})}
-            placeholder="ID Evento"
-            required
-          />
+        <form onSubmit={handleSubmit} className="form-container">
+          <div className="form-group">
+            <input
+              type="number"
+              value={nuevoComentario.usuarioid}
+              onChange={(e) => setNuevoComentario({...nuevoComentario, usuarioid: e.target.value})}
+              placeholder="ID Usuario"
+              required
+            />
+          </div>
           <textarea
             value={nuevoComentario.contenido}
             onChange={(e) => setNuevoComentario({...nuevoComentario, contenido: e.target.value})}
             placeholder="Escribe tu comentario aquí..."
             required
           />
-          <button type="submit">
+          <button type="submit" className="btn-crear">
             {comentarioEditar ? 'Actualizar' : 'Crear'} Comentario
           </button>
         </form>
 
-        <div className="comentarios-lista">
+        <div className="items-list">
           {comentarios.map((comentario) => (
-            <div key={comentario.id} className="comentario-item">
-              <div className="comentario-info">
-                <div className="comentario-header">
-                  <span className="usuario-id">👤 Usuario #{comentario.id_user}</span>
-                  <span className="fecha">{new Date(comentario.fecha_hora).toLocaleString()}</span>
-                </div>
-                <p className="contenido">{comentario.contenido}</p>
-                <span className="evento-id">📅 Evento #{comentario.id_evento}</span>
+            <div key={comentario.id} className="item-card">
+              <div className="item-header">
+                <span>Usuario #{comentario.usuarioid}</span>
+                <span>{new Date(comentario.fecha_hora).toLocaleString()}</span>
               </div>
-              <div className="comentario-botones">
-                <button onClick={() => handleEditar(comentario)}>Editar</button>
-                <button onClick={() => handleEliminar(comentario.id)}>Eliminar</button>
+              <div className="item-content">
+                <p>{comentario.contenido}</p>
+              </div>
+              <div className="item-footer">
+                <span>Estado: {comentario.estado ? 'Activo' : 'Inactivo'}</span>
+                <div className="item-actions">
+                  <button onClick={() => handleEditar(comentario)}>Editar</button>
+                  <button onClick={() => handleEliminar(comentario.id)}>Eliminar</button>
+                </div>
               </div>
             </div>
           ))}

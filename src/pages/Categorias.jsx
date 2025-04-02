@@ -4,40 +4,42 @@ import { useNavigate } from 'react-router-dom';
 import './Categorias.css';
 
 const Categorias = () => {
-  // Datos locales temporales
-  const categoriasIniciales = [
-    { id: 1, tipo: "Restaurantes" },
-    { id: 2, tipo: "Parques" },
-    { id: 3, tipo: "Museos" },
-    { id: 4, tipo: "Hoteles" }
-  ];
-
-  const [categorias, setCategorias] = useState(categoriasIniciales);
-  const [nuevaCategoria, setNuevaCategoria] = useState('');
+  const [categorias, setCategorias] = useState([]);
+  const [nuevaCategoria, setNuevaCategoria] = useState({
+    tipo: ''
+  });
   const [categoriaEditar, setCategoriaEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    cargarCategorias();
+  }, []);
+
+  const cargarCategorias = async () => {
+    try {
+      const response = await api.get("/categorias");
+      console.log('Categorías cargadas:', response.data);
+      setCategorias(response.data);
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+      setMensaje('Error al cargar las categorías');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (categoriaEditar) {
-        // Actualización local
-        setCategorias(categorias.map(cat => 
-          cat.id === categoriaEditar.id ? { ...cat, tipo: nuevaCategoria } : cat
-        ));
+        await api.put(`/categoria/${categoriaEditar.id}`, nuevaCategoria);
         setMensaje('Categoría actualizada exitosamente');
       } else {
-        // Creación local
-        const nuevaCat = {
-          id: categorias.length + 1,
-          tipo: nuevaCategoria
-        };
-        setCategorias([...categorias, nuevaCat]);
+        await api.post("/categoria", nuevaCategoria);
         setMensaje('Categoría creada exitosamente');
       }
-      setNuevaCategoria('');
+      setNuevaCategoria({ tipo: '' });
       setCategoriaEditar(null);
+      cargarCategorias();
     } catch (error) {
       setMensaje('Error al procesar la categoría');
       console.error("Error:", error);
@@ -46,15 +48,15 @@ const Categorias = () => {
 
   const handleEditar = (categoria) => {
     setCategoriaEditar(categoria);
-    setNuevaCategoria(categoria.tipo);
+    setNuevaCategoria({ tipo: categoria.tipo });
   };
 
   const handleEliminar = async (id) => {
     if (window.confirm('¿Está seguro de eliminar esta categoría?')) {
       try {
-        // Eliminación local
-        setCategorias(categorias.filter(cat => cat.id !== id));
+        await api.delete(`/categoria/${id}`);
         setMensaje('Categoría eliminada exitosamente');
+        cargarCategorias();
       } catch (error) {
         setMensaje('Error al eliminar la categoría');
         console.error("Error:", error);
@@ -63,48 +65,54 @@ const Categorias = () => {
   };
 
   return (
-    <div className="categorias-container">
-      <div className="page-header">
-        <h2>Gestión de Categorías</h2>
-        <div className="navigation-buttons">
-          <button 
-            className="nav-button"
-            onClick={() => navigate('/lugares')}
-          >
-            <span className="icon">📍</span>
-            <span className="text">Gestionar Lugares</span>
-          </button>
-          <button 
-            className="nav-button"
-            onClick={() => navigate('/comentarios')}
-          >
-            <span className="icon">💬</span>
-            <span className="text">Gestionar Comentarios</span>
-          </button>
-        </div>
+    <div className="app-container">
+      <div className="header">
+        <button className="cerrar-sesion" onClick={() => navigate('/login')}>Cerrar sesión</button>
       </div>
-      
-      <div className="content-section">
+
+      <div className="sidebar">
+        <button className="nav-button active" onClick={() => navigate('/categorias')}>
+          📝 Categorías
+        </button>
+        <button className="nav-button" onClick={() => navigate('/lugares')}>
+          📍 Lugares
+        </button>
+        <button className="nav-button" onClick={() => navigate('/comentarios')}>
+          💬 Comentarios
+        </button>
+      </div>
+
+      <div className="main-content">
+        <h2>Categorías de Carantanta</h2>
+        
         {mensaje && <div className="mensaje">{mensaje}</div>}
 
-        <form onSubmit={handleSubmit} className="categoria-form">
-          <input
-            type="text"
-            value={nuevaCategoria}
-            onChange={(e) => setNuevaCategoria(e.target.value)}
-            placeholder="Nombre de la categoría"
-            required
-          />
-          <button type="submit">
+        <form onSubmit={handleSubmit} className="form-container">
+          <div className="form-group">
+            <input
+              type="text"
+              value={nuevaCategoria.tipo}
+              onChange={(e) => setNuevaCategoria({ tipo: e.target.value })}
+              placeholder="Nombre de la categoría"
+              required
+            />
+          </div>
+          <button type="submit" className="btn-crear">
             {categoriaEditar ? 'Actualizar' : 'Crear'} Categoría
           </button>
         </form>
 
-        <div className="categorias-lista">
+        <div className="items-list">
           {categorias.map((categoria) => (
-            <div key={categoria.id} className="categoria-item">
-              <span>{categoria.tipo}</span>
-              <div className="categoria-botones">
+            <div key={categoria.id} className="item-card">
+              <div className="item-content">
+                <h3>{categoria.tipo}</h3>
+                <p className="item-details">
+                  <span>Creado: {new Date(categoria.createdAt).toLocaleDateString()}</span>
+                  <span>Actualizado: {new Date(categoria.updatedAt).toLocaleDateString()}</span>
+                </p>
+              </div>
+              <div className="item-actions">
                 <button onClick={() => handleEditar(categoria)}>Editar</button>
                 <button onClick={() => handleEliminar(categoria.id)}>Eliminar</button>
               </div>

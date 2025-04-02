@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:5000", // Quitamos /api/ ya que tus rutas no lo incluyen
+  baseURL: "http://localhost:7000/api", // Correcto, incluye /api
   headers: {
     "Content-Type": "application/json",
   },
