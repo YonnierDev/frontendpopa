@@ -16,7 +16,6 @@ const Lugares = () => {
   });
   const [lugarEditar, setLugarEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     cargarLugares();

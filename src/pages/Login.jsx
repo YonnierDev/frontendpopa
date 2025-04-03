@@ -23,7 +23,7 @@ const Login = ({ setIsAuthenticated }) => {
         localStorage.setItem("token", token);
         setIsAuthenticated(true);
         setError(""); // Limpiar cualquier error previo
-        navigate("/dashboard"); // Cambiado de /categorias a /dashboard
+        navigate("/dashboard"); // Redirigir al dashboard
       } else {
         setError("Credenciales incorrectas");
       }
