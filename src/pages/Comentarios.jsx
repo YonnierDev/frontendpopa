@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from "./api/api";
 import { useNavigate } from 'react-router-dom';
 import './Comentarios.css';
+import Sidebar from '../components/Sidebar';
 
 const Comentarios = () => {
   const [comentarios, setComentarios] = useState([]);
@@ -25,8 +26,8 @@ const Comentarios = () => {
       console.log('Comentarios cargados:', response.data);
       setComentarios(response.data);
     } catch (error) {
-      console.error("Error al cargar comentarios:", error);
-      setMensaje('Error al cargar los comentarios');
+      console.error("Error detallado:", error.response || error);
+      setMensaje('Error al cargar los comentarios: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -78,71 +79,64 @@ const Comentarios = () => {
   };
 
   return (
-    <div className="app-container">
-      <div className="header">
-        <button className="cerrar-sesion" onClick={() => navigate('/login')}>Cerrar sesión</button>
-      </div>
+    <>
+      <Sidebar />
+      <div className="app-container">
+        <div className="header">
+          <button className="cerrar-sesion" onClick={() => navigate('/login')}>
+            Cerrar sesión
+          </button>
+        </div>
 
-      <div className="sidebar">
-        <button className="nav-button" onClick={() => navigate('/categorias')}>
-          📝 Categorías
-        </button>
-        <button className="nav-button" onClick={() => navigate('/lugares')}>
-          📍 Lugares
-        </button>
-        <button className="nav-button active" onClick={() => navigate('/comentarios')}>
-          💬 Comentarios
-        </button>
-      </div>
+        <div className="main-content">
+          <h2>Comentarios de Popayán Nocturna</h2>
+          
+          {mensaje && <div className="mensaje">{mensaje}</div>}
 
-      <div className="main-content">
-        <h2>Comentarios de Carantanta</h2>
-        
-        {mensaje && <div className="mensaje">{mensaje}</div>}
-
-        <form onSubmit={handleSubmit} className="form-container">
-          <div className="form-group">
-            <input
-              type="number"
-              value={nuevoComentario.usuarioid}
-              onChange={(e) => setNuevoComentario({...nuevoComentario, usuarioid: e.target.value})}
-              placeholder="ID Usuario"
+          <form onSubmit={handleSubmit} className="form-container">
+            <div className="form-group">
+              <input
+                type="number"
+                value={nuevoComentario.usuarioid}
+                onChange={(e) => setNuevoComentario({...nuevoComentario, usuarioid: e.target.value})}
+                placeholder="ID Usuario"
+                required
+              />
+            </div>
+            <textarea
+              value={nuevoComentario.contenido}
+              onChange={(e) => setNuevoComentario({...nuevoComentario, contenido: e.target.value})}
+              placeholder="Escribe tu comentario aquí..."
               required
             />
-          </div>
-          <textarea
-            value={nuevoComentario.contenido}
-            onChange={(e) => setNuevoComentario({...nuevoComentario, contenido: e.target.value})}
-            placeholder="Escribe tu comentario aquí..."
-            required
-          />
-          <button type="submit" className="btn-crear">
-            {comentarioEditar ? 'Actualizar' : 'Crear'} Comentario
-          </button>
-        </form>
+            <button type="submit" className="btn-crear">
+              {comentarioEditar ? 'Actualizar' : 'Crear'} Comentario
+            </button>
+          </form>
 
-        <div className="items-list">
-          {comentarios.map((comentario) => (
-            <div key={comentario.id} className="item-card">
-              <div className="item-header">
-                <span>Usuario #{comentario.usuarioid}</span>
-                <span>{new Date(comentario.fecha_hora).toLocaleString()}</span>
-              </div>
-              <div className="item-content">
-                <p>{comentario.contenido}</p>
-              </div>
-              <div className="item-footer">
-                <span>Estado: {comentario.estado ? 'Activo' : 'Inactivo'}</span>
-                <div className="item-actions">
-                  <button onClick={() => handleEditar(comentario)}>Editar</button>
-                  <button onClick={() => handleEliminar(comentario.id)}>Eliminar</button>
+          <div className="items-list">
+            {comentarios.map((comentario) => (
+              <div key={comentario.id} className="item-card">
+                <div className="item-header">
+                  <span>Usuario #{comentario.usuarioid}</span>
+                  <span>{new Date(comentario.fecha_hora).toLocaleString()}</span>
+                </div>
+                <div className="item-content">
+                  <p>{comentario.contenido}</p>
+                </div>
+                <div className="item-footer">
+                  <span>Estado: {comentario.estado ? 'Activo' : 'Inactivo'}</span>
+                  <div className="item-actions">
+                    <button onClick={() => handleEditar(comentario)}>Editar</button>
+                    <button onClick={() => handleEliminar(comentario.id)}>Eliminar</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

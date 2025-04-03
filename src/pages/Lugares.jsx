@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from "./api/api";
 import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
+import Sidebar from '../components/Sidebar';
 
 const Lugares = () => {
   const [lugares, setLugares] = useState([]);
@@ -27,8 +28,8 @@ const Lugares = () => {
       console.log('Lugares cargados:', response.data);
       setLugares(response.data);
     } catch (error) {
-      console.error("Error al cargar lugares:", error);
-      setMensaje('Error al cargar los lugares');
+      console.error("Error detallado:", error.response || error);
+      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -84,99 +85,94 @@ const Lugares = () => {
   };
 
   return (
-    <div className="app-container">
-      <div className="header">
-        <button className="cerrar-sesion" onClick={() => navigate('/login')}>Cerrar sesión</button>
-      </div>
-
-      <div className="sidebar">
-        <button className="nav-button" onClick={() => navigate('/categorias')}>
-          📝 Categorías
-        </button>
-        <button className="nav-button active" onClick={() => navigate('/lugares')}>
-          📍 Lugares
-        </button>
-        <button className="nav-button" onClick={() => navigate('/comentarios')}>
-          💬 Comentarios
-        </button>
-      </div>
-
-      <div className="main-content">
-        <h2>Lugares de Carantanta</h2>
-        
-        {mensaje && <div className="mensaje">{mensaje}</div>}
-
-        <form onSubmit={handleSubmit} className="form-container">
-          <div className="form-group">
-            <input
-              type="number"
-              value={nuevoLugar.categoriaid}
-              onChange={(e) => setNuevoLugar({...nuevoLugar, categoriaid: e.target.value})}
-              placeholder="ID Categoría"
-              required
-            />
-            <input
-              type="number"
-              value={nuevoLugar.usuarioid}
-              onChange={(e) => setNuevoLugar({...nuevoLugar, usuarioid: e.target.value})}
-              placeholder="ID Usuario"
-              required
-            />
-          </div>
-          <input
-            type="text"
-            value={nuevoLugar.nombre}
-            onChange={(e) => setNuevoLugar({...nuevoLugar, nombre: e.target.value})}
-            placeholder="Nombre del lugar"
-            required
-          />
-          <textarea
-            value={nuevoLugar.descripcion}
-            onChange={(e) => setNuevoLugar({...nuevoLugar, descripcion: e.target.value})}
-            placeholder="Descripción del lugar"
-            required
-          />
-          <input
-            type="text"
-            value={nuevoLugar.ubicacion}
-            onChange={(e) => setNuevoLugar({...nuevoLugar, ubicacion: e.target.value})}
-            placeholder="Ubicación"
-            required
-          />
-          <button type="submit" className="btn-crear">
-            {lugarEditar ? 'Actualizar' : 'Crear'} Lugar
+    <>
+      <Sidebar />
+      <div className="app-container">
+        <div className="header">
+          <button className="cerrar-sesion" onClick={() => navigate('/login')}>
+            Cerrar sesión
           </button>
-        </form>
+        </div>
 
-        <div className="items-list">
-          {lugares.map((lugar) => (
-            <div key={lugar.id} className="item-card">
-              <div className="item-header">
-                <h3>{lugar.nombre}</h3>
-                <span className="estado-badge">
-                  {lugar.estado ? '🟢 Activo' : '🔴 Inactivo'}
-                </span>
-              </div>
-              <div className="item-content">
-                <p><strong>📍 Ubicación:</strong> {lugar.ubicacion}</p>
-                <p>{lugar.descripcion}</p>
-                <div className="item-details">
-                  <span>👤 Usuario ID: {lugar.usuarioid}</span>
-                  <span>🏷️ Categoría ID: {lugar.categoriaid}</span>
-                </div>
-              </div>
-              <div className="item-footer">
-                <span>Actualizado: {new Date(lugar.updatedAt).toLocaleDateString()}</span>
-                <div className="item-actions">
-                  <button onClick={() => handleEditar(lugar)}>Editar</button>
-                  <button onClick={() => handleEliminar(lugar.id)}>Eliminar</button>
-                </div>
-              </div>
+        <div className="main-content">
+          <h2>Lugares de Popayán Nocturna</h2>
+          
+          {mensaje && <div className="mensaje">{mensaje}</div>}
+
+          <form onSubmit={handleSubmit} className="form-container">
+            <div className="form-group">
+              <input
+                type="number"
+                value={nuevoLugar.categoriaid}
+                onChange={(e) => setNuevoLugar({...nuevoLugar, categoriaid: e.target.value})}
+                placeholder="ID Categoría"
+                required
+              />
+              <input
+                type="number"
+                value={nuevoLugar.usuarioid}
+                onChange={(e) => setNuevoLugar({...nuevoLugar, usuarioid: e.target.value})}
+                placeholder="ID Usuario"
+                required
+              />
             </div>
-          ))}
+            <div className="form-group">
+              <input
+                type="text"
+                value={nuevoLugar.nombre}
+                onChange={(e) => setNuevoLugar({...nuevoLugar, nombre: e.target.value})}
+                placeholder="Nombre del lugar"
+                required
+              />
+              <input
+                type="text"
+                value={nuevoLugar.ubicacion}
+                onChange={(e) => setNuevoLugar({...nuevoLugar, ubicacion: e.target.value})}
+                placeholder="Ubicación"
+                required
+              />
+            </div>
+            <textarea
+              value={nuevoLugar.descripcion}
+              onChange={(e) => setNuevoLugar({...nuevoLugar, descripcion: e.target.value})}
+              placeholder="Descripción del lugar"
+              required
+            />
+            <button type="submit" className="btn-crear">
+              {lugarEditar ? 'Actualizar' : 'Crear'} Lugar
+            </button>
+          </form>
+
+          <div className="items-list">
+            {lugares.map((lugar) => (
+              <div key={lugar.id} className="item-card">
+                <div className="item-header">
+                  <h3>{lugar.nombre}</h3>
+                  <span className="estado-badge">
+                    {lugar.estado ? '🟢 Activo' : '🔴 Inactivo'}
+                  </span>
+                </div>
+                <div className="item-content">
+                  <p><strong>📍 Ubicación:</strong> {lugar.ubicacion}</p>
+                  <p>{lugar.descripcion}</p>
+                  <div className="item-details">
+                    <span>👤 Usuario ID: {lugar.usuarioid}</span>
+                    <span>🏷️ Categoría ID: {lugar.categoriaid}</span>
+                  </div>
+                </div>
+                <div className="item-footer">
+                  <span>Actualizado: {new Date(lugar.updatedAt).toLocaleDateString()}</span>
+                  <div className="item-actions">
+                    <button onClick={() => handleEditar(lugar)}>Editar</button>
+                    <button onClick={() => handleEliminar(lugar.id)}>Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

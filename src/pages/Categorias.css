@@ -171,4 +171,154 @@ h2 {
     gap: 15px;
     text-align: center;
   }
+}
+
+/* Heredar los estilos base de Comentarios.css */
+/* Ajustes específicos para el formulario de Categorías */
+.form-container {
+  max-width: 600px; /* Más pequeño que los otros porque solo tiene un campo */
+  width: 90%;
+  margin: 0 auto 40px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.btn-crear {
+  width: 200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    width: 95%;
+  }
+
+  .btn-crear {
+    width: 100%;
+  }
+}
+
+/* Copiar los estilos base de Comentarios.css */
+.app-container {
+  margin-left: 250px;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 250px;
+  height: 70px;
+  background-color: #000;
+  padding: 0 30px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 100;
+}
+
+.main-content {
+  padding: 90px 30px 30px;
+  width: 100%;
+}
+
+/* ... resto de los estilos específicos de Categorías ... */
+
+@media (max-width: 768px) {
+  .app-container {
+    margin-left: 0;
+  }
+
+  .header {
+    left: 0;
+  }
+}
+
+/* Ajustes para las tarjetas de categorías */
+.items-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  gap: 25px;
+  width: 100%;
+  padding: 20px;
+  margin: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1400px) {
+  .items-list {
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
+    max-width: 1600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .items-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.item-card {
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 25px;
+  border: 1px solid #000;
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  justify-content: space-between;
+}
+
+.item-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.item-content h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #000;
+}
+
+.item-details {
+  color: #666;
+  font-size: 14px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+/* Personalizar scrollbar */
+.item-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.item-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.item-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .item-card {
+    height: auto;
+    min-height: 250px;
+  }
 } 

@@ -1,48 +1,35 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { api } from "./api/api";
-import "./AuthForm.css";
+import axios from "axios";
+import "./AuthForm.css"; // Volvemos a importar el CSS
 import logo from "./logos.png";
 
 const Login = ({ setIsAuthenticated }) => {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // Volvemos a agregar el estado de error
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      console.log('Intentando login con:', { correo, contrasena });
-
-      const response = await api.post("/login", {
-        correo: correo,
-        contrasena: contrasena
+      const response = await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/login", {
+        correo,
+        contrasena,
       });
 
-      console.log('Respuesta del servidor:', response.data);
-
-      if (response.data?.token) {
-        localStorage.setItem("token", response.data.token);
+      const { token } = response.data;
+      if (token) {
+        localStorage.setItem("token", token);
         setIsAuthenticated(true);
-        setError("");
-        
-        setCorreo("");
-        setContrasena("");
-        
-        navigate("/categorias");
+        setError(""); // Limpiar cualquier error previo
+        navigate("/dashboard"); // Cambiado de /categorias a /dashboard
       } else {
-        setError(response.data?.mensaje || "Credenciales inválidas");
+        setError("Credenciales incorrectas");
       }
     } catch (error) {
-      console.error("Error completo:", error);
-      if (error.response?.status === 401) {
-        setError("Credenciales inválidas");
-      } else if (error.response?.status === 400) {
-        setError("Correo y contraseña son obligatorios");
-      } else {
-        setError(error.response?.data?.mensaje || "Error en el servicio");
-      }
+      console.error("Error en login:", error);
+      setError("Error al iniciar sesión. Verifica tus credenciales.");
     }
   };
 
