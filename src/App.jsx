@@ -8,6 +8,9 @@ import Categorias from './pages/Categorias';
 import Lugares from './pages/Lugares';
 import Comentarios from './pages/Comentarios';
 import Dashboard from './pages/Dashboard';
+import Calificaciones from './pages/Calificaciones';
+import Eventos from './pages/Eventos';
+import Reservas from './pages/Reservas';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,6 +36,9 @@ const App = () => {
           <Route path="/comentarios" element={<Comentarios />} />
           <Route path="/usuarios" element={isAuthenticated ? <UserListPage /> : <Navigate to="/login" />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/calificaciones" element={<Calificaciones />} />
+          <Route path="/eventos" element={<Eventos />} />
+          <Route path="/reservas" element={<Reservas />} />
         </Routes>
       </div>
     </Router>

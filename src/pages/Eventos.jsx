@@ -1,128 +1,180 @@
-import { useState, useEffect } from "react";
-import "./Eventos.css";
+import React, { useState, useEffect } from 'react';
+import { api } from "./api/api";
+import { useNavigate } from 'react-router-dom';
+import './Eventos.css';
+import Sidebar from '../components/Sidebar';
 
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
   const [nuevoEvento, setNuevoEvento] = useState({
-    lugarid: "",
-    comentarioid: "",
-    capacidad: "",
-    precio: "",
-    descripcion: "",
-    fecha_hora: "",
+    lugarid: '',
+    comentarioid: '',
+    capacidad: '',
+    precio: '',
+    descripcion: '',
+    fecha_hora: ''
   });
-  const [mensaje, setMensaje] = useState("");
+  const [eventoEditar, setEventoEditar] = useState(null);
+  const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    obtenerEventos();
+    cargarEventos();
   }, []);
 
-  const obtenerEventos = async () => {
+  const cargarEventos = async () => {
     try {
-      const response = await fetch("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/eventos");
-      if (!response.ok) throw new Error("Error al obtener los eventos");
-      const data = await response.json();
-      setEventos(data);
+      const response = await api.get("/eventos");
+      console.log('Eventos cargados:', response.data);
+      setEventos(response.data);
     } catch (error) {
-      console.error(error);
+      console.error("Error detallado:", error.response || error);
+      setMensaje('Error al cargar los eventos: ' + (error.response?.data?.message || error.message));
     }
   };
 
-  const handleInputChange = (e) => {
-    setNuevoEvento({ ...nuevoEvento, [e.target.name]: e.target.value });
-  };
-
-  const handleCrearEvento = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await fetch("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevoEvento),
+      if (eventoEditar) {
+        await api.put(`/evento/${eventoEditar.id}`, nuevoEvento);
+        setMensaje('Evento actualizado exitosamente');
+      } else {
+        await api.post("/evento", nuevoEvento);
+        setMensaje('Evento creado exitosamente');
+      }
+      setNuevoEvento({
+        lugarid: '',
+        comentarioid: '',
+        capacidad: '',
+        precio: '',
+        descripcion: '',
+        fecha_hora: ''
       });
-
-      if (!response.ok) throw new Error("Error al crear el evento");
-      setMensaje("Evento creado con éxito");
-      setNuevoEvento({ lugarid: "", comentarioid: "", capacidad: "", precio: "", descripcion: "", fecha_hora: "" });
-      obtenerEventos();
+      setEventoEditar(null);
+      cargarEventos();
     } catch (error) {
-      setMensaje("Error al crear el evento");
+      setMensaje('Error al procesar el evento');
+      console.error("Error:", error);
     }
   };
 
-  const handleEditarEvento = async (id, nuevaDescripcion) => {
-    try {
-      const response = await fetch(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ descripcion: nuevaDescripcion }),
-      });
+  const handleEditar = (evento) => {
+    setEventoEditar(evento);
+    setNuevoEvento({
+      lugarid: evento.lugarid,
+      comentarioid: evento.comentarioid,
+      capacidad: evento.capacidad,
+      precio: evento.precio,
+      descripcion: evento.descripcion,
+      fecha_hora: evento.fecha_hora
+    });
+  };
 
-      if (!response.ok) throw new Error("Error al actualizar el evento");
-      setMensaje("Evento actualizado con éxito");
-      obtenerEventos();
-    } catch (error) {
-      setMensaje("Error al actualizar el evento");
+  const handleEliminar = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar este evento?')) {
+      try {
+        await api.delete(`/evento/${id}`);
+        setMensaje('Evento eliminado exitosamente');
+        cargarEventos();
+      } catch (error) {
+        setMensaje('Error al eliminar el evento');
+        console.error("Error:", error);
+      }
     }
-  };
-
-  const handleEliminarEvento = async (id) => {
-    try {
-      const response = await fetch(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Error al eliminar el evento");
-      setMensaje("Evento eliminado con éxito");
-      obtenerEventos();
-    } catch (error) {
-      setMensaje("Error al eliminar el evento");
-    }
-  };
-
-  const handleAceptarEvento = (id) => {
-    console.log(`Evento ${id} aceptado`); // Puedes hacer una actualización en la BD si es necesario
-  };
-
-  const handleRechazarEvento = (id) => {
-    console.log(`Evento ${id} rechazado`); // Puedes hacer una actualización en la BD si es necesario
-  };
-
-  const formatearFecha = (fecha) => {
-    return new Date(fecha).toLocaleString();
   };
 
   return (
-    <div className="eventos-box">
-      <h2>🎉 Eventos</h2>
-      
-      <div className="crear-evento-form">
-        <input type="number" name="lugarid" value={nuevoEvento.lugarid} onChange={handleInputChange} placeholder="Lugar ID" />
-        <input type="number" name="comentarioid" value={nuevoEvento.comentarioid} onChange={handleInputChange} placeholder="Comentario ID" />
-        <input type="number" name="capacidad" value={nuevoEvento.capacidad} onChange={handleInputChange} placeholder="Capacidad" />
-        <input type="number" name="precio" value={nuevoEvento.precio} onChange={handleInputChange} placeholder="Precio" />
-        <input type="text" name="descripcion" value={nuevoEvento.descripcion} onChange={handleInputChange} placeholder="Descripción" />
-        <input type="datetime-local" name="fecha_hora" value={nuevoEvento.fecha_hora} onChange={handleInputChange} />
-        <button className="crear-evento" onClick={handleCrearEvento}>Crear Evento</button>
-      </div>
+    <>
+      <Sidebar />
+      <div className="app-container">
+        <div className="header">
+          <button className="cerrar-sesion" onClick={() => navigate('/login')}>
+            Cerrar sesión
+          </button>
+        </div>
 
-      {mensaje && <p className="mensaje">{mensaje}</p>}
-      
-      {eventos.length === 0 ? (
-        <p className="loading-text">Cargando...</p>
-      ) : (
-        <ul className="eventos-ul">
-          {eventos.map((evento) => (
-            <li key={evento.id} className="evento-item">
-              <span>{evento.descripcion} - {formatearFecha(evento.fecha_hora)}</span>
-              <button className="editar" onClick={() => handleEditarEvento(evento.id, prompt("Nueva descripción:", evento.descripcion))}>Editar</button>
-              <button className="aceptar" onClick={() => handleAceptarEvento(evento.id)}>Aceptar</button>
-              <button className="rechazar" onClick={() => handleRechazarEvento(evento.id)}>Rechazar</button>
-              <button className="eliminar" onClick={() => handleEliminarEvento(evento.id)}>Eliminar</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+        <div className="main-content">
+          <h2>Eventos de Popayán Nocturna</h2>
+          
+          {mensaje && <div className="mensaje">{mensaje}</div>}
+
+          <form onSubmit={handleSubmit} className="form-container">
+            <div className="form-group">
+              <input
+                type="number"
+                value={nuevoEvento.lugarid}
+                onChange={(e) => setNuevoEvento({...nuevoEvento, lugarid: e.target.value})}
+                placeholder="ID Lugar"
+                required
+              />
+              <input
+                type="number"
+                value={nuevoEvento.comentarioid}
+                onChange={(e) => setNuevoEvento({...nuevoEvento, comentarioid: e.target.value})}
+                placeholder="ID Comentario"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="number"
+                value={nuevoEvento.capacidad}
+                onChange={(e) => setNuevoEvento({...nuevoEvento, capacidad: e.target.value})}
+                placeholder="Capacidad"
+                required
+              />
+              <input
+                type="number"
+                value={nuevoEvento.precio}
+                onChange={(e) => setNuevoEvento({...nuevoEvento, precio: e.target.value})}
+                placeholder="Precio"
+                required
+              />
+            </div>
+            <textarea
+              value={nuevoEvento.descripcion}
+              onChange={(e) => setNuevoEvento({...nuevoEvento, descripcion: e.target.value})}
+              placeholder="Descripción del evento"
+              required
+            />
+            <input
+              type="datetime-local"
+              value={nuevoEvento.fecha_hora}
+              onChange={(e) => setNuevoEvento({...nuevoEvento, fecha_hora: e.target.value})}
+              required
+            />
+            <button type="submit" className="btn-crear">
+              {eventoEditar ? 'Actualizar' : 'Crear'} Evento
+            </button>
+          </form>
+
+          <div className="items-list">
+            {eventos.map((evento) => (
+              <div key={evento.id} className="item-card">
+                <div className="item-header">
+                  <span>Lugar #{evento.lugarid}</span>
+                  <span>{new Date(evento.fecha_hora).toLocaleString()}</span>
+                </div>
+                <div className="item-content">
+                  <p>{evento.descripcion}</p>
+                  <div className="item-details">
+                    <span>💰 Precio: ${evento.precio}</span>
+                    <span>👥 Capacidad: {evento.capacidad}</span>
+                  </div>
+                </div>
+                <div className="item-footer">
+                  <div className="item-actions">
+                    <button onClick={() => handleEditar(evento)}>Editar</button>
+                    <button onClick={() => handleEliminar(evento.id)}>Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

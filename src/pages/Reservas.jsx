@@ -1,129 +1,164 @@
-import { useState, useEffect } from "react";
-import "./Reservas.css";
+import React, { useState, useEffect } from 'react';
+import { api } from "./api/api";
+import { useNavigate } from 'react-router-dom';
+import './Reservas.css';
+import Sidebar from '../components/Sidebar';
 
 const Reservas = () => {
   const [reservas, setReservas] = useState([]);
-  const [mensaje, setMensaje] = useState("");
-
-  // Obtener todas las reservas
-  const fetchReservas = async () => {
-    try {
-      const response = await fetch("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reservas");
-      if (!response.ok) throw new Error("Error al obtener las reservas");
-
-      const data = await response.json();
-      setReservas(data);
-    } catch (error) {
-      console.error("Error al cargar reservas", error);
-      setMensaje("No se pudieron cargar las reservas.");
-    }
-  };
-
-  // Buscar una reserva por ID
-  const buscarReserva = async (id) => {
-    try {
-      const response = await fetch(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reserva/${id}`);
-      if (!response.ok) throw new Error("Reserva no encontrada");
-
-      const data = await response.json();
-      setReservas([data]); // Mostrar solo la reserva encontrada
-    } catch (error) {
-      console.error("Error al buscar la reserva", error);
-      setMensaje("Reserva no encontrada.");
-    }
-  };
-
-  // Editar una reserva
-  const editarReserva = async (id, nuevaData) => {
-    try {
-      const response = await fetch(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reserva/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevaData),
-      });
-
-      if (!response.ok) throw new Error("Error al editar la reserva");
-
-      setMensaje("Reserva editada con éxito");
-      fetchReservas(); // Recargar la lista de reservas
-    } catch (error) {
-      console.error("Error al editar la reserva", error);
-      setMensaje("No se pudo editar la reserva.");
-    }
-  };
-
-  // Aceptar o rechazar una reserva
-  const actualizarEstadoReserva = async (id, estado) => {
-    try {
-      const response = await fetch(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reserva/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estado }),
-      });
-
-      if (!response.ok) throw new Error("Error al actualizar la reserva");
-
-      setMensaje(`Reserva ${estado} con éxito`);
-      fetchReservas(); // Recargar la lista
-    } catch (error) {
-      console.error("Error al actualizar la reserva", error);
-      setMensaje("No se pudo actualizar la reserva.");
-    }
-  };
-
-  // Eliminar una reserva
-  const eliminarReserva = async (id) => {
-    try {
-      const response = await fetch(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reserva/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Error al eliminar la reserva");
-
-      setMensaje("Reserva eliminada con éxito");
-      fetchReservas(); // Recargar la lista
-    } catch (error) {
-      console.error("Error al eliminar la reserva", error);
-      setMensaje("No se pudo eliminar la reserva.");
-    }
-  };
+  const [nuevaReserva, setNuevaReserva] = useState({
+    usuarioid: '',
+    eventoid: '',
+    fecha_hora: new Date().toISOString(),
+    estado: true,
+    cantidad_personas: ''
+  });
+  const [reservaEditar, setReservaEditar] = useState(null);
+  const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchReservas();
+    cargarReservas();
   }, []);
 
+  const cargarReservas = async () => {
+    try {
+      const response = await api.get("/reservas");
+      console.log('Reservas cargadas:', response.data);
+      setReservas(response.data);
+    } catch (error) {
+      console.error("Error detallado:", error.response || error);
+      setMensaje('Error al cargar las reservas: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (reservaEditar) {
+        await api.put(`/reserva/${reservaEditar.id}`, nuevaReserva);
+        setMensaje('Reserva actualizada exitosamente');
+      } else {
+        await api.post("/reserva", nuevaReserva);
+        setMensaje('Reserva creada exitosamente');
+      }
+      setNuevaReserva({
+        usuarioid: '',
+        eventoid: '',
+        fecha_hora: new Date().toISOString(),
+        estado: true,
+        cantidad_personas: ''
+      });
+      setReservaEditar(null);
+      cargarReservas();
+    } catch (error) {
+      setMensaje('Error al procesar la reserva');
+      console.error("Error:", error);
+    }
+  };
+
+  const handleEditar = (reserva) => {
+    setReservaEditar(reserva);
+    setNuevaReserva({
+      usuarioid: reserva.usuarioid,
+      eventoid: reserva.eventoid,
+      fecha_hora: reserva.fecha_hora,
+      estado: reserva.estado,
+      cantidad_personas: reserva.cantidad_personas
+    });
+  };
+
+  const handleEliminar = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar esta reserva?')) {
+      try {
+        await api.delete(`/reserva/${id}`);
+        setMensaje('Reserva eliminada exitosamente');
+        cargarReservas();
+      } catch (error) {
+        setMensaje('Error al eliminar la reserva');
+        console.error("Error:", error);
+      }
+    }
+  };
+
   return (
-    <div className="reservas-box">
-      <h2>🍽 Carantanta</h2>
-      <h3>📅 Reservas</h3>
-
-      {mensaje && <p className="mensaje">{mensaje}</p>}
-
-      {reservas.length === 0 ? (
-        <p className="loading-text">Cargando...</p>
-      ) : (
-        <div className="card-container">
-          {reservas.map((r) => (
-            <div key={r.id} className="card">
-              <p><strong>Cliente:</strong> {r.cliente}</p>
-              <p><strong>Mesa:</strong> {r.mesa}</p>
-              <button className="editar" onClick={() => editarReserva(r.id, { cliente: "Nuevo Cliente", mesa: 99 })}>
-                Editar
-              </button>
-              <button className="aceptar" onClick={() => actualizarEstadoReserva(r.id, "aceptada")}>
-                Aceptar
-              </button>
-              <button className="rechazar" onClick={() => actualizarEstadoReserva(r.id, "rechazada")}>
-                Rechazar
-              </button>
-              <button className="eliminar" onClick={() => eliminarReserva(r.id)}>
-                Eliminar
-              </button>
-            </div>
-          ))}
+    <>
+      <Sidebar />
+      <div className="app-container">
+        <div className="header">
+          <button className="cerrar-sesion" onClick={() => navigate('/login')}>
+            Cerrar sesión
+          </button>
         </div>
-      )}
-    </div>
+
+        <div className="main-content">
+          <h2>Reservas de Popayán Nocturna</h2>
+          
+          {mensaje && <div className="mensaje">{mensaje}</div>}
+
+          <form onSubmit={handleSubmit} className="form-container">
+            <div className="form-group">
+              <input
+                type="number"
+                value={nuevaReserva.usuarioid}
+                onChange={(e) => setNuevaReserva({...nuevaReserva, usuarioid: e.target.value})}
+                placeholder="ID Usuario"
+                required
+              />
+              <input
+                type="number"
+                value={nuevaReserva.eventoid}
+                onChange={(e) => setNuevaReserva({...nuevaReserva, eventoid: e.target.value})}
+                placeholder="ID Evento"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="datetime-local"
+                value={nuevaReserva.fecha_hora}
+                onChange={(e) => setNuevaReserva({...nuevaReserva, fecha_hora: e.target.value})}
+                required
+              />
+              <input
+                type="number"
+                value={nuevaReserva.cantidad_personas}
+                onChange={(e) => setNuevaReserva({...nuevaReserva, cantidad_personas: e.target.value})}
+                placeholder="Cantidad de personas"
+                required
+              />
+            </div>
+            <button type="submit" className="btn-crear">
+              {reservaEditar ? 'Actualizar' : 'Crear'} Reserva
+            </button>
+          </form>
+
+          <div className="items-list">
+            {reservas.map((reserva) => (
+              <div key={reserva.id} className="item-card">
+                <div className="item-header">
+                  <span>Usuario #{reserva.usuarioid}</span>
+                  <span>Evento #{reserva.eventoid}</span>
+                </div>
+                <div className="item-content">
+                  <div className="item-details">
+                    <span>👥 Personas: {reserva.cantidad_personas}</span>
+                    <span>📅 {new Date(reserva.fecha_hora).toLocaleString()}</span>
+                    <span>Estado: {reserva.estado ? '✅ Activa' : '❌ Cancelada'}</span>
+                  </div>
+                </div>
+                <div className="item-footer">
+                  <div className="item-actions">
+                    <button onClick={() => handleEditar(reserva)}>Editar</button>
+                    <button onClick={() => handleEliminar(reserva.id)}>Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

@@ -38,6 +38,24 @@ const Sidebar = () => {
         >
           💬 Comentarios
         </button>
+        <button 
+          className={`sidebar-button ${isActive('/calificaciones') ? 'active' : ''}`}
+          onClick={() => navigate('/calificaciones')}
+        >
+          ⭐ Calificaciones
+        </button>
+        <button 
+          className={`sidebar-button ${isActive('/eventos') ? 'active' : ''}`}
+          onClick={() => navigate('/eventos')}
+        >
+          🎉 Eventos
+        </button>
+        <button 
+          className={`sidebar-button ${isActive('/reservas') ? 'active' : ''}`}
+          onClick={() => navigate('/reservas')}
+        >
+          📅 Reservas
+        </button>
       </div>
     </div>
   );

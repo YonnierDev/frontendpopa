@@ -1,52 +1,151 @@
-import { useState, useEffect } from "react";
-import "./Calificaciones.css";
+import React, { useState, useEffect } from 'react';
+import { api } from "./api/api";
+import { useNavigate } from 'react-router-dom';
+import './Calificaciones.css';
+import Sidebar from '../components/Sidebar';
 
 const Calificaciones = () => {
   const [calificaciones, setCalificaciones] = useState([]);
-  const [mensaje, setMensaje] = useState("");
+  const [nuevaCalificacion, setNuevaCalificacion] = useState({
+    usuarioid: '',
+    puntuacion: '',
+    comentario: '',
+    fecha: new Date().toISOString()
+  });
+  const [calificacionEditar, setCalificacionEditar] = useState(null);
+  const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
-  // Función para obtener calificaciones desde la API
-  const fetchCalificaciones = async () => {
+  useEffect(() => {
+    cargarCalificaciones();
+  }, []);
+
+  const cargarCalificaciones = async () => {
     try {
-      const response = await fetch("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificaciones");
-      if (!response.ok) throw new Error("Error al obtener las calificaciones");
-      
-      const data = await response.json();
-      setCalificaciones(data);
+      const response = await api.get("/calificaciones");
+      console.log('Calificaciones cargadas:', response.data);
+      setCalificaciones(response.data);
     } catch (error) {
-      console.error("Error al cargar calificaciones", error);
-      setMensaje("No se pudieron cargar las calificaciones.");
+      console.error("Error detallado:", error.response || error);
+      setMensaje('Error al cargar las calificaciones: ' + (error.response?.data?.message || error.message));
     }
   };
 
-  useEffect(() => {
-    fetchCalificaciones();
-  }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (calificacionEditar) {
+        await api.put(`/calificacion/${calificacionEditar.id}`, nuevaCalificacion);
+        setMensaje('Calificación actualizada exitosamente');
+      } else {
+        await api.post("/calificacion", nuevaCalificacion);
+        setMensaje('Calificación creada exitosamente');
+      }
+      setNuevaCalificacion({
+        usuarioid: '',
+        puntuacion: '',
+        comentario: '',
+        fecha: new Date().toISOString()
+      });
+      setCalificacionEditar(null);
+      cargarCalificaciones();
+    } catch (error) {
+      setMensaje('Error al procesar la calificación');
+      console.error("Error:", error);
+    }
+  };
+
+  const handleEditar = (calificacion) => {
+    setCalificacionEditar(calificacion);
+    setNuevaCalificacion({
+      usuarioid: calificacion.usuarioid,
+      puntuacion: calificacion.puntuacion,
+      comentario: calificacion.comentario,
+      fecha: calificacion.fecha
+    });
+  };
+
+  const handleEliminar = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar esta calificación?')) {
+      try {
+        await api.delete(`/calificacion/${id}`);
+        setMensaje('Calificación eliminada exitosamente');
+        cargarCalificaciones();
+      } catch (error) {
+        setMensaje('Error al eliminar la calificación');
+        console.error("Error:", error);
+      }
+    }
+  };
 
   return (
-    <div className="calificaciones-box">
-      <h2>🍽 Carantanta</h2>
-      <h3>⭐ Puntuaciones de Carantanta</h3>
-
-      {mensaje && <p className="mensaje">{mensaje}</p>}
-
-      {calificaciones.length === 0 ? (
-        <p className="loading-text">Cargando...</p>
-      ) : (
-        <div className="card-container">
-          {calificaciones.map((c) => (
-            <div key={c.id} className="card">
-              <p>
-                <strong>Cliente:</strong> {c.usuario}
-              </p>
-              <p>
-                <strong>Puntuación:</strong> ⭐ {c.puntuacion} / 5
-              </p>
-            </div>
-          ))}
+    <>
+      <Sidebar />
+      <div className="app-container">
+        <div className="header">
+          <button className="cerrar-sesion" onClick={() => navigate('/login')}>
+            Cerrar sesión
+          </button>
         </div>
-      )}
-    </div>
+
+        <div className="main-content">
+          <h2>Calificaciones de Popayán Nocturna</h2>
+          
+          {mensaje && <div className="mensaje">{mensaje}</div>}
+
+          <form onSubmit={handleSubmit} className="form-container">
+            <div className="form-group">
+              <input
+                type="number"
+                value={nuevaCalificacion.usuarioid}
+                onChange={(e) => setNuevaCalificacion({...nuevaCalificacion, usuarioid: e.target.value})}
+                placeholder="ID Usuario"
+                required
+              />
+              <input
+                type="number"
+                value={nuevaCalificacion.puntuacion}
+                onChange={(e) => setNuevaCalificacion({...nuevaCalificacion, puntuacion: e.target.value})}
+                placeholder="Puntuación (1-5)"
+                min="1"
+                max="5"
+                required
+              />
+            </div>
+            <textarea
+              value={nuevaCalificacion.comentario}
+              onChange={(e) => setNuevaCalificacion({...nuevaCalificacion, comentario: e.target.value})}
+              placeholder="Comentario de la calificación..."
+              required
+            />
+            <button type="submit" className="btn-crear">
+              {calificacionEditar ? 'Actualizar' : 'Crear'} Calificación
+            </button>
+          </form>
+
+          <div className="items-list">
+            {calificaciones.map((calificacion) => (
+              <div key={calificacion.id} className="item-card">
+                <div className="item-header">
+                  <span>Usuario #{calificacion.usuarioid}</span>
+                  <span>⭐ {calificacion.puntuacion}/5</span>
+                </div>
+                <div className="item-content">
+                  <p>{calificacion.comentario}</p>
+                </div>
+                <div className="item-footer">
+                  <span>{new Date(calificacion.fecha).toLocaleDateString()}</span>
+                  <div className="item-actions">
+                    <button onClick={() => handleEditar(calificacion)}>Editar</button>
+                    <button onClick={() => handleEliminar(calificacion.id)}>Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
