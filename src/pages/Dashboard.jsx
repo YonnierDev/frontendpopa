@@ -1,10 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from "./api/api";
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import Sidebar from '../components/Sidebar';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    totalLugares: 0,
+    eventosActivos: 0,
+    reservasPendientes: 0
+  });
+
+  useEffect(() => {
+    cargarEstadisticas();
+  }, []);
+
+  const cargarEstadisticas = async () => {
+    try {
+      // Cargar total de lugares
+      const lugaresResponse = await api.get("/lugares");
+      const totalLugares = lugaresResponse.data.length;
+
+      // Cargar eventos activos (asumiendo que tienen un campo estado)
+      const eventosResponse = await api.get("/eventos");
+      const eventosActivos = eventosResponse.data.filter(evento => evento.estado === true).length;
+
+      // Cargar reservas pendientes (asumiendo que tienen un campo estado)
+      const reservasResponse = await api.get("/reservas");
+      const reservasPendientes = reservasResponse.data.filter(reserva => reserva.estado === true).length;
+
+      setStats({
+        totalLugares,
+        eventosActivos,
+        reservasPendientes
+      });
+    } catch (error) {
+      console.error("Error al cargar estadísticas:", error);
+    }
+  };
 
   return (
     <>
@@ -81,15 +115,15 @@ const Dashboard = () => {
             <div className="dashboard-card stats">
               <div className="stat-item">
                 <h4>Total Lugares</h4>
-                <span className="stat-number">24</span>
+                <span className="stat-number">{stats.totalLugares}</span>
               </div>
               <div className="stat-item">
                 <h4>Eventos Activos</h4>
-                <span className="stat-number">12</span>
+                <span className="stat-number">{stats.eventosActivos}</span>
               </div>
               <div className="stat-item">
                 <h4>Reservas Pendientes</h4>
-                <span className="stat-number">8</span>
+                <span className="stat-number">{stats.reservasPendientes}</span>
               </div>
             </div>
           </div>
