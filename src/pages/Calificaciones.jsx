@@ -1,0 +1,146 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import "./Calificaciones.css";
+
+const Calificaciones = () => {
+  const [calificaciones, setCalificaciones] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [calificacionSeleccionada, setCalificacionSeleccionada] = useState(null);
+
+  useEffect(() => {
+    fetchCalificaciones();
+  }, []);
+
+  const fetchCalificaciones = async () => {
+    try {
+      const { data } = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificaciones");
+      if (!Array.isArray(data)) throw new Error("La API no devolvió un array");
+      setCalificaciones(data);
+    } catch (error) {
+      console.error("Error al cargar calificaciones:", error);
+      setMensaje("No se pudieron cargar las calificaciones");
+    }
+  };
+
+  const handleEliminar = async (id) => {
+    if (!window.confirm("¿Seguro que quieres eliminar esta calificación?")) return;
+
+    try {
+      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificacion/${id}`);
+      setCalificaciones(prev => prev.filter(c => c.id !== id));
+
+      setMensaje("Calificación eliminada exitosamente");
+      setTimeout(() => setMensaje(""), 3000);
+    } catch (error) {
+      console.error("Error al eliminar calificación:", error);
+      setMensaje("No se pudo eliminar la calificación");
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
+  const toggleEstado = async (id, estadoActual) => {
+    const nuevoEstado = !estadoActual;
+
+    try {
+      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificacion/${id}/estado`, {
+        activo: nuevoEstado,
+      });
+
+      setCalificaciones(prev =>
+        prev.map(c => (c.id === id ? { ...c, activo: nuevoEstado } : c))
+      );
+    } catch (error) {
+      console.error("Error al cambiar estado de la calificación:", error);
+    }
+  };
+
+  const handleBusqueda = (e) => {
+    setBusqueda(e.target.value);
+  };
+
+  const handleDetalles = (calificacion) => {
+    setCalificacionSeleccionada(calificacion);
+  };
+
+  const cerrarModal = () => {
+    setCalificacionSeleccionada(null);
+  };
+
+  const calificacionesFiltradas = calificaciones.filter(c =>
+    c.usuario.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  return (
+    <div className="calificaciones-box">
+      <h2>Calificaciones</h2>
+
+      <input
+        type="text"
+        placeholder="Buscar usuario..."
+        value={busqueda}
+        onChange={handleBusqueda}
+        className="buscador-calificaciones"
+      />
+
+      {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+
+      {calificaciones.length === 0 ? (
+        <p className="loading-text">Cargando...</p>
+      ) : (
+        <table className="calificaciones-tabla">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Evento</th>
+              <th>Calificación</th>
+              <th>Comentario</th>
+              <th>Acciones</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {calificacionesFiltradas.map(c => (
+              <tr key={c.id} className="calificacion-item">
+                <td>{c.usuario}</td>
+                <td>{c.evento}</td>
+                <td>{c.puntuacion}</td>
+                <td>{c.comentario || "Sin comentario"}</td>
+                <td className="acciones">
+                  <button className="detalles" onClick={() => handleDetalles(c)}>Detalles</button>
+                  <button className="editar">Editar</button>
+                  <button className="eliminar" onClick={() => handleEliminar(c.id)}>Eliminar</button>
+                </td>
+                <td>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={c.activo}
+                      onChange={() => toggleEstado(c.id, c.activo)}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {calificacionSeleccionada && (
+        <div className="modal">
+          <div className="modal-contenido">
+            <h3>Detalles de la Calificación</h3>
+            <p><strong>Usuario:</strong> {calificacionSeleccionada.usuario}</p>
+            <p><strong>Evento:</strong> {calificacionSeleccionada.evento}</p>
+            <p><strong>Calificación:</strong> {calificacionSeleccionada.puntuacion}</p>
+            <p><strong>Comentario:</strong> {calificacionSeleccionada.comentario || "Sin comentario"}</p>
+            <button className="cerrar-modal" onClick={cerrarModal}>Cerrar</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Calificaciones;

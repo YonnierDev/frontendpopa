@@ -8,9 +8,7 @@ const Login = ({ setIsAuthenticated }) => {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const navigate = useNavigate();
-const getrol=async () => {
-  
-}
+
 
 
   const handleLogin = async (e) => {
@@ -21,7 +19,7 @@ const getrol=async () => {
       localStorage.setItem("token", response.data.token);
       setIsAuthenticated(true);
       alert("Login exitoso!");
-      navigate("/"); // Redirige a la tabla de usuarios
+      navigate("/Dashboard"); // Redirige a la tabla de usuarios
     } catch (error) {
       console.error("Error en login:", error);
       alert("Error al iniciar sesión");

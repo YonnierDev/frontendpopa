@@ -1,0 +1,170 @@
+/* Contenedor principal */
+.eventos-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 40px; /* Espacio entre el formulario y la tabla */
+    margin-top: 300px; /* Separación de la barra superior */
+}
+
+/* --- FORMULARIO --- */
+.formulario-container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+}
+
+/* Botón del formulario */
+.formulario-container button {
+    background-color: yellow;
+    color: black;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.formulario-container button:hover {
+    background-color: #e6c200;
+}
+
+/* --- BUSCADOR --- */
+.buscador-eventos {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    color: black;
+    background-color: #f8f8f8;
+}
+
+/* --- TABLA --- */
+.tabla-container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Tabla */
+.eventos-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: white;
+}
+
+/* Encabezados */
+.eventos-tabla th {
+    background: #f8f8f8;
+    font-weight: bold;
+    color: black;
+    padding: 10px;
+}
+
+/* Celdas */
+.eventos-tabla td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    color: black;
+    background-color: #ffffff;
+}
+
+/* Botones de la tabla */
+.acciones button {
+    margin: 3px;
+    padding: 6px 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+/* Botón Detalles */
+.detalles {
+    background-color: rgb(219, 205, 3);
+    color: white;
+}
+
+.detalles:hover {
+    background-color: yellow;
+}
+
+/* Botón Editar */
+.editar {
+    background-color: yellow;
+    color: black;
+}
+
+.editar:hover {
+    background-color: rgb(219, 205, 3);
+}
+
+/* Botón Eliminar */
+.eliminar {
+    background-color: red;
+    color: white;
+}
+
+.eliminar:hover {
+    background-color: darkred;
+}
+
+/* --- SWITCH ACTIVAR/INACTIVAR --- */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: green;
+}
+
+input:checked + .slider:before {
+    transform: translateX(14px);
+}
