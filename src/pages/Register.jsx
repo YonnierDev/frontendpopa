@@ -1,21 +1,23 @@
 import { useState } from "react";
-import { api } from "./api/api";
 import { useNavigate, Link } from "react-router-dom";
-import "./AuthForm.css"; // Asegúrate de importar el CSS
-import logo from "./logos.png"; // Ruta de la imagen
+import { api } from "./api/api";
+import "bootstrap/dist/css/bootstrap.min.css";
+import logo from "./logos.png";
+import "./AuthForm.css";
+
 const Register = () => {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [correo, setCorreo] = useState("");
-  const [fecha_nacimiento, setFecha_nacimiento] = useState("");
+  const [fecha_nacimiento, setFechaNacimiento] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [genero, setGenero] = useState("");
-
   const navigate = useNavigate();
+
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post("/usuario", {
+      await api.post("/registrar", {
         nombre,
         apellido,
         correo,
@@ -23,93 +25,70 @@ const Register = () => {
         contrasena,
         genero,
       });
-
-      console.log("Usuario registrado:", response.data);
-      alert("REGISTRADO EXITOSAMENTE!");
-
-      setNombre("");
-      setApellido("");
-      setCorreo("");
-      setFecha_nacimiento("");
-      setContrasena("");
-      setGenero("");
-
-      navigate("/usuarios");
+      alert("Registro exitoso!");
+      navigate("/validar/correo", { state: { correo } });
     } catch (error) {
-      if (error.response) {
-        if (error.response.status === 400) {
-          alert(error.response.data.mensaje || "El correo ya está registrado.");
-        } else {
-          alert("Error en la petición, revisa la consola.");
-        }
-      } else {
-        alert("Error en la conexión con el servidor.");
-      }
-      console.error("ERROR AL REGISTRAR:", error);
+      alert(error.response?.data?.mensaje || "Error al registrarse");
     }
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container-register">
       <div className="auth-box">
-        <div className="title">
-          <h2>Registro</h2>
-        </div>
+        <h2>Registro</h2>
         <form onSubmit={handleRegister}>
           <input
             type="text"
             placeholder="Nombre"
+            value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             required
           />
           <input
             type="text"
             placeholder="Apellido"
+            value={apellido}
             onChange={(e) => setApellido(e.target.value)}
             required
           />
           <input
-            type="text"
+            type="email"
             placeholder="Correo"
+            value={correo}
             onChange={(e) => setCorreo(e.target.value)}
             required
           />
           <input
             type="date"
-            placeholder="fecha de nacimiento"
-            onChange={(e) => setFecha_nacimiento(e.target.value)}
+            value={fecha_nacimiento}
+            onChange={(e) => setFechaNacimiento(e.target.value)}
             required
           />
           <input
             type="password"
             placeholder="Contraseña"
+            value={contrasena}
             onChange={(e) => setContrasena(e.target.value)}
             required
           />
-          <select value={genero} onChange={(e) => setGenero(e.target.value)} required>
+          <select
+            value={genero}
+            onChange={(e) => setGenero(e.target.value)}
+            required
+          >
             <option value="">Selecciona tu género</option>
-            <option value="M">Masculino</option>
-            <option value="F">Femenino</option>
-            <option value="Otro">Otro</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Otros">Otro</option>
           </select>
-
           <button type="submit">Registrarse</button>
         </form>
-        <div className="separator">
-          <span>
-            ----------------------------- o ----------------------------
-          </span>
-        </div>
-
-        <div className="title">
-          <p className="register-text">
-            ¿Tienes cuenta? <Link to="/login">Login</Link>
-          </p>
-        </div>
+        <p className="register-text">
+          ¿Tienes cuenta? <Link to="/login">Inicia sesión</Link>
+        </p>
       </div>
-      <div className="logo">
-        <img src={logo} alt="Photobella Logo" className="logo-img" />
-        <div className="logo-text"></div>
+      <div className="logo-container">
+        <img src={logo} alt="Logo" className="logo-img large" />
       </div>
     </div>
   );

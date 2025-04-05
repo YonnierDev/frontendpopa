@@ -1,81 +1,67 @@
 import { useEffect, useState } from "react";
-import { api } from "../api/api";
+import { getLugares, getLugarById, updateLugar, toggleLugarEstado } from "../api/lugares";
+import { FaEdit, FaSave, FaToggleOn, FaToggleOff, FaSearch, FaList } from "react-icons/fa";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./LugarListPage.css";
 
 const LugarListPage = () => {
   const [lugares, setLugares] = useState([]);
   const [editLugar, setEditLugar] = useState(null);
   const [searchId, setSearchId] = useState("");
 
-  // Obtener todos los lugares
-  const fetchLugares = async () => {
-    try {
-      const response = await api.get("/lugares");
-      setLugares(response.data);
-    } catch (error) {
-      console.error("Error al obtener los lugares:", error.response?.data || error.message);
-    }
-  };
-
-  // Buscar un lugar por ID
-  const fetchLugarById = async () => {
-    if (!searchId) return;
-    try {
-      const response = await api.get(`/lugar/${searchId}`);
-      setLugares([response.data]);
-    } catch (error) {
-      console.error("Error al buscar el lugar:", error.response?.data || error.message);
-    }
-  };
-
   useEffect(() => {
     fetchLugares();
   }, []);
 
-  // Editar lugar
+  const fetchLugares = async () => {
+    const data = await getLugares();
+    setLugares(data);
+  };
+
+  const fetchLugarById = async () => {
+    if (!searchId) return;
+    const data = await getLugarById(searchId);
+    if (data) setLugares([data]);
+  };
+
   const handleEditClick = (lugar) => {
     setEditLugar({ ...lugar });
   };
 
-  // Guardar cambios en la edición
   const handleSaveEdit = async () => {
     if (!editLugar) return;
-    try {
-      await api.put(`/lugar/${editLugar.id}`, editLugar);
-      setEditLugar(null);
-      fetchLugares();
-    } catch (error) {
-      console.error("Error al guardar los cambios:", error.response?.data || error.message);
-    }
+    await updateLugar(editLugar.id, editLugar);
+    setEditLugar(null);
+    fetchLugares();
   };
 
-  // Cambiar estado (activar/desactivar)
   const handleToggleActive = async (id) => {
-    try {
-      await api.put(`/lugar/${id}/estado`);
-      fetchLugares();
-    } catch (error) {
-      console.error("Error al cambiar el estado:", error.response?.data || error.message);
-    }
+    await toggleLugarEstado(id);
+    fetchLugares();
   };
 
   return (
-    <div class="color1">
-      <h2>Lista de Lugares</h2>
-      <div>
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Lista de Lugares</h2>
+      <div className="d-flex justify-content-center mb-4">
         <input
           type="text"
+          className="form-control w-25 me-2"
           placeholder="Buscar por ID..."
           value={searchId}
           onChange={(e) => setSearchId(e.target.value)}
         />
-        <button onClick={fetchLugarById}>Buscar</button>
-        <button onClick={fetchLugares}>Listar Todos</button>
+        <button className="btn btn-primary me-2" onClick={fetchLugarById}>
+          <FaSearch /> Buscar
+        </button>
+        <button className="btn btn-secondary" onClick={fetchLugares}>
+          <FaList /> Listar Todos
+        </button>
       </div>
-      <table>
-        <thead>
+      <table className="table table-striped table-hover table-bordered">
+        <thead className="table-dark">
           <tr>
-            <th>ID</th>
-            <th>Categoria</th>
+            <th>Categoría</th>
             <th>Usuario</th>
             <th>Descripción</th>
             <th>Ubicación</th>
@@ -86,33 +72,13 @@ const LugarListPage = () => {
         <tbody>
           {lugares.map((lugar) => (
             <tr key={lugar.id}>
-              <td>{lugar.id}</td>
-              <td>
-                {editLugar?.id === lugar.id ? (
-                  <input
-                    type="number"
-                    value={editLugar.categoriaid}
-                    onChange={(e) => setEditLugar({ ...editLugar, categoriaid: e.target.value })}
-                  />
-                ) : (
-                  lugar.categoriaid
-                )}
-              </td>
-              <td>
-                {editLugar?.id === lugar.id ? (
-                  <input
-                    type="number"
-                    value={editLugar.usuarioid}
-                    onChange={(e) => setEditLugar({ ...editLugar, usuarioid: e.target.value })}
-                  />
-                ) : (
-                  lugar.usuarioid
-                )}
-              </td>
+              <td>{lugar.categorias?.tipo || "Sin categoría"}</td>
+              <td>{lugar.usuarios?.nombre || "Sin usuario"}</td>
               <td>
                 {editLugar?.id === lugar.id ? (
                   <input
                     type="text"
+                    className="form-control"
                     value={editLugar.descripcion}
                     onChange={(e) => setEditLugar({ ...editLugar, descripcion: e.target.value })}
                   />
@@ -124,6 +90,7 @@ const LugarListPage = () => {
                 {editLugar?.id === lugar.id ? (
                   <input
                     type="text"
+                    className="form-control"
                     value={editLugar.ubicacion}
                     onChange={(e) => setEditLugar({ ...editLugar, ubicacion: e.target.value })}
                   />
@@ -132,26 +99,25 @@ const LugarListPage = () => {
                 )}
               </td>
               <td>
-                {editLugar?.id === lugar.id ? (
-                  <select
-                    value={editLugar.estado}
-                    onChange={(e) => setEditLugar({ ...editLugar, estado: e.target.value === "true" })}
-                  >
-                    <option value="true">Activo</option>
-                    <option value="false">Inactivo</option>
-                  </select>
-                ) : (
-                  lugar.estado ? "Activo" : "Inactivo"
-                )}
+                <span className={`badge ${lugar.estado ? "bg-success" : "bg-danger"}`}>
+                  {lugar.estado ? "Activo" : "Inactivo"}
+                </span>
               </td>
-              <td>
+              <td className="d-flex justify-content-center">
                 {editLugar?.id === lugar.id ? (
-                  <button onClick={handleSaveEdit}>Guardar</button>
+                  <button className="btn btn-success btn-sm me-2" onClick={handleSaveEdit}>
+                    <FaSave /> Guardar
+                  </button>
                 ) : (
-                  <button onClick={() => handleEditClick(lugar)}>Editar</button>
+                  <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditClick(lugar)}>
+                    <FaEdit /> Editar
+                  </button>
                 )}
-                <button onClick={() => handleToggleActive(lugar.id)}>
-                  {lugar.estado ? "Desactivar" : "Activar"}
+                <button
+                  className={`btn btn-sm ${lugar.estado ? "btn-danger" : "btn-success"}`}
+                  onClick={() => handleToggleActive(lugar.id)}
+                >
+                  {lugar.estado ? <FaToggleOff /> : <FaToggleOn />} {lugar.estado ? "Desactivar" : "Activar"}
                 </button>
               </td>
             </tr>

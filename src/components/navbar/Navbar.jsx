@@ -1,0 +1,61 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaUser, FaSignOutAlt } from "react-icons/fa";
+import "./navbar.css";
+
+const Navbar = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    setIsAuthenticated(false);
+    navigate("/login");
+  };
+
+  return (
+    <nav className="navbar-custom d-flex flex-column align-items-center p-3">
+      <ul className="nav-links w-100">
+        {/* Gestión de Usuarios */}
+        <li className="nav-section-title">Gestión de Usuarios</li>
+        <li className="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Usuarios">
+          <Link to="/usuarios" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/usuarios" ? "active" : ""}`}>
+            <FaUsers /> <span>Usuarios</span>
+          </Link>
+        </li>
+
+        {/* Sitios Turísticos */}
+        <li className="nav-section-title">Sitios Turísticos</li>
+        <li className="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Reservas">
+          <Link to="/reservas" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/reservas" ? "active" : ""}`}>
+            <FaCalendarAlt /> <span>Eventos</span>
+          </Link>
+        </li>
+        <li className="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Lugares">
+          <Link to="/lugares" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/lugares" ? "active" : ""}`}>
+            <FaMapMarkerAlt /> <span>Lugares</span>
+          </Link>
+        </li>
+
+        {/* Cuenta */}
+        <li className="nav-section-title">Cuenta</li>
+        <li className="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Mi Cuenta">
+          <Link to="/perfil" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/perfil" ? "active" : ""}`}>
+            <FaUser /> <span>Mi Cuenta</span>
+          </Link>
+        </li>
+
+        {/* Cerrar Sesión */}
+        <li className="nav-item logout-btn mt-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Cerrar Sesión">
+          <button className="btn btn-danger w-100 d-flex align-items-center gap-2" onClick={handleLogout}>
+            <FaSignOutAlt /> <span>Cerrar Sesión</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+};
+
+export default Navbar;
