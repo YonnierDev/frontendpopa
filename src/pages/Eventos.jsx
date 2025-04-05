@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Eventos.css";
+import "../styles/Eventos.css";
+
 
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
@@ -11,7 +12,13 @@ const Eventos = () => {
     descripcion: "",
     precio: "",
     fecha_hora: "",
+    capacidad: "",
+    propietario: "",
+    estado: true,
   });
+  const [eventoSeleccionado, setEventoSeleccionado] = useState(null);
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [idEventoEditar, setIdEventoEditar] = useState(null);
 
   useEffect(() => {
     fetchEventos();
@@ -19,9 +26,7 @@ const Eventos = () => {
 
   const fetchEventos = async () => {
     try {
-      const response = await axios.get(
-        "https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/eventos"
-      );
+      const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/eventos");
       setEventos(response.data);
     } catch (error) {
       console.error("Error al cargar eventos", error);
@@ -33,128 +38,227 @@ const Eventos = () => {
   };
 
   const handleChange = (e) => {
-    setNuevoEvento({
-      ...nuevoEvento,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setNuevoEvento({ ...nuevoEvento, [name]: value });
   };
 
   const handleCrearEvento = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        "https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento",
-        nuevoEvento
-      );
-      setMensaje("Evento creado exitosamente");
+      if (modoEdicion && idEventoEditar) {
+        await axios.put(
+          `https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${idEventoEditar}`,
+          {
+            lugar: nuevoEvento.lugar,
+            descripcion: nuevoEvento.descripcion,
+            precio: parseFloat(nuevoEvento.precio),
+            fecha_hora: nuevoEvento.fecha_hora,
+            capacidad: nuevoEvento.capacidad || 0,
+            propietario: nuevoEvento.propietario || "Admin",
+            estado: nuevoEvento.estado !== false,
+          }
+        );
+        setMensaje("Evento actualizado exitosamente");
+      } else {
+        await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento", {
+          lugar: nuevoEvento.lugar,
+          descripcion: nuevoEvento.descripcion,
+          precio: parseFloat(nuevoEvento.precio),
+          fecha_hora: nuevoEvento.fecha_hora,
+          capacidad: nuevoEvento.capacidad || 0,
+          propietario: nuevoEvento.propietario || "Admin",
+          estado: true,
+        });
+        setMensaje("Evento creado exitosamente");
+      }
+
       fetchEventos();
-      setNuevoEvento({ lugar: "", descripcion: "", precio: "", fecha_hora: "" });
+      setNuevoEvento({
+        lugar: "",
+        descripcion: "",
+        precio: "",
+        fecha_hora: "",
+        capacidad: "",
+        propietario: "",
+        estado: true,
+      });
+      setModoEdicion(false);
+      setIdEventoEditar(null);
       setTimeout(() => setMensaje(""), 3000);
     } catch (error) {
-      console.error("Error al crear evento", error);
-      setMensaje("Error al crear el evento");
+      console.error("Error al guardar evento", error);
+      setMensaje("Error al guardar el evento");
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
+  const iniciarEdicion = (evento) => {
+    setNuevoEvento({
+      lugar: evento.lugar,
+      descripcion: evento.descripcion,
+      precio: evento.precio,
+      fecha_hora: evento.fecha_hora.slice(0, 16),
+      capacidad: evento.capacidad,
+      propietario: evento.propietario,
+      estado: evento.estado,
+    });
+    setModoEdicion(true);
+    setIdEventoEditar(evento.id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const mostrarDetalles = async (evento) => {
+    try {
+      const response = await axios.get(
+        `https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${evento.id}`
+      );
+      setEventoSeleccionado(response.data);
+    } catch (error) {
+      console.error("Error al obtener detalles del evento", error);
+    }
+  };
+
+  const cerrarModal = () => {
+    setEventoSeleccionado(null);
+  };
+
+  const eliminarEvento = async (id) => {
+    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este evento?");
+    if (!confirmacion) return;
+
+    try {
+      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${id}`);
+      setEventos(eventos.filter((evento) => evento.id !== id));
+      setMensaje("Evento eliminado correctamente");
+      setTimeout(() => setMensaje(""), 3000);
+    } catch (error) {
+      console.error("Error al eliminar el evento", error);
+      setMensaje("Error al eliminar el evento");
+      setTimeout(() => setMensaje(""), 3000);
+    }
+  };
+
+  const cambiarEstadoEvento = async (id, estadoActual) => {
+    try {
+      const nuevoEstado = !estadoActual;
+      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${id}`, {
+        estado: nuevoEstado
+      });
+
+      setEventos(prev =>
+        prev.map(evento =>
+          evento.id === id ? { ...evento, estado: nuevoEstado } : evento
+        )
+      );
+      setMensaje("Estado actualizado");
+      setTimeout(() => setMensaje(""), 3000);
+    } catch (error) {
+      console.error("Error al cambiar el estado", error);
+      setMensaje("Error al cambiar el estado");
       setTimeout(() => setMensaje(""), 3000);
     }
   };
 
   return (
     <div className="eventos-contenedor">
-      {/* Contenedor del formulario */}
       <div className="formulario-container">
-        <h3>Crea un Evento</h3>
+        <h3>{modoEdicion ? "Editar Evento" : "Crea un Evento"}</h3>
         <form onSubmit={handleCrearEvento}>
-          <input
-            type="text"
-            name="lugar"
-            placeholder="Lugar"
-            value={nuevoEvento.lugar}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="descripcion"
-            placeholder="Descripción"
-            value={nuevoEvento.descripcion}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="number"
-            name="precio"
-            placeholder="Precio"
-            value={nuevoEvento.precio}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="datetime-local"
-            name="fecha_hora"
-            value={nuevoEvento.fecha_hora}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit">Guardar</button>
+          <input type="text" name="lugar" placeholder="Lugar" value={nuevoEvento.lugar} onChange={handleChange} required />
+          <input type="text" name="descripcion" placeholder="Descripción" value={nuevoEvento.descripcion} onChange={handleChange} required />
+          <input type="number" name="precio" placeholder="Precio" value={nuevoEvento.precio} onChange={handleChange} required />
+          <input type="datetime-local" name="fecha_hora" value={nuevoEvento.fecha_hora} onChange={handleChange} required />
+          <input type="number" name="capacidad" placeholder="Capacidad" value={nuevoEvento.capacidad} onChange={handleChange} />
+          <input type="text" name="propietario" placeholder="Propietario" value={nuevoEvento.propietario} onChange={handleChange} />
+          <button type="submit">{modoEdicion ? "Actualizar" : "Guardar"}</button>
         </form>
       </div>
 
-      {/* Buscador de eventos */}
-      <input
-        type="text"
-        placeholder="Buscar evento..."
-        value={busqueda}
-        onChange={handleBusqueda}
-        className="buscador-eventos"
-      />
+      <input type="text" placeholder="Buscar evento..." value={busqueda} onChange={handleBusqueda} className="buscador-eventos" />
 
-      {/* Contenedor de la tabla */}
       <div className="tabla-container">
         {mensaje && <p className="mensaje-exito">{mensaje}</p>}
 
-        {eventos.length === 0 ? (
-          <p className="loading-text">Cargando...</p>
-        ) : (
-          <table className="eventos-tabla">
-            <thead>
-              <tr>
-                <th>Nombre del Evento</th>
-                <th>Propietario</th>
-                <th>Capacidad</th>
-                <th>Precio</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {eventos
-                .filter((evento) =>
-                  evento.descripcion.toLowerCase().includes(busqueda.toLowerCase())
-                )
-                .map((evento) => (
-                  <tr key={evento.id} className="evento-item">
-                    <td>{evento.descripcion}</td>
-                    <td>{evento.propietario || "No disponible"}</td>
-                    <td>{evento.capacidad}</td>
-                    <td>${evento.precio}</td>
-                    <td>{new Date(evento.fecha_hora).toLocaleString()}</td>
-                    <td className="acciones">
-                      <button className="detalles">Detalles</button>
-                      <button className="editar">Editar</button>
-                      <button className="eliminar">Eliminar</button>
-                    </td>
-                    <td>
-                      <label className="switch">
-                        <input type="checkbox" checked={evento.estado} />
-                        <span className="slider"></span>
-                      </label>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        )}
+        <table className="eventos-tabla">
+          <thead>
+            <tr>
+              <th>Nombre del Evento</th>
+              <th>Propietario</th>
+              <th>Capacidad</th>
+              <th>Precio</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {eventos
+              .filter((evento) => evento.descripcion.toLowerCase().includes(busqueda.toLowerCase()))
+              .map((evento) => (
+                <tr key={evento.id} className="evento-item">
+                  <td>{evento.descripcion}</td>
+                  <td>{evento.propietario || "No disponible"}</td>
+                  <td>{evento.capacidad}</td>
+                  <td>${evento.precio}</td>
+                  <td>{new Date(evento.fecha_hora).toLocaleString()}</td>
+                  <td className="acciones">
+                    <button className="detalles" onClick={() => mostrarDetalles(evento)}>Detalles</button>
+                    <button className="editar" onClick={() => iniciarEdicion(evento)}>Editar</button>
+                    <button className="eliminar" onClick={() => eliminarEvento(evento.id)}>Eliminar</button>
+                  </td>
+                  <td>
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={evento.estado}
+                        onChange={() => cambiarEstadoEvento(evento.id, evento.estado)}
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
       </div>
+
+      {eventoSeleccionado && (
+        <div className="modal">
+          <div className="modal-contenido">
+            <h3>Detalles del Evento</h3>
+            <p><strong>Descripción:</strong> {eventoSeleccionado.descripcion}</p>
+            <p><strong>Lugar:</strong> {eventoSeleccionado.lugar}</p>
+            <p><strong>Propietario:</strong> {eventoSeleccionado.propietario}</p>
+            <p><strong>Capacidad:</strong> {eventoSeleccionado.capacidad}</p>
+            <p><strong>Precio:</strong> ${eventoSeleccionado.precio}</p>
+            <p><strong>Fecha:</strong> {new Date(eventoSeleccionado.fecha_hora).toLocaleString()}</p>
+
+            <h5>Comentarios</h5>
+            {eventoSeleccionado.comentarios?.length > 0 ? (
+              <ul>
+                {eventoSeleccionado.comentarios.map((comentario) => (
+                  <li key={comentario.id}>
+                    <strong>{comentario.usuario}:</strong> {comentario.contenido}
+                  </li>
+                ))}
+              </ul>
+            ) : <p>No hay comentarios.</p>}
+
+            <h5>Calificaciones</h5>
+            {eventoSeleccionado.calificaciones?.length > 0 ? (
+              <ul>
+                {eventoSeleccionado.calificaciones.map((calificacion) => (
+                  <li key={calificacion.id}>
+                    <strong>{calificacion.usuario}:</strong> {calificacion.puntuacion}
+                  </li>
+                ))}
+              </ul>
+            ) : <p>No hay calificaciones.</p>}
+
+            <button className="cerrar-modal" onClick={cerrarModal}>Cerrar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

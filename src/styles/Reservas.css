@@ -79,7 +79,7 @@
 }
 
 /* Decoración en la esquina superior izquierda */
-.tabla-container::before {
+.card-reservas::before {
     content: "";
     position: absolute;
     top: -5px;
@@ -100,9 +100,9 @@
 
 /* Encabezados */
 .reservas-tabla th {
-    background: #f8f8f8;
+    background: black;
     font-weight: bold;
-    color: black;
+    color: white;
     padding: 10px;
 }
 
@@ -183,3 +183,51 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(14px);
 }
+
+.buscador-reservas {
+    width: 100%;
+    padding: 10px;
+    margin: 20px 0;
+  }
+  
+  .card-reservas {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-editar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .modal-contenido {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 300px;
+  }
+  
+  .modal-botones {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .modal-botones button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  

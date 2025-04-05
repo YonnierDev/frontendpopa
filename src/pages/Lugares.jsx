@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Lugares.css";
+import "../styles/Lugares.css"
 
 const Lugares = () => {
   const [lugares, setLugares] = useState([]);
@@ -64,49 +64,51 @@ const Lugares = () => {
     <div className="lugares-box">
       <h2>Lugares</h2>
 
-      <input
-        type="text"
-        placeholder="Buscar lugar..."
-        value={busqueda}
-        onChange={handleBusqueda}
-        className="buscador-lugares"
-      />
-
       {mensaje && <p className="mensaje-exito">{mensaje}</p>}
 
-      <table className="lugares-tabla">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Ubicación</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lugaresFiltrados.map((l) => (
-            <tr key={l.id} className="lugar-item">
-              <td>{l.nombre}</td>
-              <td>{l.ubicacion}</td>
-              <td>{l.descripcion || "Sin descripción"}</td>
-              <td>
-                <button className="editar" onClick={() => handleEditar(l)}>Editar</button>
-              </td>
-              <td>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={l.activo}
-                    onChange={() => toggleEstado(l.id, l.activo)}
-                  />
-                  <span className="slider"></span>
-                </label>
-              </td>
+      <div className="card-lugares card-formulario">
+        <input
+          type="text"
+          placeholder="Buscar lugar..."
+          value={busqueda}
+          onChange={handleBusqueda}
+          className="buscador-lugares"
+        />
+
+        <table className="lugares-tabla">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Ubicación</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+              <th>Estado</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {lugaresFiltrados.map((l) => (
+              <tr key={l.id} className="lugar-item">
+                <td>{l.nombre}</td>
+                <td>{l.ubicacion}</td>
+                <td>{l.descripcion || "Sin descripción"}</td>
+                <td>
+                  <button className="editar" onClick={() => handleEditar(l)}>Editar</button>
+                </td>
+                <td>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={l.activo}
+                      onChange={() => toggleEstado(l.id, l.activo)}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {lugarSeleccionado && (
         <div className="modal">

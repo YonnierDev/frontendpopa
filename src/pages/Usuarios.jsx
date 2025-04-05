@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Usuarios.css";
+import "../styles/Usuarios.css";
 
 const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [nuevoUsuario, setNuevoUsuario] = useState({
-    rol: "",
     nombre: "",
     apellido: "",
     correo: "",
-    fechaNacimiento: "",
+    fecha_nacimiento: "",
+    contrasena: "",
     genero: "",
-    activo: true,
+    estado: true,
+    rolid: 3,
   });
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const Usuarios = () => {
       await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/usuario/${id}/estado`, {
         activo: nuevoEstado,
       });
-      setUsuarios(usuarios.map(u => (u.id === id ? { ...u, activo: nuevoEstado } : u)));
+      setUsuarios(usuarios.map(u => (u.id === id ? { ...u, estado: nuevoEstado } : u)));
     } catch (error) {
       console.error("Error al cambiar estado del usuario", error);
     }
@@ -60,13 +61,14 @@ const Usuarios = () => {
       const response = await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/usuario", nuevoUsuario);
       setUsuarios([...usuarios, response.data]);
       setNuevoUsuario({
-        rol: "",
         nombre: "",
         apellido: "",
         correo: "",
-        fechaNacimiento: "",
+        fecha_nacimiento: "",
+        contrasena: "",
         genero: "",
-        activo: true,
+        estado: true,
+        rolid: 3,
       });
     } catch (error) {
       console.error("Error al crear usuario", error);
@@ -80,7 +82,7 @@ const Usuarios = () => {
   return (
     <div className="usuarios-container">
       {/* Sección de Usuarios */}
-      <div className="usuarios-box">
+      <div className="usuarios-box decoracion-esquina">
         <h2>Lista de Usuarios</h2>
         <input
           type="text"
@@ -106,15 +108,15 @@ const Usuarios = () => {
           <tbody>
             {usuariosFiltrados.map(u => (
               <tr key={u.id}>
-                <td>{u.rol}</td>
+                <td>{u.rolid}</td>
                 <td>{u.nombre}</td>
                 <td>{u.apellido}</td>
                 <td>{u.correo}</td>
-                <td>{u.fechaNacimiento}</td>
+                <td>{u.fecha_nacimiento}</td>
                 <td>{u.genero}</td>
                 <td>
                   <label className="switch">
-                    <input type="checkbox" checked={u.activo} onChange={() => toggleEstado(u.id, u.activo)} />
+                    <input type="checkbox" checked={u.estado} onChange={() => toggleEstado(u.id, u.estado)} />
                     <span className="slider"></span>
                   </label>
                 </td>
@@ -142,14 +144,41 @@ const Usuarios = () => {
       )}
 
       {/* Sección de Crear Usuario */}
-      <div className="formulario">
+      <div className="formulario decoracion-esquina">
         <h2>Crear Usuario</h2>
-        <input type="text" placeholder="Rol" value={nuevoUsuario.rol} onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, rol: e.target.value })} />
-        <input type="text" placeholder="Nombre" value={nuevoUsuario.nombre} onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, nombre: e.target.value })} />
-        <input type="text" placeholder="Apellido" value={nuevoUsuario.apellido} onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, apellido: e.target.value })} />
-        <input type="email" placeholder="Correo" value={nuevoUsuario.correo} onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, correo: e.target.value })} />
-        <input type="date" value={nuevoUsuario.fechaNacimiento} onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, fechaNacimiento: e.target.value })} />
-        <select value={nuevoUsuario.genero} onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, genero: e.target.value })}>
+        <input
+          type="text"
+          placeholder="Nombre"
+          value={nuevoUsuario.nombre}
+          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, nombre: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Apellido"
+          value={nuevoUsuario.apellido}
+          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, apellido: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Correo"
+          value={nuevoUsuario.correo}
+          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, correo: e.target.value })}
+        />
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={nuevoUsuario.contrasena}
+          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, contrasena: e.target.value })}
+        />
+        <input
+          type="date"
+          value={nuevoUsuario.fecha_nacimiento}
+          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, fecha_nacimiento: e.target.value })}
+        />
+        <select
+          value={nuevoUsuario.genero}
+          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, genero: e.target.value })}
+        >
           <option value="">Seleccionar Género</option>
           <option value="Masculino">Masculino</option>
           <option value="Femenino">Femenino</option>

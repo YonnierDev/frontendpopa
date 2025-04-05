@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"; 
 import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from "./components/Navbar";
@@ -9,6 +9,9 @@ import Eventos from "./pages/Eventos";
 import Reservas from "./pages/Reservas";
 import Calificaciones from "./pages/Calificaciones";
 import Dashboard from "./pages/Dashboard";
+import Lugares from "./pages/Lugares";  // Nueva ruta
+import Comentarios from "./pages/Comentarios";  // Nueva ruta
+import Categorias from "./pages/Categorias";  // Nueva ruta
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,8 +24,11 @@ const App = () => {
 
   return (
     <Router>
-      {/* Solo muestra Navbar si está autenticado y en "/usuarios" o "/eventos" */}
-      {isAuthenticated && ["/usuarios", "/eventos"].includes(window.location.pathname) && <Navbar />}
+      {/* Solo muestra Navbar si está autenticado y en las rutas especificadas */}
+      {isAuthenticated && 
+        ["/usuarios", "/eventos", "/reservas", "/calificaciones", "/dashboard", "/lugares", "/comentarios", "/categorias"]
+        .includes(window.location.pathname) && <Navbar />
+      }
 
       <div className="main-container">
         <Routes>
@@ -34,6 +40,9 @@ const App = () => {
           <Route path="/reservas" element={isAuthenticated ? <Reservas /> : <Navigate to="/login" />} />
           <Route path="/calificaciones" element={isAuthenticated ? <Calificaciones /> : <Navigate to="/login" />} />
           <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/lugares" element={isAuthenticated ? <Lugares /> : <Navigate to="/login" />} />  {/* Nueva ruta */}
+          <Route path="/comentarios" element={isAuthenticated ? <Comentarios /> : <Navigate to="/login" />} />  {/* Nueva ruta */}
+          <Route path="/categorias" element={isAuthenticated ? <Categorias /> : <Navigate to="/login" />} />  {/* Nueva ruta */}
         </Routes>
       </div>
     </Router>
