@@ -11,12 +11,10 @@ body {
 }
 
 /* --- Contenedor principal del login --- */
-
 .auth-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    align-items: center;
     gap: 40px;
     width: 100%;
 }
@@ -28,15 +26,16 @@ body {
 
 .logo-container img {
     width: 150px;
-} 
+}
+
+/* --- Título (centrado) --- */
 .title {
     display: flex;
     align-items: center;
     justify-content: center;
-    align-items: center;
-    color:#000000
-
+    color: #000000;
 }
+
 /* --- Caja del formulario de autenticación --- */
 .auth-box {
     background-color: #ffffff;
@@ -63,7 +62,13 @@ body {
 /* --- Título de bienvenida --- */
 .auth-box h2 {
     margin-bottom: 20px;
-    font-size: 20px;
+    font-size: 24px;
+    background-color: transparent;
+    color: #000;
+    padding: 0;
+    border: none;
+    text-align: center;
+    font-weight: bold;
 }
 
 /* --- Estilos de los inputs --- */
@@ -74,23 +79,20 @@ body {
     border: none;
     border-radius: 15px;
     background-color: #3a3838 !important;
-    /* Fondo negro */
     color: #ffffff !important;
-    /* Texto blanco */
     text-align: left;
     outline: none;
     transition: 0.3s;
 }
 
-/* --- Para prevenir colores no deseados en autocompletado --- */
+/* --- Corrección para autocompletado del navegador --- */
 .auth-box input:-webkit-autofill,
 .auth-box input:-webkit-autofill:hover,
 .auth-box input:-webkit-autofill:focus,
 .auth-box input:-webkit-autofill:active {
-    background-color: #252424 !important;
-    color: #fff inset !important;
-    -webkit-box-shadow: 0 0 0px 1000px #080808 inset !important;
-    box-shadow: 0 0 0px 1000px #2b2a2a inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: 0 0 0px 1000px #3a3838 inset !important;
 }
 
 /* --- Botón de inicio de sesión --- */
@@ -119,16 +121,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    align-items: center;
 }
 
-
+/* --- Logo grande --- */
 .logo-img {
     width: 400px;
-    /* Ajusta el tamaño según tu diseño */
-    height:400px;
+    height: 400px;
 }
 
+/* --- Iconos de redes sociales --- */
 .social-icons {
     display: flex;
     justify-content: center;
@@ -152,9 +153,10 @@ body {
 
 .social-circle:hover {
     background-color: #ffcc00;
-    color: black;
+    color: rgb(0, 0, 0);
 }
 
+/* --- Texto de registro --- */
 .register-text {
     margin-top: 15px;
     font-size: 14px;
@@ -170,6 +172,7 @@ body {
 .register-text a:hover {
     text-decoration: underline;
 }
+
 /* --- Ajustes para pantallas pequeñas --- */
 @media (max-width: 768px) {
     .auth-container {
@@ -182,11 +185,12 @@ body {
     }
 }
 
+/* --- Estilo para mensajes de error --- */
 .error-message {
-  background-color: #ff4444;
-  color: white;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  text-align: center;
+    background-color: #ff4444;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
 }

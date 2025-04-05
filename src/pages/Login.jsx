@@ -61,7 +61,7 @@ const Login = ({ setIsAuthenticated }) => {
             <input
               id="password"
               type="password"
-              placeholder="********"
+              placeholder="Ingresa tu correo"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
               required
