@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "./api/api";
+import { api } from "../../components/api/api";
 import { useNavigate } from 'react-router-dom';
 import './Calificaciones.css';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 
 const Calificaciones = () => {
   const [calificaciones, setCalificaciones] = useState([]);

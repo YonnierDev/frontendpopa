@@ -124,9 +124,9 @@ body {
 
 
 .logo-img {
-    width: auto;
+    width: 400px;
     /* Ajusta el tamaño según tu diseño */
-    height: auto;
+    height:400px;
 }
 
 .social-icons {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "./api/api";
+import { api } from "../../components/api/api";
 import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 
 const Lugares = () => {
   const [lugares, setLugares] = useState([]);
@@ -16,6 +16,7 @@ const Lugares = () => {
   });
   const [lugarEditar, setLugarEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     cargarLugares();
@@ -103,14 +104,14 @@ const Lugares = () => {
               <input
                 type="number"
                 value={nuevoLugar.categoriaid}
-                onChange={(e) => setNuevoLugar({...nuevoLugar, categoriaid: e.target.value})}
+                onChange={(e) => setNuevoLugar({ ...nuevoLugar, categoriaid: e.target.value })}
                 placeholder="ID Categoría"
                 required
               />
               <input
                 type="number"
                 value={nuevoLugar.usuarioid}
-                onChange={(e) => setNuevoLugar({...nuevoLugar, usuarioid: e.target.value})}
+                onChange={(e) => setNuevoLugar({ ...nuevoLugar, usuarioid: e.target.value })}
                 placeholder="ID Usuario"
                 required
               />
@@ -119,21 +120,21 @@ const Lugares = () => {
               <input
                 type="text"
                 value={nuevoLugar.nombre}
-                onChange={(e) => setNuevoLugar({...nuevoLugar, nombre: e.target.value})}
+                onChange={(e) => setNuevoLugar({ ...nuevoLugar, nombre: e.target.value })}
                 placeholder="Nombre del lugar"
                 required
               />
               <input
                 type="text"
                 value={nuevoLugar.ubicacion}
-                onChange={(e) => setNuevoLugar({...nuevoLugar, ubicacion: e.target.value})}
+                onChange={(e) => setNuevoLugar({ ...nuevoLugar, ubicacion: e.target.value })}
                 placeholder="Ubicación"
                 required
               />
             </div>
             <textarea
               value={nuevoLugar.descripcion}
-              onChange={(e) => setNuevoLugar({...nuevoLugar, descripcion: e.target.value})}
+              onChange={(e) => setNuevoLugar({ ...nuevoLugar, descripcion: e.target.value })}
               placeholder="Descripción del lugar"
               required
             />
@@ -175,4 +176,4 @@ const Lugares = () => {
   );
 };
 
-export default Lugares; 
+export default Lugares;

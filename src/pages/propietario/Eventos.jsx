@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "./api/api";
+import { api } from "../../components/api/api";
 import { useNavigate } from 'react-router-dom';
 import './Eventos.css';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
@@ -96,7 +96,7 @@ const Eventos = () => {
 
         <div className="main-content">
           <h2>Eventos de Popayán Nocturna</h2>
-          
+
           {mensaje && <div className="mensaje">{mensaje}</div>}
 
           <form onSubmit={handleSubmit} className="form-container">
@@ -104,14 +104,14 @@ const Eventos = () => {
               <input
                 type="number"
                 value={nuevoEvento.lugarid}
-                onChange={(e) => setNuevoEvento({...nuevoEvento, lugarid: e.target.value})}
+                onChange={(e) => setNuevoEvento({ ...nuevoEvento, lugarid: e.target.value })}
                 placeholder="ID Lugar"
                 required
               />
               <input
                 type="number"
                 value={nuevoEvento.comentarioid}
-                onChange={(e) => setNuevoEvento({...nuevoEvento, comentarioid: e.target.value})}
+                onChange={(e) => setNuevoEvento({ ...nuevoEvento, comentarioid: e.target.value })}
                 placeholder="ID Comentario"
                 required
               />
@@ -120,28 +120,28 @@ const Eventos = () => {
               <input
                 type="number"
                 value={nuevoEvento.capacidad}
-                onChange={(e) => setNuevoEvento({...nuevoEvento, capacidad: e.target.value})}
+                onChange={(e) => setNuevoEvento({ ...nuevoEvento, capacidad: e.target.value })}
                 placeholder="Capacidad"
                 required
               />
               <input
                 type="number"
                 value={nuevoEvento.precio}
-                onChange={(e) => setNuevoEvento({...nuevoEvento, precio: e.target.value})}
+                onChange={(e) => setNuevoEvento({ ...nuevoEvento, precio: e.target.value })}
                 placeholder="Precio"
                 required
               />
             </div>
             <textarea
               value={nuevoEvento.descripcion}
-              onChange={(e) => setNuevoEvento({...nuevoEvento, descripcion: e.target.value})}
+              onChange={(e) => setNuevoEvento({ ...nuevoEvento, descripcion: e.target.value })}
               placeholder="Descripción del evento"
               required
             />
             <input
               type="datetime-local"
               value={nuevoEvento.fecha_hora}
-              onChange={(e) => setNuevoEvento({...nuevoEvento, fecha_hora: e.target.value})}
+              onChange={(e) => setNuevoEvento({ ...nuevoEvento, fecha_hora: e.target.value })}
               required
             />
             <button type="submit" className="btn-crear">

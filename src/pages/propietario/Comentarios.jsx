@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "./api/api";
+import { api } from "../../components/api/api"; 
 import { useNavigate } from 'react-router-dom';
 import './Comentarios.css';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 
 const Comentarios = () => {
   const [comentarios, setComentarios] = useState([]);
@@ -140,4 +140,4 @@ const Comentarios = () => {
   );
 };
 
-export default Comentarios; 
+export default Comentarios;
