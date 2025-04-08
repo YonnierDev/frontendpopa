@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "../styles/Reservas.css";
+import "../admip/styles/Reservas.css";
 
 const Reservas = () => {
   const [reservas, setReservas] = useState([]);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Calificaciones.css";
+import "../admip/styles/Calificaciones.css";
 
 const Calificaciones = () => {
   const [calificaciones, setCalificaciones] = useState([]);
@@ -29,7 +29,6 @@ const Calificaciones = () => {
     try {
       await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificacion/${id}`);
       setCalificaciones(prev => prev.filter(c => c.id !== id));
-
       setMensaje("Calificación eliminada exitosamente");
       setTimeout(() => setMensaje(""), 3000);
     } catch (error) {
@@ -44,11 +43,11 @@ const Calificaciones = () => {
 
     try {
       await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificacion/${id}/estado`, {
-        activo: nuevoEstado,
+        estado: nuevoEstado,
       });
 
       setCalificaciones(prev =>
-        prev.map(c => (c.id === id ? { ...c, activo: nuevoEstado } : c))
+        prev.map(c => (c.id === id ? { ...c, estado: nuevoEstado } : c))
       );
     } catch (error) {
       console.error("Error al cambiar estado de la calificación:", error);
@@ -68,7 +67,7 @@ const Calificaciones = () => {
   };
 
   const calificacionesFiltradas = calificaciones.filter(c =>
-    c.usuario.toLowerCase().includes(busqueda.toLowerCase())
+    c.usuarioid.toString().includes(busqueda)
   );
 
   return (
@@ -77,7 +76,7 @@ const Calificaciones = () => {
 
       <input
         type="text"
-        placeholder="Buscar usuario..."
+        placeholder="Buscar por ID de usuario..."
         value={busqueda}
         onChange={handleBusqueda}
         className="buscador-calificaciones"
@@ -91,10 +90,9 @@ const Calificaciones = () => {
         <table className="calificaciones-tabla">
           <thead>
             <tr>
-              <th>Usuario</th>
-              <th>Evento</th>
+              <th>ID Usuario</th>
+              <th>ID Evento</th>
               <th>Calificación</th>
-              <th>Comentario</th>
               <th>Acciones</th>
               <th>Estado</th>
             </tr>
@@ -102,10 +100,9 @@ const Calificaciones = () => {
           <tbody>
             {calificacionesFiltradas.map(c => (
               <tr key={c.id} className="calificacion-item">
-                <td>{c.usuario}</td>
-                <td>{c.evento}</td>
+                <td>{c.usuarioid}</td>
+                <td>{c.eventoid}</td>
                 <td>{c.puntuacion}</td>
-                <td>{c.comentario || "Sin comentario"}</td>
                 <td className="acciones">
                   <button className="detalles" onClick={() => handleDetalles(c)}>Detalles</button>
                   <button className="editar">Editar</button>
@@ -115,8 +112,8 @@ const Calificaciones = () => {
                   <label className="switch">
                     <input
                       type="checkbox"
-                      checked={c.activo}
-                      onChange={() => toggleEstado(c.id, c.activo)}
+                      checked={c.estado}
+                      onChange={() => toggleEstado(c.id, c.estado)}
                     />
                     <span className="slider"></span>
                   </label>
@@ -131,10 +128,9 @@ const Calificaciones = () => {
         <div className="modal">
           <div className="modal-contenido">
             <h3>Detalles de la Calificación</h3>
-            <p><strong>Usuario:</strong> {calificacionSeleccionada.usuario}</p>
-            <p><strong>Evento:</strong> {calificacionSeleccionada.evento}</p>
+            <p><strong>ID Usuario:</strong> {calificacionSeleccionada.usuarioid}</p>
+            <p><strong>ID Evento:</strong> {calificacionSeleccionada.eventoid}</p>
             <p><strong>Calificación:</strong> {calificacionSeleccionada.puntuacion}</p>
-            <p><strong>Comentario:</strong> {calificacionSeleccionada.comentario || "Sin comentario"}</p>
             <button className="cerrar-modal" onClick={cerrarModal}>Cerrar</button>
           </div>
         </div>

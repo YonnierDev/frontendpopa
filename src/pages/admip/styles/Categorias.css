@@ -1,8 +1,9 @@
 /* Botón amarillo con letras negras */
-.btn-amarillo {
+.btn-amarillo,
+.boton-accion {
   background-color: #ffc107;
   color: black;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border: none;
   border-radius: 20px;
   font-weight: bold;
@@ -10,7 +11,8 @@
   margin: 0 5px;
 }
 
-.btn-amarillo:hover {
+.btn-amarillo:hover,
+.boton-accion:hover {
   background-color: #e0a800;
 }
 
@@ -30,6 +32,7 @@
 .categorias-box {
   padding: 20px;
   font-family: Arial, sans-serif;
+  margin-top: 250px;
 }
 
 .card-categorias,
@@ -44,6 +47,7 @@
 
 .card-formulario h3 {
   margin-bottom: 10px;
+  color: black;
 }
 
 .formulario-categorias {
@@ -94,10 +98,12 @@
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
+  color: black;
 }
 
 .tabla-categorias th {
   background-color: #070707;
+  color: white;
 }
 
 /* Switch de estado */
@@ -160,25 +166,7 @@ input:checked + .slider:before {
   border: 1px solid #aaa;
 }
 
-.acciones-botones{
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-
- .boton-accion {
-  margin: 0 5px;
-  padding: 6px 14px;
-  background-color: #ffc107; /* amarillo */
-  color: black;
-  border: none;
-  border-radius: 20px;
-  font-weight: bold;
-  cursor: pointer;
- }
-
- .boton-accion:hover {
-  background-color: #e0a800;
- }
+.acciones-botones {
   display: flex;
   justify-content: center;
   gap: 10px;

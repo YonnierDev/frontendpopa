@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "../styles/Lugares.css"
+import "../admip/styles/Lugares.css"
 
 const Lugares = () => {
   const [lugares, setLugares] = useState([]);

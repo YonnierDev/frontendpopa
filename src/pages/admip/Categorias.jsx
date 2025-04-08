@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/Categorias.css";
+import "../admip/styles/Categorias.css";
 
 const Categorias = () => {
   const [categorias, setCategorias] = useState([]);
@@ -25,8 +25,8 @@ const Categorias = () => {
   const crearCategoria = async () => {
     if (!nuevaCategoria.trim()) return;
     try {
-      await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categorias", {
-        nombre: nuevaCategoria,
+      await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria", {
+        tipo: nuevaCategoria,
         estado: true,
       });
       setNuevaCategoria("");
@@ -37,9 +37,10 @@ const Categorias = () => {
   };
 
   const editarCategoria = async (id) => {
+    if (!nombreEditado.trim()) return; // Asegura que no se edite con nombre vacío
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categorias/${id}`, {
-        nombre: nombreEditado,
+      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria/${id}`, {
+        tipo: nombreEditado,
       });
       setEditarId(null);
       obtenerCategorias();
@@ -50,7 +51,7 @@ const Categorias = () => {
 
   const eliminarCategoria = async (id) => {
     try {
-      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categorias/${id}`);
+      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria/${id}`);
       obtenerCategorias();
     } catch (error) {
       console.error("Error al eliminar categoría:", error);
@@ -59,7 +60,7 @@ const Categorias = () => {
 
   const cambiarEstado = async (id, estadoActual) => {
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categorias/${id}`, {
+      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria/${id}`, {
         estado: !estadoActual,
       });
       obtenerCategorias();
@@ -69,27 +70,13 @@ const Categorias = () => {
   };
 
   const categoriasFiltradas = categorias.filter((cat) =>
-    cat?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
+    cat?.tipo?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
     <div className="categorias-box">
       <h2>Categorías</h2>
 
-      <div className="card-formulario">
-        <h3>Agregar Nueva Categoría</h3>
-        <div className="formulario-categorias">
-          <input
-            type="text"
-            placeholder="Nueva categoría"
-            value={nuevaCategoria}
-            onChange={(e) => setNuevaCategoria(e.target.value)}
-          />
-          <button onClick={crearCategoria}>Crear</button>
-        </div>
-      </div>
-
-      {/* Buscador centrado entre cards */}
       <div className="buscador-centrado">
         <input
           className="buscador-categorias"
@@ -106,8 +93,8 @@ const Categorias = () => {
             <tr>
               <th>ID</th>
               <th>Nombre</th>
-              <th>Estado</th>
               <th>Acciones</th>
+              <th>Estado</th>
             </tr>
           </thead>
           <tbody>
@@ -122,8 +109,21 @@ const Categorias = () => {
                       onChange={(e) => setNombreEditado(e.target.value)}
                     />
                   ) : (
-                    cat.nombre
+                    cat.tipo
                   )}
+                </td>
+                <td>
+                  {editarId === cat.id ? (
+                    <button className="boton-accion" onClick={() => editarCategoria(cat.id)}>Guardar</button>
+                  ) : (
+                    <button className="boton-accion" onClick={() => {
+                      setEditarId(cat.id);
+                      setNombreEditado(cat.tipo);
+                    }}>
+                      Editar
+                    </button>
+                  )}
+                  <button className="boton-accion" onClick={() => eliminarCategoria(cat.id)}>Eliminar</button>
                 </td>
                 <td>
                   <label className="switch">
@@ -135,23 +135,23 @@ const Categorias = () => {
                     <span className="slider"></span>
                   </label>
                 </td>
-                <td>
-                   {editarId === cat.id ? (
-                     <button className="boton-accion" onClick={() => editarCategoria(cat.id)}>Guardar</button>
-                   ) : (
-                      <button className="boton-accion" onClick={() => {
-                         setEditarId(cat.id);
-                         setNombreEditado(cat.nombre);
-                       }}>
-                          Editar
-                        </button>
-                      )}
-                      <button className="boton-accion" onClick={() => eliminarCategoria(cat.id)}>Eliminar</button>
-                    </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="card-formulario">
+        <h3>Agregar Nueva Categoría</h3>
+        <div className="formulario-categorias">
+          <input
+            type="text"
+            placeholder="Nueva categoría"
+            value={nuevaCategoria}
+            onChange={(e) => setNuevaCategoria(e.target.value)}
+          />
+          <button onClick={crearCategoria}>Crear</button>
+        </div>
       </div>
     </div>
   );

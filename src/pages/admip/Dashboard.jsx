@@ -10,9 +10,8 @@ import Categorias from "./Categorias";
 import Usuarios from "./Usuarios";
 import Lugares from "./Lugares";
 import Comentarios from "./Comentarios";
-
-import logo from "./logos.png";
-import "./Dashboard.css";
+import logo from "../../assets/logos.png";
+import "../admip/styles/Dashboard.css";
 
 const Dashboard = () => {
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
@@ -23,7 +22,7 @@ const Dashboard = () => {
 
     const fetchCategoria = async () => {
       try {
-        const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/Categoria");
+        const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categorias");
         setCorreoAdmin(response.data.correo || "Admin no encontrado");
       } catch (error) {
         console.error("Error al obtener el administrador:", error);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "../styles/Eventos.css";
+import "../admip/styles/Eventos.css";
 
 
 const Eventos = () => {
