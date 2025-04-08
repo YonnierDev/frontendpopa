@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./AuthForm.css"; // Volvemos a importar el CSS
-import logo from "./logos.png";
+import logo from "./camm.png";        
 
 const Login = ({ setIsAuthenticated }) => {
   const [correo, setCorreo] = useState("");

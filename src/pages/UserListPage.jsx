@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api } from "./api/api";
+import { api } from "../components/api/api";
 import "./UserListPage.css"; // Asegúrate de importar los estilos
  
 const UserListPage = () => {
@@ -46,6 +46,7 @@ const UserListPage = () => {
         </table>
       )}
     </div>
+    
   );
 };
 
