@@ -1,137 +1,138 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "../../components/api/api";
+import { api } from "../../components/api/api"; 
 import { useNavigate } from 'react-router-dom';
-import './Dashboard.css';
+import './Comentarios.css';
 import Sidebar from '../../components/Sidebar';
 
-const Dashboard = () => {
-  const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    totalLugares: 0,
-    eventosActivos: 0,
-    reservasPendientes: 0
+const Comentarios = () => {
+  const [comentarios, setComentarios] = useState([]);
+  const [nuevoComentario, setNuevoComentario] = useState({
+    usuarioid: '',
+    contenido: '',
+    fecha_hora: new Date().toISOString(),
+    estado: true
   });
+  const [comentarioEditar, setComentarioEditar] = useState(null);
+  const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    cargarEstadisticas();
+    cargarComentarios();
   }, []);
 
-  const cargarEstadisticas = async () => {
+  const cargarComentarios = async () => {
     try {
-      // Cargar total de lugares
-      const lugaresResponse = await api.get("/lugares");
-      const totalLugares = lugaresResponse.data.length;
-
-      // Cargar eventos activos (asumiendo que tienen un campo estado)
-      const eventosResponse = await api.get("/eventos");
-      const eventosActivos = eventosResponse.data.filter(evento => evento.estado === true).length;
-
-      // Cargar reservas pendientes (asumiendo que tienen un campo estado)
-      const reservasResponse = await api.get("/reservas");
-      const reservasPendientes = reservasResponse.data.filter(reserva => reserva.estado === true).length;
-
-      setStats({
-        totalLugares,
-        eventosActivos,
-        reservasPendientes
-      });
+      const response = await api.get("/comentarios");
+      console.log('Comentarios cargados:', response.data);
+      setComentarios(response.data);
     } catch (error) {
-      console.error("Error al cargar estadísticas:", error);
+      console.error("Error detallado:", error.response || error);
+      setMensaje('Error al cargar los comentarios: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (comentarioEditar) {
+        await api.put(`/comentario/${comentarioEditar.id}`, nuevoComentario);
+        setMensaje('Comentario actualizado exitosamente');
+      } else {
+        await api.post("/comentario", nuevoComentario);
+        setMensaje('Comentario creado exitosamente');
+      }
+      setNuevoComentario({
+        usuarioid: '',
+        contenido: '',
+        fecha_hora: new Date().toISOString(),
+        estado: true
+      });
+      setComentarioEditar(null);
+      cargarComentarios();
+    } catch (error) {
+      setMensaje('Error al procesar el comentario');
+      console.error("Error:", error);
+    }
+  };
+
+  const handleEditar = (comentario) => {
+    setComentarioEditar(comentario);
+    setNuevoComentario({
+      usuarioid: comentario.usuarioid,
+      contenido: comentario.contenido,
+      fecha_hora: comentario.fecha_hora,
+      estado: comentario.estado
+    });
+  };
+
+  const handleEliminar = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar este comentario?')) {
+      try {
+        await api.delete(`/comentario/${id}`);
+        setMensaje('Comentario eliminado exitosamente');
+        cargarComentarios();
+      } catch (error) {
+        setMensaje('Error al eliminar el comentario');
+        console.error("Error:", error);
+      }
     }
   };
 
   return (
     <>
       <Sidebar />
-      <div className="dashboard-container">
-        <div className="dashboard-header">
-          {/* Aquí se añadió el contenedor del logo */}
-          <div className="logo-container">
-            {/* Aquí va la etiqueta img que carga el logo */}
-            <img src="/src/components/camm.png" alt="Logo" className="logo" />    
-          </div>
-
-          <h1>Panel de Control - Popayán Nocturna</h1>
-          <button className="logout-btn" onClick={() => navigate('/login')}>
+      <div className="app-container">
+        <div className="header">
+          <button className="cerrar-sesion" onClick={() => navigate('/login')}>
             Cerrar sesión
           </button>
         </div>
 
-        <div className="dashboard-content">
-          <div className="welcome-section">
-            <h2>Bienvenido al Panel Administrativo</h2>
-            <p>Selecciona una sección para administrar</p>
-          </div>
+        <div className="main-content">
+          <h2>Comentarios de Popayán Nocturna</h2>
+          
+          {mensaje && <div className="mensaje">{mensaje}</div>}
 
-          <div className="dashboard-grid">
-            <div className="dashboard-card" onClick={() => navigate('/categorias')}>
-              <div className="card-icon">📝</div>
-              <h3>Categorías</h3>
-              <p>Gestiona las categorías de lugares</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
+          <form onSubmit={handleSubmit} className="form-container">
+            <div className="form-group">
+              <input
+                type="number"
+                value={nuevoComentario.usuarioid}
+                onChange={(e) => setNuevoComentario({...nuevoComentario, usuarioid: e.target.value})}
+                placeholder="ID Usuario"
+                required
+              />
             </div>
+            <textarea
+              value={nuevoComentario.contenido}
+              onChange={(e) => setNuevoComentario({...nuevoComentario, contenido: e.target.value})}
+              placeholder="Escribe tu comentario aquí..."
+              required
+            />
+            <button type="submit" className="btn-crear">
+              {comentarioEditar ? 'Actualizar' : 'Crear'} Comentario
+            </button>
+          </form>
 
-            <div className="dashboard-card" onClick={() => navigate('/lugares')}>
-              <div className="card-icon">📍</div>
-              <h3>Lugares</h3>
-              <p>Administra los lugares registrados</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
+          <div className="items-list">
+            {comentarios.map((comentario) => (
+              <div key={comentario.id} className="item-card">
+                <div className="item-header">
+                  <span>Usuario #{comentario.usuarioid}</span>
+                  <span>{new Date(comentario.fecha_hora).toLocaleString()}</span>
+                </div>
+                <div className="item-content">
+                  <p>{comentario.contenido}</p>
+                </div>
+                <div className="item-footer">
+                  <span>Estado: {comentario.estado ? 'Activo' : 'Inactivo'}</span>
+                  <div className="item-actions">
+                    <button onClick={() => handleEditar(comentario)}>Editar</button>
+                    <button onClick={() => handleEliminar(comentario.id)}>Eliminar</button>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/comentarios')}>
-              <div className="card-icon">💬</div>
-              <h3>Comentarios</h3>
-              <p>Gestiona los comentarios de usuarios</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/calificaciones')}>
-              <div className="card-icon">⭐</div>
-              <h3>Calificaciones</h3>
-              <p>Revisa las calificaciones de lugares</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/eventos')}>
-              <div className="card-icon">🎉</div>
-              <h3>Eventos</h3>
-              <p>Gestiona los eventos programados</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/reservas')}>
-              <div className="card-icon">📅</div>
-              <h3>Reservas</h3>
-              <p>Administra las reservas de eventos</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card stats">
-              <div className="stat-item">
-                <h4>Total Lugares</h4>
-                <span className="stat-number">{stats.totalLugares}</span>
-              </div>
-              <div className="stat-item">
-                <h4>Eventos Activos</h4>
-                <span className="stat-number">{stats.eventosActivos}</span>
-              </div>
-              <div className="stat-item">
-                <h4>Reservas Pendientes</h4>
-                <span className="stat-number">{stats.reservasPendientes}</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -139,4 +140,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Comentarios;
