@@ -15,44 +15,44 @@ const Sidebar = () => {
       </div>
       <div className="sidebar-menu">
         <button 
-          className={`sidebar-button ${isActive('/dashboard') ? 'active' : ''}`}
-          onClick={() => navigate('/dashboard')}
+          className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/dashboard')}
         >
           <span className="emoji">🏠</span> Dashboard
         </button>
         <button 
-          className={`sidebar-button ${isActive('/categorias') ? 'active' : ''}`}
-          onClick={() => navigate('/categorias')}
+          className={`sidebar-button ${isActive('/propietario/categorias') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/categorias')}
         >
           <span className="emoji">📝</span> Categorías
         </button>
         <button 
-          className={`sidebar-button ${isActive('/lugares') ? 'active' : ''}`}
-          onClick={() => navigate('/lugares')}
+          className={`sidebar-button ${isActive('/propietario/lugares') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/lugares')}
         >
           <span className="emoji">📍</span> Lugares
         </button>
         <button 
-          className={`sidebar-button ${isActive('/comentarios') ? 'active' : ''}`}
-          onClick={() => navigate('/comentarios')}
+          className={`sidebar-button ${isActive('/propietario/comentarios') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/comentarios')}
         >
           <span className="emoji">💬</span> Comentarios
         </button>
         <button 
-          className={`sidebar-button ${isActive('/calificaciones') ? 'active' : ''}`}
-          onClick={() => navigate('/calificaciones')}
+          className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/calificaciones')}
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>
         <button 
-          className={`sidebar-button ${isActive('/eventos') ? 'active' : ''}`}
-          onClick={() => navigate('/eventos')}
+          className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/eventos')}
         >
           <span className="emoji">🎉</span> Eventos
         </button>
         <button 
-          className={`sidebar-button ${isActive('/reservas') ? 'active' : ''}`}
-          onClick={() => navigate('/reservas')}
+          className={`sidebar-button ${isActive('/propietario/reservas') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/reservas')}
         >
           <span className="emoji">📅</span> Reservas
         </button>

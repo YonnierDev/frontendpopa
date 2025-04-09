@@ -44,7 +44,7 @@ const Dashboard = () => {
         <img src={logo} alt="Photobella Logo" className="logo-img" />
         <span className="admin-email">{correoAdmin}</span>
       </nav>
-
+      
       <div className="dashboard-container">
         {/* Barra Lateral */}
         <div className="sidebar">
