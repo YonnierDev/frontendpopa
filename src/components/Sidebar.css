@@ -1,3 +1,5 @@
+/* Sidebar.css */
+
 .sidebar {
   width: 250px;
   height: 100vh;
@@ -51,4 +53,11 @@
   background-color: #ffcc00;
   color: #000;
   font-weight: 500;
-} 
+}
+
+/* Forzar que los emojis se muestren en amarillo */
+.emoji {
+  font-family: "Segoe UI Symbol", "Symbola", sans-serif;
+  color: #ffcc00;
+  display: inline-block;
+}

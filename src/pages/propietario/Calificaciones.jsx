@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "../../components/api/api";
+import { api } from "../../components/api/api";      
 import { useNavigate } from 'react-router-dom';
 import './Calificaciones.css';
 import Sidebar from '../../components/Sidebar';
 
 const Calificaciones = () => {
   const [calificaciones, setCalificaciones] = useState([]);
+  const [eventos, setEventos] = useState([]); // para mostrar en el select
   const [nuevaCalificacion, setNuevaCalificacion] = useState({
     usuarioid: '',
+    eventoid: '',
     puntuacion: '',
     comentario: '',
     fecha: new Date().toISOString()
@@ -18,16 +20,25 @@ const Calificaciones = () => {
 
   useEffect(() => {
     cargarCalificaciones();
+    cargarEventos(); // nueva función
   }, []);
 
   const cargarCalificaciones = async () => {
     try {
       const response = await api.get("/calificaciones");
-      console.log('Calificaciones cargadas:', response.data);
       setCalificaciones(response.data);
     } catch (error) {
       console.error("Error detallado:", error.response || error);
       setMensaje('Error al cargar las calificaciones: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const cargarEventos = async () => {
+    try {
+      const response = await api.get("/eventos"); // asegúrate que esta ruta exista
+      setEventos(response.data);
+    } catch (error) {
+      console.error("Error al cargar eventos:", error.response || error);
     }
   };
 
@@ -43,6 +54,7 @@ const Calificaciones = () => {
       }
       setNuevaCalificacion({
         usuarioid: '',
+        eventoid: '',
         puntuacion: '',
         comentario: '',
         fecha: new Date().toISOString()
@@ -59,6 +71,7 @@ const Calificaciones = () => {
     setCalificacionEditar(calificacion);
     setNuevaCalificacion({
       usuarioid: calificacion.usuarioid,
+      eventoid: calificacion.eventoid,
       puntuacion: calificacion.puntuacion,
       comentario: calificacion.comentario,
       fecha: calificacion.fecha
@@ -102,6 +115,18 @@ const Calificaciones = () => {
                 placeholder="ID Usuario"
                 required
               />
+              <select
+                value={nuevaCalificacion.eventoid}
+                onChange={(e) => setNuevaCalificacion({...nuevaCalificacion, eventoid: e.target.value})}
+                required
+              >
+                <option value="">Seleccione un evento</option>
+                {eventos.map(evento => (
+                  <option key={evento.id} value={evento.id}>
+                    {evento.nombre}
+                  </option>
+                ))}
+              </select>
               <input
                 type="number"
                 value={nuevaCalificacion.puntuacion}
