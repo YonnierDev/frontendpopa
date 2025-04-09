@@ -8,7 +8,7 @@ import UserListPage from "./pages/UserListPage";
 import Categorias from './pages/propietario/Categorias';
 import Lugares from './pages/propietario/Lugares';
 import Comentarios from './pages/propietario/Comentarios';
-import Dashboard from './pages/propietario/Dashboard';
+import DashboardPropietario from './pages/propietario/DashboardPropietario';
 import Calificaciones from './pages/propietario/Calificaciones';
 import Eventos from './pages/propietario/Eventos';
 import Reservas from './pages/propietario/Reservas';
@@ -33,7 +33,7 @@ const App = () => {
           <Route path="/usuarios" element={isAuthenticated ? <UserListPage /> : <Navigate to="/login" />} />
 
           {/* Rutas del propietario */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<DashboardPropietario />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/lugares" element={<Lugares />} />
           <Route path="/comentarios" element={<Comentarios />} />
