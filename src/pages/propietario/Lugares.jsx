@@ -25,24 +25,39 @@ const Lugares = () => {
   const cargarLugares = async () => {
     try {
       const response = await api.get("/lugares");
-      console.log('Lugares cargados:', response.data);
       setLugares(response.data);
     } catch (error) {
-      console.error("Error detallado:", error.response || error);
-      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.message || error.message));
+      console.error("Error al cargar los lugares:", error.response || error);
+      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.mensaje || error.message));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const datos = {
+      usuarioid: parseInt(nuevoLugar.usuarioid),
+      categoriaid: parseInt(nuevoLugar.categoriaid),
+      nombre: nuevoLugar.nombre.trim(),
+      descripcion: nuevoLugar.descripcion.trim(),
+      ubicacion: nuevoLugar.ubicacion.trim(),
+      estado: true
+    };
+
+    if (!datos.usuarioid || !datos.categoriaid || !datos.nombre || !datos.descripcion || !datos.ubicacion) {
+      setMensaje("Por favor completa todos los campos correctamente.");
+      return;
+    }
+
     try {
       if (lugarEditar) {
-        await api.put(`/lugar/${lugarEditar.id}`, nuevoLugar);
+        await api.put(`/lugar/${lugarEditar.id}`, datos);
         setMensaje('Lugar actualizado exitosamente');
       } else {
-        await api.post("/lugar", nuevoLugar);
+        await api.post("/lugar", datos);
         setMensaje('Lugar creado exitosamente');
       }
+
       setNuevoLugar({
         categoriaid: '',
         usuarioid: '',
@@ -54,7 +69,8 @@ const Lugares = () => {
       setLugarEditar(null);
       cargarLugares();
     } catch (error) {
-      setMensaje('Error al procesar el lugar');
+      const errorMsg = error.response?.data?.mensaje || error.message;
+      setMensaje('Error: ' + errorMsg);
       console.error("Error:", error);
     }
   };
@@ -96,7 +112,7 @@ const Lugares = () => {
 
         <div className="main-content">
           <h2>Lugares de Popayán Nocturna</h2>
-          
+
           {mensaje && <div className="mensaje">{mensaje}</div>}
 
           <form onSubmit={handleSubmit} className="form-container">
@@ -104,14 +120,24 @@ const Lugares = () => {
               <input
                 type="number"
                 value={nuevoLugar.categoriaid}
-                onChange={(e) => setNuevoLugar({ ...nuevoLugar, categoriaid: e.target.value })}
+                onChange={(e) => {
+                  const valor = e.target.value;
+                  if (/^\d*$/.test(valor)) {
+                    setNuevoLugar({ ...nuevoLugar, categoriaid: valor });
+                  }
+                }}
                 placeholder="ID Categoría"
                 required
               />
               <input
                 type="number"
                 value={nuevoLugar.usuarioid}
-                onChange={(e) => setNuevoLugar({ ...nuevoLugar, usuarioid: e.target.value })}
+                onChange={(e) => {
+                  const valor = e.target.value;
+                  if (/^\d*$/.test(valor)) {
+                    setNuevoLugar({ ...nuevoLugar, usuarioid: valor });
+                  }
+                }}
                 placeholder="ID Usuario"
                 required
               />

@@ -7,6 +7,7 @@ import Sidebar from '../../components/Sidebar';
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
   const [nuevoEvento, setNuevoEvento] = useState({
+    nombre: '',
     lugarid: '',
     comentarioid: '',
     capacidad: '',
@@ -44,6 +45,7 @@ const Eventos = () => {
         setMensaje('Evento creado exitosamente');
       }
       setNuevoEvento({
+        nombre: '',
         lugarid: '',
         comentarioid: '',
         capacidad: '',
@@ -62,6 +64,7 @@ const Eventos = () => {
   const handleEditar = (evento) => {
     setEventoEditar(evento);
     setNuevoEvento({
+      nombre: evento.nombre,
       lugarid: evento.lugarid,
       comentarioid: evento.comentarioid,
       capacidad: evento.capacidad,
@@ -101,6 +104,13 @@ const Eventos = () => {
 
           <form onSubmit={handleSubmit} className="form-container">
             <div className="form-group">
+              <input
+                type="text"
+                value={nuevoEvento.nombre}
+                onChange={(e) => setNuevoEvento({ ...nuevoEvento, nombre: e.target.value })}
+                placeholder="Nombre del evento"
+                required
+              />
               <input
                 type="number"
                 value={nuevoEvento.lugarid}
@@ -153,7 +163,7 @@ const Eventos = () => {
             {eventos.map((evento) => (
               <div key={evento.id} className="item-card">
                 <div className="item-header">
-                  <span>Lugar #{evento.lugarid}</span>
+                  <strong>{evento.nombre}</strong>
                   <span>{new Date(evento.fecha_hora).toLocaleString()}</span>
                 </div>
                 <div className="item-content">

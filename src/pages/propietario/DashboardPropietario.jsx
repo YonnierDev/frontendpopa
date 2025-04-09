@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { api } from "../../components/api/api";
 import { useNavigate } from 'react-router-dom';
-import './Dashboard.css';
+import './DashboardPropietario.css';
 import Sidebar from '../../components/Sidebar';
 
-const Dashboard = () => {
+const DashboardPropietario = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalLugares: 0,
@@ -18,15 +18,12 @@ const Dashboard = () => {
 
   const cargarEstadisticas = async () => {
     try {
-      // Cargar total de lugares
       const lugaresResponse = await api.get("/lugares");
       const totalLugares = lugaresResponse.data.length;
 
-      // Cargar eventos activos (asumiendo que tienen un campo estado)
       const eventosResponse = await api.get("/eventos");
       const eventosActivos = eventosResponse.data.filter(evento => evento.estado === true).length;
 
-      // Cargar reservas pendientes (asumiendo que tienen un campo estado)
       const reservasResponse = await api.get("/reservas");
       const reservasPendientes = reservasResponse.data.filter(reserva => reserva.estado === true).length;
 
@@ -133,4 +130,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPropietario;

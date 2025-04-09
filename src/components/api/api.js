@@ -1,8 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api", // Asegúrate de que el backend usa HTTPS
-  baseURL: "https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api",
+  baseURL: "https://popnocturna.vercel.app/api",
   headers: {
     "Content-Type": "application/json",
   },

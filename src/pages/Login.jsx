@@ -15,7 +15,7 @@ const Login = ({ setIsAuthenticated }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/login", {
+      const response = await axios.post("https://popnocturna.vercel.app/api/login", {
         correo,
         contrasena,
       });
@@ -63,7 +63,7 @@ const Login = ({ setIsAuthenticated }) => {
             <input
               id="password"
               type="password"
-              placeholder="********"
+              placeholder="Ingresa tu correo"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
               required

@@ -18,47 +18,47 @@ const Sidebar = () => {
           className={`sidebar-button ${isActive('/dashboard') ? 'active' : ''}`}
           onClick={() => navigate('/dashboard')}
         >
-          🏠 Dashboard
+          <span className="emoji">🏠</span> Dashboard
         </button>
         <button 
           className={`sidebar-button ${isActive('/categorias') ? 'active' : ''}`}
           onClick={() => navigate('/categorias')}
         >
-          📝 Categorías
+          <span className="emoji">📝</span> Categorías
         </button>
         <button 
           className={`sidebar-button ${isActive('/lugares') ? 'active' : ''}`}
           onClick={() => navigate('/lugares')}
         >
-          📍 Lugares
+          <span className="emoji">📍</span> Lugares
         </button>
         <button 
           className={`sidebar-button ${isActive('/comentarios') ? 'active' : ''}`}
           onClick={() => navigate('/comentarios')}
         >
-          💬 Comentarios
+          <span className="emoji">💬</span> Comentarios
         </button>
         <button 
           className={`sidebar-button ${isActive('/calificaciones') ? 'active' : ''}`}
           onClick={() => navigate('/calificaciones')}
         >
-          ⭐ Calificaciones
+          <span className="emoji">⭐</span> Calificaciones
         </button>
         <button 
           className={`sidebar-button ${isActive('/eventos') ? 'active' : ''}`}
           onClick={() => navigate('/eventos')}
         >
-          🎉 Eventos
+          <span className="emoji">🎉</span> Eventos
         </button>
         <button 
           className={`sidebar-button ${isActive('/reservas') ? 'active' : ''}`}
           onClick={() => navigate('/reservas')}
         >
-          📅 Reservas
+          <span className="emoji">📅</span> Reservas
         </button>
       </div>
     </div>
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

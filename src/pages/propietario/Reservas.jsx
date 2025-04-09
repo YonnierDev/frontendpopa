@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "../../components/api/api";
+import { api } from "../../components/api/api"; 
 import { useNavigate } from 'react-router-dom';
 import './Reservas.css';
 import Sidebar from '../../components/Sidebar';
@@ -23,7 +23,7 @@ const Reservas = () => {
 
   const cargarReservas = async () => {
     try {
-      const response = await api.get("/propietario/reservas");
+      const response = await api.get("/reservas"); // Ruta corregida
       setReservas(response.data);
     } catch (error) {
       console.error("Error al cargar reservas:", error);
@@ -35,10 +35,10 @@ const Reservas = () => {
     e.preventDefault();
     try {
       if (reservaEditar) {
-        await api.put(`/propietario/reservas/${reservaEditar.id}`, nuevaReserva);
+        await api.put(`/reserva/${reservaEditar.id}`, nuevaReserva); // Ruta corregida
         setMensaje('Reserva actualizada exitosamente');
       } else {
-        await api.post("/propietario/reservas", nuevaReserva);
+        await api.post("/reserva", nuevaReserva); // Ruta corregida
         setMensaje('Reserva creada exitosamente');
       }
       setNuevaReserva({
@@ -70,7 +70,7 @@ const Reservas = () => {
   const handleEliminar = async (id) => {
     if (window.confirm('¿Está seguro de eliminar esta reserva?')) {
       try {
-        await api.delete(`/propietario/reservas/${id}`);
+        await api.delete(`/reserva/${id}`); // Ruta corregida
         setMensaje('Reserva eliminada exitosamente');
         cargarReservas();
       } catch (error) {

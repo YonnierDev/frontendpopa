@@ -34,7 +34,7 @@ const App = () => {
           <Route path="/usuarios" element={isAuthenticated ? <UserListPage /> : <Navigate to="/login" />} />
 
           {/* Rutas del propietario */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<DashboardPropietario />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/lugares" element={<Lugares />} />
           <Route path="/comentarios" element={<Comentarios />} />
