@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "../components/api/api";
 import { useNavigate, Link } from "react-router-dom";
 import "./AuthForm.css"; // Asegúrate de importar el CSS
-import logo from "./logos.png"; // Ruta de la imagen
+import logo from "./camm.png";   // Ruta de la imagen
 const Register = () => {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");

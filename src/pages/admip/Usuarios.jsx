@@ -23,7 +23,7 @@ const Usuarios = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/usuarios");
+      const response = await axios.get("https://popnocturna.vercel.app/api/usuarios");
       setUsuarios(response.data);
     } catch (error) {
       console.error("Error al obtener usuarios", error);
@@ -33,7 +33,7 @@ const Usuarios = () => {
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/usuario/${id}/estado`, {
+      await axios.put(`https://popnocturna.vercel.app/api/usuario/${id}/estado`, {
         activo: nuevoEstado,
       });
       setUsuarios(usuarios.map(u => (u.id === id ? { ...u, estado: nuevoEstado } : u)));
@@ -48,7 +48,7 @@ const Usuarios = () => {
 
   const handleGuardarEdicion = async () => {
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/usuario/${usuarioSeleccionado.id}`, usuarioSeleccionado);
+      await axios.put(`https://popnocturna.vercel.app/api/usuario/${usuarioSeleccionado.id}`, usuarioSeleccionado);
       setUsuarios(usuarios.map(u => (u.id === usuarioSeleccionado.id ? usuarioSeleccionado : u)));
       setUsuarioSeleccionado(null);
     } catch (error) {
@@ -58,7 +58,7 @@ const Usuarios = () => {
 
   const handleCrearUsuario = async () => {
     try {
-      const response = await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/usuario", nuevoUsuario);
+      const response = await axios.post("https://popnocturna.vercel.app/api/usuario", nuevoUsuario);
       setUsuarios([...usuarios, response.data]);
       setNuevoUsuario({
         nombre: "",

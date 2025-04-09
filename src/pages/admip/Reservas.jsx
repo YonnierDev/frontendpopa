@@ -14,7 +14,7 @@ const Reservas = () => {
 
   const fetchReservas = async () => {
     try {
-      const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reservas");
+      const response = await axios.get("https://popnocturna.vercel.app/api/reservas");
       setReservas(response.data);
     } catch (error) {
       console.error("Error al cargar reservas", error);
@@ -25,7 +25,7 @@ const Reservas = () => {
     if (!window.confirm("¿Seguro que quieres eliminar esta reserva?")) return;
 
     try {
-      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reserva/${id}`);
+      await axios.delete(`https://popnocturna.vercel.app/api/reserva/${id}`);
       setReservas(reservas.filter(reserva => reserva.id !== id));
       setMensaje("Reserva eliminada exitosamente");
       setTimeout(() => setMensaje(""), 3000);
@@ -42,7 +42,7 @@ const Reservas = () => {
 
   const handleGuardarEdicion = async () => {
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reserva/${reservaSeleccionada.id}`, reservaSeleccionada);
+      await axios.put(`https://popnocturna.vercel.app/api/reserva/${reservaSeleccionada.id}`, reservaSeleccionada);
       setMensaje("Reserva actualizada correctamente");
       fetchReservas();
       setReservaSeleccionada(null);
@@ -61,7 +61,7 @@ const Reservas = () => {
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/reserva/${id}`, {
+      await axios.put(`https://popnocturna.vercel.app/api/reserva/${id}`, {
         estado: nuevoEstado,
       });
       setReservas(reservas.map(reserva =>

@@ -26,7 +26,7 @@ const Eventos = () => {
 
   const fetchEventos = async () => {
     try {
-      const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/eventos");
+      const response = await axios.get("https://popnocturna.vercel.app/api/eventos");
       setEventos(response.data);
     } catch (error) {
       console.error("Error al cargar eventos", error);
@@ -47,7 +47,7 @@ const Eventos = () => {
     try {
       if (modoEdicion && idEventoEditar) {
         await axios.put(
-          `https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${idEventoEditar}`,
+          `https://popnocturna.vercel.app/api/evento/${idEventoEditar}`,
           {
             lugar: nuevoEvento.lugar,
             descripcion: nuevoEvento.descripcion,
@@ -60,7 +60,7 @@ const Eventos = () => {
         );
         setMensaje("Evento actualizado exitosamente");
       } else {
-        await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento", {
+        await axios.post("https://popnocturna.vercel.app/api/evento", {
           lugar: nuevoEvento.lugar,
           descripcion: nuevoEvento.descripcion,
           precio: parseFloat(nuevoEvento.precio),
@@ -110,7 +110,7 @@ const Eventos = () => {
   const mostrarDetalles = async (evento) => {
     try {
       const response = await axios.get(
-        `https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${evento.id}`
+        `https://popnocturna.vercel.app/api/evento/${evento.id}`
       );
       setEventoSeleccionado(response.data);
     } catch (error) {
@@ -127,7 +127,7 @@ const Eventos = () => {
     if (!confirmacion) return;
 
     try {
-      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${id}`);
+      await axios.delete(`https://popnocturna.vercel.app/api/evento/${id}`);
       setEventos(eventos.filter((evento) => evento.id !== id));
       setMensaje("Evento eliminado correctamente");
       setTimeout(() => setMensaje(""), 3000);
@@ -141,7 +141,7 @@ const Eventos = () => {
   const cambiarEstadoEvento = async (id, estadoActual) => {
     try {
       const nuevoEstado = !estadoActual;
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/evento/${id}`, {
+      await axios.put(`https://popnocturna.vercel.app/api/evento/${id}`, {
         estado: nuevoEstado
       });
 
