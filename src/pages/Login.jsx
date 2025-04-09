@@ -1,31 +1,31 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import "./AuthForm.css"; // Volvemos a importar el CSS
-import logo from "./camm.png";        
+import "./AuthForm.css";
+import logo from "./camm.png";
 
 const Login = ({ setIsAuthenticated }) => {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
-  const [error, setError] = useState(""); // Volvemos a agregar el estado de error
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/login", {
+      const response = await axios.post("https://popnocturna.vercel.app/api/login", {
         correo,
         contrasena,
       });
 
-      const { token } = response.data;
+      const { token, rol, nombre, usuarioId } = response.data;
+
       if (token) {
         localStorage.setItem("token", token);
+        localStorage.setItem("usuario", JSON.stringify({ rol, nombre, usuarioId }));
         setIsAuthenticated(true);
-        setError(""); // Limpiar cualquier error previo
-        navigate("/dashboard"); // Redirigir al dashboard
+        setError("");
+        navigate("/dashboard"); // Esto redirige y luego App.jsx manda según el rol
       } else {
         setError("Credenciales incorrectas");
       }

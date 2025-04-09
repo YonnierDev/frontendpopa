@@ -22,7 +22,7 @@ const Dashboard = () => {
 
     const fetchCategoria = async () => {
       try {
-        const response = await axios.get("https://popnocturna.vercel.app/api/categorias");
+        const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categorias");
         setCorreoAdmin(response.data.correo || "Admin no encontrado");
       } catch (error) {
         console.error("Error al obtener el administrador:", error);

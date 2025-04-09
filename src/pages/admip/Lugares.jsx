@@ -14,7 +14,7 @@ const Lugares = () => {
 
   const fetchLugares = async () => {
     try {
-      const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/lugares");
+      const response = await axios.get("https://popnocturna.vercel.app/api/lugares");
       setLugares(response.data);
     } catch (error) {
       console.error("Error al cargar lugares", error);
@@ -28,7 +28,7 @@ const Lugares = () => {
   const handleGuardarEdicion = async () => {
     try {
       await axios.put(
-        `https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/lugar/${lugarSeleccionado.id}`,
+        `https://popnocturna.vercel.app/api/lugar/${lugarSeleccionado.id}`,
         lugarSeleccionado
       );
       setMensaje("Lugar actualizado correctamente");
@@ -43,7 +43,7 @@ const Lugares = () => {
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/lugar/${id}/estado`, {
+      await axios.put(`https://popnocturna.vercel.app/api/lugar/${id}/estado`, {
         activo: nuevoEstado,
       });
       setLugares(lugares.map(l => (l.id === id ? { ...l, activo: nuevoEstado } : l)));

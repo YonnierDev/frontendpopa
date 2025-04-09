@@ -15,7 +15,7 @@ const Categorias = () => {
 
   const obtenerCategorias = async () => {
     try {
-      const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categorias");
+      const response = await axios.get("https://popnocturna.vercel.app/api/categorias");
       setCategorias(response.data || []);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
@@ -25,7 +25,7 @@ const Categorias = () => {
   const crearCategoria = async () => {
     if (!nuevaCategoria.trim()) return;
     try {
-      await axios.post("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria", {
+      await axios.post("https://popnocturna.vercel.app/api/categoria", {
         tipo: nuevaCategoria,
         estado: true,
       });
@@ -39,7 +39,7 @@ const Categorias = () => {
   const editarCategoria = async (id) => {
     if (!nombreEditado.trim()) return; // Asegura que no se edite con nombre vacío
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria/${id}`, {
+      await axios.put(`https://popnocturna.vercel.app/api/categoria/${id}`, {
         tipo: nombreEditado,
       });
       setEditarId(null);
@@ -51,7 +51,7 @@ const Categorias = () => {
 
   const eliminarCategoria = async (id) => {
     try {
-      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria/${id}`);
+      await axios.delete(`https://popnocturna.vercel.app/api/categoria/${id}`);
       obtenerCategorias();
     } catch (error) {
       console.error("Error al eliminar categoría:", error);
@@ -60,7 +60,7 @@ const Categorias = () => {
 
   const cambiarEstado = async (id, estadoActual) => {
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/categoria/${id}`, {
+      await axios.put(`https://popnocturna.vercel.app/api/categoria/${id}`, {
         estado: !estadoActual,
       });
       obtenerCategorias();

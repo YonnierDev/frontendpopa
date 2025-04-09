@@ -12,7 +12,7 @@ const Comentarios = () => {
 
   const fetchComentarios = async () => {
     try {
-      const response = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/comentarios");
+      const response = await axios.get("https://popnocturna.vercel.app/api/comentarios");
       console.log("Comentarios recibidos:", response.data);
       setComentarios(response.data);
     } catch (error) {
@@ -24,7 +24,7 @@ const Comentarios = () => {
     const nuevoContenido = prompt("Editar contenido del comentario:", comentario.contenido);
     if (nuevoContenido !== null && nuevoContenido.trim() !== "") {
       try {
-        await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/comentario/${comentario.id}`, {
+        await axios.put(`https://popnocturna.vercel.app/api/comentario/${comentario.id}`, {
           contenido: nuevoContenido,
         });
         setComentarios(comentarios.map(c =>
@@ -39,7 +39,7 @@ const Comentarios = () => {
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/comentario/${id}/estado`, {
+      await axios.put(`https://popnocturna.vercel.app/api/comentario/${id}/estado`, {
         activo: nuevoEstado,
       });
       setComentarios(comentarios.map(c =>

@@ -14,7 +14,7 @@ const Calificaciones = () => {
 
   const fetchCalificaciones = async () => {
     try {
-      const { data } = await axios.get("https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificaciones");
+      const { data } = await axios.get("https://popnocturna.vercel.app/api/calificaciones");
       if (!Array.isArray(data)) throw new Error("La API no devolvió un array");
       setCalificaciones(data);
     } catch (error) {
@@ -27,7 +27,7 @@ const Calificaciones = () => {
     if (!window.confirm("¿Seguro que quieres eliminar esta calificación?")) return;
 
     try {
-      await axios.delete(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificacion/${id}`);
+      await axios.delete(`https://popnocturna.vercel.app/api/calificacion/${id}`);
       setCalificaciones(prev => prev.filter(c => c.id !== id));
       setMensaje("Calificación eliminada exitosamente");
       setTimeout(() => setMensaje(""), 3000);
@@ -42,7 +42,7 @@ const Calificaciones = () => {
     const nuevoEstado = !estadoActual;
 
     try {
-      await axios.put(`https://backend-1ky982i25-yonnierdevs-projects.vercel.app/api/calificacion/${id}/estado`, {
+      await axios.put(`https://popnocturna.vercel.app/api/calificacion/${id}/estado`, {
         estado: nuevoEstado,
       });
 
