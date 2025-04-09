@@ -55,7 +55,7 @@ const Login = ({ setIsAuthenticated }) => {
       // Redirecciona según el rol
       switch (rolId) {
         case 1:
-          navigate("/admip/dashboard");
+          navigate("/admin/dashboard");
           break;
         case 2:
           navigate("/propietario/dashboard");
