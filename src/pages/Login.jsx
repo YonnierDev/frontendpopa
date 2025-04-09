@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./AuthForm.css";
@@ -10,8 +10,21 @@ const Login = ({ setIsAuthenticated }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Limpieza de campos si el usuario vuelve a esta vista
+    setCorreo("");
+    setContrasena("");
+    setError("");
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!correo || !contrasena) {
+      setError("Por favor, completa todos los campos.");
+      return;
+    }
+
     try {
       const response = await axios.post("https://popnocturna.vercel.app/api/login", {
         correo,
@@ -20,18 +33,45 @@ const Login = ({ setIsAuthenticated }) => {
 
       const { token, rol, nombre, usuarioId } = response.data;
 
-      if (token) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("usuario", JSON.stringify({ rol, nombre, usuarioId }));
-        setIsAuthenticated(true);
-        setError("");
-        navigate("/dashboard"); // Esto redirige y luego App.jsx manda según el rol
-      } else {
-        setError("Credenciales incorrectas");
+      if (!token || rol === undefined) {
+        setError("Respuesta inválida del servidor.");
+        return;
       }
-    } catch (error) {
-      console.error("Error en login:", error);
-      setError("Error al iniciar sesión. Verifica tus credenciales.");
+
+      // Aseguramos que rol sea un número
+      const rolId = parseInt(rol);
+
+      // Guardar token y usuario
+      localStorage.setItem("token", token);
+      localStorage.setItem("usuario", JSON.stringify({ rol: rolId, nombre, usuarioId }));
+
+      // Debug: verificar el rol
+      console.log("Rol recibido:", rolId);
+
+      // Actualiza estado global
+      setIsAuthenticated(true);
+      setError("");
+
+      // Redirecciona según el rol
+      switch (rolId) {
+        case 1:
+          navigate("/admip/dashboard");
+          break;
+        case 2:
+          navigate("/propietario/dashboard");
+          break;
+        default:
+          navigate("/login");
+          break;
+      }
+
+    } catch (err) {
+      console.error("Error en login:", err);
+      if (err.response && err.response.status === 401) {
+        setError("Credenciales incorrectas.");
+      } else {
+        setError("Error al iniciar sesión. Intenta más tarde.");
+      }
     }
   };
 
@@ -40,11 +80,14 @@ const Login = ({ setIsAuthenticated }) => {
       <div className="logo">
         <img src={logo} alt="Photobella Logo" className="logo-img" />
       </div>
+
       <div className="auth-box">
         <div className="title">
           <h2>LOGIN</h2>
         </div>
+
         {error && <div className="error-message">{error}</div>}
+
         <form onSubmit={handleLogin}>
           <div className="input-group">
             <label htmlFor="email">Email</label>
@@ -59,29 +102,27 @@ const Login = ({ setIsAuthenticated }) => {
           </div>
 
           <div className="input-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Contraseña</label>
             <input
               id="password"
               type="password"
-              placeholder="********"
+              placeholder="Ingresa tu contraseña"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
               required
             />
           </div>
 
-          <button type="submit">Login</button>
+          <button type="submit">Iniciar sesión</button>
         </form>
 
         <div className="separator">
           <span>----------------------------- o ----------------------------</span>
         </div>
 
-        <div className="title">
-          <p className="register-text">
-            ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-          </p>
-        </div>
+        <p className="register-text">
+          ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+        </p>
       </div>
     </div>
   );
