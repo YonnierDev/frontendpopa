@@ -1,0 +1,116 @@
+/* ====== Barra de navegación superior ====== */
+.navbar {
+    background-color: #000; /* Negro */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo del correo en la barra de navegación */
+.admin-email {
+    font-size: 16px;
+    color: white;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+
+/* Logo en la barra de navegación */
+.logo-img {
+    width: 120px;
+    height: 50px;
+}
+
+/* Enlace de Cerrar Sesión en la barra superior */
+.navbar .logout-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.navbar .logout-link:hover {
+    color: #ffcc00;
+}
+
+/* ====== Barra de navegación lateral ====== */
+.sidebar {
+    width: 150px;  /* Ancho de la barra lateral */
+    height: 100vh; /* Altura completa de la pantalla */
+    background-color: #000; /* Negro oscuro */
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 120px; /* Espacio debajo de la barra superior */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Botones del menú lateral */
+.menu-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 15px;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.menu-btn:hover {
+    background-color: #f0c505;
+}
+
+/* Contenedor del botón de Cerrar Sesión en la barra lateral */
+.logout-container {
+    margin-top: auto; /* Envía el botón al fondo */
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Botón de Cerrar Sesión en la barra lateral */
+.logout-btn {
+    background-color: rgb(68, 66, 66);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    text-decoration: none;
+    text-align: center;
+}
+
+.logout-btn:hover {
+    background-color: darkred;
+}
+
+/* ====== Contenido Principal ====== */
+.dashboard-container {
+    display: flex;
+}
+
+.content {
+    margin-left: 200px; /* Ajuste para que no se solape con la barra lateral */
+    padding: 20px;
+    flex-grow: 1;
+}
+  
+.bienvenida-message {
+    margin: 20px 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: rgb(7, 7, 7);
+}

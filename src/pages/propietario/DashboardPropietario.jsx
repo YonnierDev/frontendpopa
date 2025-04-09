@@ -55,7 +55,7 @@ const DashboardPropietario = () => {
           </div>
 
           <div className="dashboard-grid">
-            <div className="dashboard-card" onClick={() => navigate('/categorias')}>
+            <div className="dashboard-card" onClick={() => navigate('/propietario/categorias')}>
               <div className="card-icon">📝</div>
               <h3>Categorías</h3>
               <p>Gestiona las categorías de lugares</p>
@@ -64,7 +64,7 @@ const DashboardPropietario = () => {
               </div>
             </div>
 
-            <div className="dashboard-card" onClick={() => navigate('/lugares')}>
+            <div className="dashboard-card" onClick={() => navigate('/propietario/lugares')}>
               <div className="card-icon">📍</div>
               <h3>Lugares</h3>
               <p>Administra los lugares registrados</p>
@@ -73,7 +73,7 @@ const DashboardPropietario = () => {
               </div>
             </div>
 
-            <div className="dashboard-card" onClick={() => navigate('/comentarios')}>
+            <div className="dashboard-card" onClick={() => navigate('/propietario/comentarios')}>
               <div className="card-icon">💬</div>
               <h3>Comentarios</h3>
               <p>Gestiona los comentarios de usuarios</p>
@@ -82,7 +82,7 @@ const DashboardPropietario = () => {
               </div>
             </div>
 
-            <div className="dashboard-card" onClick={() => navigate('/calificaciones')}>
+            <div className="dashboard-card" onClick={() => navigate('/propietario/calificaciones')}>
               <div className="card-icon">⭐</div>
               <h3>Calificaciones</h3>
               <p>Revisa las calificaciones de lugares</p>
@@ -91,7 +91,7 @@ const DashboardPropietario = () => {
               </div>
             </div>
 
-            <div className="dashboard-card" onClick={() => navigate('/eventos')}>
+            <div className="dashboard-card" onClick={() => navigate('/propietario/eventos')}>
               <div className="card-icon">🎉</div>
               <h3>Eventos</h3>
               <p>Gestiona los eventos programados</p>
@@ -100,7 +100,7 @@ const DashboardPropietario = () => {
               </div>
             </div>
 
-            <div className="dashboard-card" onClick={() => navigate('/reservas')}>
+            <div className="dashboard-card" onClick={() => navigate('/propietario/reservas')}>
               <div className="card-icon">📅</div>
               <h3>Reservas</h3>
               <p>Administra las reservas de eventos</p>
