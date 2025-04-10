@@ -76,24 +76,26 @@
     padding: 10px;
     display: flex;
     justify-content: center;
+    margin-bottom: 20px; /* Margen inferior para separarlo del borde de la pantalla */
 }
 
 /* Botón de Cerrar Sesión en la barra lateral */
 .logout-btn {
-    background-color: rgb(68, 66, 66);
+    background-color: #ff4444; /* Rojo más brillante para mayor contraste */
     color: white;
     border: none;
-    padding: 10px 15px;
-    font-size: 16px;
+    padding: 8px 12px;
+    font-size: 14px;
     cursor: pointer;
     text-align: center;
-    width: 100%;
+    width: 90%;
     text-decoration: none;
-    text-align: center;
+    border-radius: 5px;
+    font-weight: bold; /* Texto en negrita para mayor visibilidad */
 }
 
 .logout-btn:hover {
-    background-color: darkred;
+    background-color: #cc0000; /* Rojo más oscuro al pasar el mouse */
 }
 
 /* ====== Contenido Principal ====== */
@@ -112,5 +114,5 @@
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-    color: rgb(7, 7, 7);
+    color: white;
 }

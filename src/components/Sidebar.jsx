@@ -8,6 +8,12 @@ const Sidebar = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    navigate('/login');
+  };
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
@@ -55,6 +61,11 @@ const Sidebar = () => {
           onClick={() => navigate('/propietario/calificaciones')}
         >
           <span className="emoji">⭐</span> Calificaciones
+        </button>
+      </div>
+      <div className="logout-container">
+        <button className="logout-btn" onClick={handleLogout}>
+          Cerrar Sesión
         </button>
       </div>
     </div>
