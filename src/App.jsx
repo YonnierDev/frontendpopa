@@ -9,10 +9,13 @@ import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Admin (rol 2)
+// Superadmin
+import DashboardSuperadmin from "./pages/superadmin/DashboardSuperadmin";
+
+// Admin
 import DashboardAdmin from "./pages/admip/Dashboard";
 
-// Propietario (rol 3)
+// Propietario
 import DashboardPropietario from "./pages/propietario/DashboardPropietario";
 import ComentariosProp from "./pages/propietario/Comentarios";
 import LugaresProp from "./pages/propietario/Lugares";
@@ -21,7 +24,6 @@ import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 
-// Navbar dinámico (solo en rutas privadas)
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const location = useLocation();
   const publicPaths = ['/login', '/register'];
@@ -71,22 +73,21 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* Rutas SuperAdmin - rol 1 (espacio reservado para futuro) */}
+          {/* Rutas Superadmin */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
           >
-            {/* Aquí puedes agregar rutas del SuperAdmin cuando estén listas */}
-            {/* <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} /> */}
+            <Route path="/superadmin/*" element={<DashboardSuperadmin />} />
           </Route>
 
-          {/* Rutas Administrador - rol 2 */}
+          {/* Rutas Administrador */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
           >
-            <Route path="/admin/dashboard" element={<DashboardAdmin />} />
+            <Route path="/admin/*" element={<DashboardAdmin />} />
           </Route>
 
-          {/* Rutas Propietario - rol 3 */}
+          {/* Rutas Propietario */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} />}
           >
@@ -97,9 +98,10 @@ function App() {
             <Route path="/propietario/reservas" element={<ReservasProp />} />
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
+            
           </Route>
 
-          {/* Ruta por defecto si no coincide con ninguna */}
+          {/* Ruta por defecto */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
