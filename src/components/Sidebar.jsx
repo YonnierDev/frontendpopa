@@ -16,15 +16,12 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <h3>Popayán Nocturna</h3>
-      </div>
       <div className="sidebar-menu">
         <button 
           className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}
           onClick={() => navigate('/propietario/dashboard')}
         >
-          <span className="emoji">🏠</span> Dashboard
+          <span className="emoji">🏠</span> Panel
         </button>
         <button 
           className={`sidebar-button ${isActive('/propietario/categorias') ? 'active' : ''}`}
