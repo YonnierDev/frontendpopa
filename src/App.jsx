@@ -9,10 +9,10 @@ import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Admin
+// Admin (rol 2)
 import DashboardAdmin from "./pages/admip/Dashboard";
 
-// Propietario
+// Propietario (rol 3)
 import DashboardPropietario from "./pages/propietario/DashboardPropietario";
 import ComentariosProp from "./pages/propietario/Comentarios";
 import LugaresProp from "./pages/propietario/Lugares";
@@ -21,17 +21,12 @@ import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 
-// Componente para mostrar el Navbar solo en rutas protegidas
+// Navbar dinámico (solo en rutas privadas)
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const location = useLocation();
   const publicPaths = ['/login', '/register'];
-  
-  // No mostrar Navbar en rutas públicas
-  if (publicPaths.includes(location.pathname)) {
-    return null;
-  }
-  
-  // Mostrar Navbar solo si está autenticado
+
+  if (publicPaths.includes(location.pathname)) return null;
   return isAuthenticated ? <Navbar rol={rol} /> : null;
 };
 
@@ -45,7 +40,6 @@ function App() {
 
     if (token && storedUsuario) {
       setIsAuthenticated(true);
-
       try {
         const usuario = JSON.parse(storedUsuario);
         setRol(usuario?.rol);
@@ -77,29 +71,35 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* Ruta protegida solo para el dashboard del admin */}
+          {/* Rutas SuperAdmin - rol 1 (espacio reservado para futuro) */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
+          >
+            {/* Aquí puedes agregar rutas del SuperAdmin cuando estén listas */}
+            {/* <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} /> */}
+          </Route>
+
+          {/* Rutas Administrador - rol 2 */}
+          <Route
+            element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
           >
             <Route path="/admin/dashboard" element={<DashboardAdmin />} />
           </Route>
 
-          {/* Ruta protegida solo para el dashboard del propietario */}
+          {/* Rutas Propietario - rol 3 */}
           <Route
-            element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
+            element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} />}
           >
             <Route path="/propietario/dashboard" element={<DashboardPropietario />} />
+            <Route path="/propietario/comentarios" element={<ComentariosProp />} />
+            <Route path="/propietario/lugares" element={<LugaresProp />} />
+            <Route path="/propietario/eventos" element={<EventosProp />} />
+            <Route path="/propietario/reservas" element={<ReservasProp />} />
+            <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
+            <Route path="/propietario/categorias" element={<CategoriasProp />} />
           </Route>
 
-          {/* Otras rutas del propietario SIN protección, ya estás logueado */}
-          <Route path="/propietario/comentarios" element={<ComentariosProp />} />
-          <Route path="/propietario/lugares" element={<LugaresProp />} />
-          <Route path="/propietario/eventos" element={<EventosProp />} />
-          <Route path="/propietario/reservas" element={<ReservasProp />} />
-          <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
-          <Route path="/propietario/categorias" element={<CategoriasProp />} />
-
-          {/* Catch all */}
+          {/* Ruta por defecto si no coincide con ninguna */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
