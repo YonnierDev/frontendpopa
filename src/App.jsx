@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -20,6 +20,20 @@ import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
+
+// Componente para mostrar el Navbar solo en rutas protegidas
+const NavbarWrapper = ({ isAuthenticated, rol }) => {
+  const location = useLocation();
+  const publicPaths = ['/login', '/register'];
+  
+  // No mostrar Navbar en rutas públicas
+  if (publicPaths.includes(location.pathname)) {
+    return null;
+  }
+  
+  // Mostrar Navbar solo si está autenticado
+  return isAuthenticated ? <Navbar rol={rol} /> : null;
+};
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,51 +61,49 @@ function App() {
 
   return (
     <Router>
-  {isAuthenticated && <Navbar rol={rol} />}
-  <div className="main-container">
-    <Routes>
-
-      {/* Rutas públicas */}
-      <Route
-        path="/login"
-        element={
-          <Login
-            setIsAuthenticated={setIsAuthenticated}
-            setRol={setRol}
+      <NavbarWrapper isAuthenticated={isAuthenticated} rol={rol} />
+      <div className="main-container">
+        <Routes>
+          {/* Rutas públicas */}
+          <Route
+            path="/login"
+            element={
+              <Login
+                setIsAuthenticated={setIsAuthenticated}
+                setRol={setRol}
+              />
+            }
           />
-        }
-      />
-      <Route path="/register" element={<Register />} />
-      <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Navigate to="/login" />} />
 
-      {/* Ruta protegida solo para el dashboard del admin */}
-      <Route
-        element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
-      >
-        <Route path="/admin/dashboard" element={<DashboardAdmin />} />
-      </Route>
+          {/* Ruta protegida solo para el dashboard del admin */}
+          <Route
+            element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
+          >
+            <Route path="/admin/dashboard" element={<DashboardAdmin />} />
+          </Route>
 
-      {/* Ruta protegida solo para el dashboard del propietario */}
-      <Route
-        element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
-      >
-        <Route path="/propietario/dashboard" element={<DashboardPropietario />} />
-      </Route>
+          {/* Ruta protegida solo para el dashboard del propietario */}
+          <Route
+            element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
+          >
+            <Route path="/propietario/dashboard" element={<DashboardPropietario />} />
+          </Route>
 
-      {/* Otras rutas del propietario SIN protección, ya estás logueado */}
-      <Route path="/propietario/comentarios" element={<ComentariosProp />} />
-      <Route path="/propietario/lugares" element={<LugaresProp />} />
-      <Route path="/propietario/eventos" element={<EventosProp />} />
-      <Route path="/propietario/reservas" element={<ReservasProp />} />
-      <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
-      <Route path="/propietario/categorias" element={<CategoriasProp />} />
+          {/* Otras rutas del propietario SIN protección, ya estás logueado */}
+          <Route path="/propietario/comentarios" element={<ComentariosProp />} />
+          <Route path="/propietario/lugares" element={<LugaresProp />} />
+          <Route path="/propietario/eventos" element={<EventosProp />} />
+          <Route path="/propietario/reservas" element={<ReservasProp />} />
+          <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
+          <Route path="/propietario/categorias" element={<CategoriasProp />} />
 
-      {/* Catch all */}
-      <Route path="*" element={<Navigate to="/login" />} />
-    </Routes>
-  </div>
-</Router>
-
+          {/* Catch all */}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

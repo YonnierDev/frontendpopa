@@ -77,7 +77,7 @@ const Login = ({ setIsAuthenticated }) => {
 
   return (
     <div className="auth-container">
-      <div className="logo">
+      <div className="logo-container">
         <img src={logo} alt="Photobella Logo" className="logo-img" />
       </div>
 

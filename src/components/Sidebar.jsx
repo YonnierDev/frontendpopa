@@ -33,18 +33,6 @@ const Sidebar = () => {
           <span className="emoji">📍</span> Lugares
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/comentarios') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/comentarios')}
-        >
-          <span className="emoji">💬</span> Comentarios
-        </button>
-        <button 
-          className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/calificaciones')}
-        >
-          <span className="emoji">⭐</span> Calificaciones
-        </button>
-        <button 
           className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
           onClick={() => navigate('/propietario/eventos')}
         >
@@ -55,6 +43,18 @@ const Sidebar = () => {
           onClick={() => navigate('/propietario/reservas')}
         >
           <span className="emoji">📅</span> Reservas
+        </button>
+        <button 
+          className={`sidebar-button ${isActive('/propietario/comentarios') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/comentarios')}
+        >
+          <span className="emoji">💬</span> Comentarios
+        </button>
+        <button 
+          className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/calificaciones')}
+        >
+          <span className="emoji">⭐</span> Calificaciones
         </button>
       </div>
     </div>
