@@ -1,6 +1,7 @@
 .lugares-box {
   padding: 20px;
   color: black; /* Letras negras */
+  margin-top: 150px;
 }
 
 .buscador-lugares {
@@ -19,13 +20,15 @@
 .lugares-tabla th,
 .lugares-tabla td {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid gray;
+  background-color: white;
 }
 
-.lugares-tabla thead {
+.lugares-tabla th {
   background-color: black;
   color: white;
 }
+
 
 
 .lugar-item {

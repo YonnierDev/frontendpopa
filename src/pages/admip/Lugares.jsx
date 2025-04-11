@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "../admip/styles/Lugares.css"
+import "../admip/styles/Lugares.css";
 
 const Lugares = () => {
   const [lugares, setLugares] = useState([]);
@@ -62,11 +62,11 @@ const Lugares = () => {
 
   return (
     <div className="lugares-box">
-      <h2>Lugares</h2>
-
       {mensaje && <p className="mensaje-exito">{mensaje}</p>}
 
       <div className="card-lugares card-formulario">
+        <h2>Lugares</h2>
+
         <input
           type="text"
           placeholder="Buscar lugar..."

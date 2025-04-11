@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";  
 import axios from "axios";
 import "../admip/styles/Usuarios.css";
 
@@ -6,16 +6,7 @@ const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
-  const [nuevoUsuario, setNuevoUsuario] = useState({
-    nombre: "",
-    apellido: "",
-    correo: "",
-    fecha_nacimiento: "",
-    contrasena: "",
-    genero: "",
-    estado: true,
-    rolid: 3,
-  });
+  const [mensajesEstado, setMensajesEstado] = useState({});
 
   useEffect(() => {
     fetchUsuarios();
@@ -33,10 +24,14 @@ const Usuarios = () => {
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://popnocturna.vercel.app/api/usuario/${id}/estado`, {
+      await axios.patch(`https://popnocturna.vercel.app/api/usuario/estado/${id}`, {
         activo: nuevoEstado,
       });
       setUsuarios(usuarios.map(u => (u.id === id ? { ...u, estado: nuevoEstado } : u)));
+      setMensajesEstado(prev => ({
+        ...prev,
+        [id]: nuevoEstado ? "Usuario activo" : "Usuario inactivo"
+      }));
     } catch (error) {
       console.error("Error al cambiar estado del usuario", error);
     }
@@ -53,25 +48,6 @@ const Usuarios = () => {
       setUsuarioSeleccionado(null);
     } catch (error) {
       console.error("Error al editar usuario", error);
-    }
-  };
-
-  const handleCrearUsuario = async () => {
-    try {
-      const response = await axios.post("https://popnocturna.vercel.app/api/usuario", nuevoUsuario);
-      setUsuarios([...usuarios, response.data]);
-      setNuevoUsuario({
-        nombre: "",
-        apellido: "",
-        correo: "",
-        fecha_nacimiento: "",
-        contrasena: "",
-        genero: "",
-        estado: true,
-        rolid: 3,
-      });
-    } catch (error) {
-      console.error("Error al crear usuario", error);
     }
   };
 
@@ -101,8 +77,8 @@ const Usuarios = () => {
               <th>Correo</th>
               <th>Fecha de Nacimiento</th>
               <th>Género</th>
-              <th>Estado</th>
               <th>Acciones</th>
+              <th>Estado</th>
             </tr>
           </thead>
           <tbody>
@@ -115,13 +91,20 @@ const Usuarios = () => {
                 <td>{u.fecha_nacimiento}</td>
                 <td>{u.genero}</td>
                 <td>
-                  <label className="switch">
-                    <input type="checkbox" checked={u.estado} onChange={() => toggleEstado(u.id, u.estado)} />
-                    <span className="slider"></span>
-                  </label>
+                  <button className="editar" onClick={() => handleEditar(u)}>Editar</button>
                 </td>
                 <td>
-                  <button className="editar" onClick={() => handleEditar(u)}>Editar</button>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={u.estado}
+                      onChange={() => toggleEstado(u.id, u.estado)}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                  <div className="mensaje-estado">
+                    {mensajesEstado[u.id]}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -134,58 +117,36 @@ const Usuarios = () => {
         <div className="modal">
           <div className="modal-contenido">
             <h3>Editar Usuario</h3>
-            <input type="text" value={usuarioSeleccionado.nombre} onChange={(e) => setUsuarioSeleccionado({ ...usuarioSeleccionado, nombre: e.target.value })} />
-            <input type="text" value={usuarioSeleccionado.apellido} onChange={(e) => setUsuarioSeleccionado({ ...usuarioSeleccionado, apellido: e.target.value })} />
-            <input type="email" value={usuarioSeleccionado.correo} onChange={(e) => setUsuarioSeleccionado({ ...usuarioSeleccionado, correo: e.target.value })} />
-            <button className="guardar" onClick={handleGuardarEdicion}>Guardar</button>
-            <button className="cerrar-modal" onClick={() => setUsuarioSeleccionado(null)}>Cancelar</button>
+            <input
+              type="text"
+              value={usuarioSeleccionado.nombre}
+              onChange={(e) =>
+                setUsuarioSeleccionado({ ...usuarioSeleccionado, nombre: e.target.value })
+              }
+            />
+            <input
+              type="text"
+              value={usuarioSeleccionado.apellido}
+              onChange={(e) =>
+                setUsuarioSeleccionado({ ...usuarioSeleccionado, apellido: e.target.value })
+              }
+            />
+            <input
+              type="email"
+              value={usuarioSeleccionado.correo}
+              onChange={(e) =>
+                setUsuarioSeleccionado({ ...usuarioSeleccionado, correo: e.target.value })
+              }
+            />
+            <button className="guardar" onClick={handleGuardarEdicion}>
+              Guardar
+            </button>
+            <button className="cerrar-modal" onClick={() => setUsuarioSeleccionado(null)}>
+              Cancelar
+            </button>
           </div>
         </div>
       )}
-
-      {/* Sección de Crear Usuario */}
-      <div className="formulario decoracion-esquina">
-        <h2>Crear Usuario</h2>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={nuevoUsuario.nombre}
-          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, nombre: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Apellido"
-          value={nuevoUsuario.apellido}
-          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, apellido: e.target.value })}
-        />
-        <input
-          type="email"
-          placeholder="Correo"
-          value={nuevoUsuario.correo}
-          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, correo: e.target.value })}
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={nuevoUsuario.contrasena}
-          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, contrasena: e.target.value })}
-        />
-        <input
-          type="date"
-          value={nuevoUsuario.fecha_nacimiento}
-          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, fecha_nacimiento: e.target.value })}
-        />
-        <select
-          value={nuevoUsuario.genero}
-          onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, genero: e.target.value })}
-        >
-          <option value="">Seleccionar Género</option>
-          <option value="Masculino">Masculino</option>
-          <option value="Femenino">Femenino</option>
-          <option value="Otro">Otro</option>
-        </select>
-        <button className="crear" onClick={handleCrearUsuario}>Crear Usuario</button>
-      </div>
     </div>
   );
 };
