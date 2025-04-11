@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Importa todos los componentes
@@ -16,6 +16,7 @@ import "../admip/styles/Dashboard.css";
 const Dashboard = () => {
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
   const [correoAdmin, setCorreoAdmin] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMostrarSeccion("bienvenida");
@@ -37,6 +38,12 @@ const Dashboard = () => {
     setMostrarSeccion(seccion);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    navigate('/login');
+  };
+
   return (
     <div>
       {/* Barra de Navegación Superior */}
@@ -44,7 +51,7 @@ const Dashboard = () => {
         <img src={logo} alt="Photobella Logo" className="logo-img" />
         <span className="admin-email">{correoAdmin}</span>
       </nav>
-
+      
       <div className="dashboard-container">
         {/* Barra Lateral */}
         <div className="sidebar">
@@ -57,7 +64,7 @@ const Dashboard = () => {
           <button className="menu-btn" onClick={() => handleMostrarSeccion("calificaciones")}>Calificaciones</button>
 
           <div className="logout-container">
-            <Link to="/logout" className="logout-btn">Cerrar Sesión</Link>
+            <button className="logout-btn" onClick={handleLogout}>Cerrar Sesión</button>
           </div>
         </div>
 

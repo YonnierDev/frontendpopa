@@ -1,0 +1,80 @@
+.role-list-container {
+  max-width: 900px;
+  
+  margin: 2rem auto;
+  background-color: #1e1e2f;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+}
+
+.create-role-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.create-role-form input,
+.create-role-form select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #2e2e3e;
+  color: #fff;
+}
+
+.create-role-form .btn {
+  background-color: #5c67f2;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.create-role-form .btn:hover {
+  background-color: #4a54e1;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #2e2e3e;
+  color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.styled-table thead {
+  background-color: #444;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.styled-table tr:hover {
+  background-color: #383858;
+}
+
+.styled-table .btn {
+  margin-right: 5px;
+  background-color: #5c67f2;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.styled-table .btn:hover {
+  background-color: #4a54e1;
+}

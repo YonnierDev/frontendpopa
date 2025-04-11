@@ -11,7 +11,6 @@ const Login = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Limpieza de campos si el usuario vuelve a esta vista
     setCorreo("");
     setContrasena("");
     setError("");
@@ -38,26 +37,22 @@ const Login = ({ setIsAuthenticated }) => {
         return;
       }
 
-      // Aseguramos que rol sea un número
       const rolId = parseInt(rol);
 
-      // Guardar token y usuario
       localStorage.setItem("token", token);
       localStorage.setItem("usuario", JSON.stringify({ rol: rolId, nombre, usuarioId }));
 
-      // Debug: verificar el rol
-      console.log("Rol recibido:", rolId);
-
-      // Actualiza estado global
       setIsAuthenticated(true);
       setError("");
 
-      // Redirecciona según el rol
       switch (rolId) {
         case 1:
-          navigate("/admip/dashboard");
+          navigate("/superadmin/dashboard");
           break;
         case 2:
+          navigate("/admin/dashboard");
+          break;
+        case 3:
           navigate("/propietario/dashboard");
           break;
         default:
@@ -77,7 +72,7 @@ const Login = ({ setIsAuthenticated }) => {
 
   return (
     <div className="auth-container">
-      <div className="logo">
+      <div className="logo-container">
         <img src={logo} alt="Photobella Logo" className="logo-img" />
       </div>
 
