@@ -111,12 +111,6 @@ body {
     background-color: #e6b800;
 }
 
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-}
-
 .nav-links li {
     display: inline;
 }
@@ -125,7 +119,7 @@ body {
     text-decoration: none;
     color: white;
     font-size: 18px;
-    padding: 10px;
+    padding:15px;
     transition: 0.3s;
 }
 
@@ -136,11 +130,19 @@ body {
 
 /* Contenedor principal centrado */
 .main-container {
+<<<<<<< HEAD
     margin-top: 80px;
     padding: 20px;
     width: 100%;
     min-height: calc(100vh - 80px);
 }
+=======
+    width: 100%;
+    padding: 0 20px; /* opcional, para espacio lateral */
+    box-sizing: border-box;
+  }
+  
+>>>>>>> 377ac9f3d51e90c33a004e6506c237d0696773b6
 
 /* Ajustes responsivos */
 @media (max-width: 768px) {

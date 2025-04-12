@@ -15,7 +15,7 @@ import DashboardSuperAdmin from "./pages/superadmin/DashboardSuperAdmin";
 // Admin (rol 2)
 import DashboardAdmin from "./pages/admip/Dashboard";
 
-// Propietario (rol 3)
+// Propietario
 import DashboardPropietario from "./pages/propietario/DashboardPropietario";
 import ComentariosProp from "./pages/propietario/Comentarios";
 import LugaresProp from "./pages/propietario/Lugares";
@@ -25,7 +25,11 @@ import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 import { AlertContainer } from "./components/alert/AlertManager";
 
+<<<<<<< HEAD
 // Navbar dinámico (solo en rutas privadas)
+=======
+
+>>>>>>> 377ac9f3d51e90c33a004e6506c237d0696773b6
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const location = useLocation();
   const publicPaths = ['/login', '/register'];
@@ -75,21 +79,25 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
 
+<<<<<<< HEAD
           {/* Rutas SuperAdmin - rol 1 */}
+=======
+          {/* Rutas Superadmin */}
+>>>>>>> 377ac9f3d51e90c33a004e6506c237d0696773b6
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
           >
             <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} />
           </Route>
 
-          {/* Rutas Administrador - rol 2 */}
+          {/* Rutas Administrador */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
           >
-            <Route path="/admin/dashboard" element={<DashboardAdmin />} />
+            <Route path="/admin/*" element={<DashboardAdmin />} />
           </Route>
 
-          {/* Rutas Propietario - rol 3 */}
+          {/* Rutas Propietario */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} />}
           >
@@ -100,9 +108,10 @@ function App() {
             <Route path="/propietario/reservas" element={<ReservasProp />} />
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
+            
           </Route>
 
-          {/* Ruta por defecto si no coincide con ninguna */}
+          {/* Ruta por defecto */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
