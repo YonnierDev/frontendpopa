@@ -40,7 +40,12 @@ const Login = ({ setIsAuthenticated }) => {
       const rolId = parseInt(rol);
 
       localStorage.setItem("token", token);
-      localStorage.setItem("usuario", JSON.stringify({ rol: rolId, nombre, usuarioId }));
+      localStorage.setItem("usuario", JSON.stringify({ 
+        rol: rolId, 
+        nombre, 
+        usuarioId,
+        correo
+      }));
 
       setIsAuthenticated(true);
       setError("");

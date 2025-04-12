@@ -25,7 +25,6 @@ import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 import { AlertContainer } from "./components/alert/AlertManager";
 
-
 // Navbar dinámico (solo en rutas privadas)
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const location = useLocation();
@@ -76,11 +75,10 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* Rutas SuperAdmin - rol 1 (espacio reservado para futuro) */}
+          {/* Rutas SuperAdmin - rol 1 */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
           >
-            {/* Aquí puedes agregar rutas del SuperAdmin cuando estén listas */}
             <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} />
           </Route>
 

@@ -10,12 +10,10 @@ import Reservas from "./reservas/ReservasListPage";
 // import Calificaciones from "./calificaciones/";
 // import Comentarios from "./comentarios/";
 
-import logo from "../../assets/logos.png";
 import "./DashboardSuperAdmin.css";
 
 const DashboardSuperAdmin = () => {
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
-  const [correoAdmin, setCorreoAdmin] = useState("SuperAdmin");//Esto hay que cambiarlo
   const navigate = useNavigate();
 
   const handleMostrarSeccion = (seccion) => {
@@ -30,12 +28,6 @@ const DashboardSuperAdmin = () => {
 
   return (
     <div>
-      {/* Barra Superior */}
-      <nav className="superadmin-navbar">
-        <img src={logo} alt="Photobella Logo" className="superadmin-logo" />
-        <span className="superadmin-email">{correoAdmin}</span>
-      </nav>
-
       <div className="superadmin-dashboard">
         {/* Sidebar */}
         <aside className="superadmin-sidebar">
@@ -71,7 +63,6 @@ const DashboardSuperAdmin = () => {
           {mostrarSeccion === "lugares" && <Lugares />}
           {mostrarSeccion === "reservas" && <Reservas />}
           {mostrarSeccion === "eventos" && <Eventos />}
-
         </main>
       </div>
     </div>

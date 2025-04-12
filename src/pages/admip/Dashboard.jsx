@@ -10,28 +10,14 @@ import Categorias from "./Categorias";
 import Usuarios from "./Usuarios";
 import Lugares from "./Lugares";
 import Comentarios from "./Comentarios";
-import logo from "../../assets/logos.png";
 import "../admip/styles/Dashboard.css";
 
 const Dashboard = () => {
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
-  const [correoAdmin, setCorreoAdmin] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     setMostrarSeccion("bienvenida");
-
-    const fetchCategoria = async () => {
-      try {
-        const response = await axios.get("https://popnocturna.vercel.app/api/categorias");
-        setCorreoAdmin(response.data.correo || "Admin no encontrado");
-      } catch (error) {
-        console.error("Error al obtener el administrador:", error);
-        setCorreoAdmin("Admin no encontrado");
-      }
-    };
-
-    fetchCategoria();
   }, []);
 
   const handleMostrarSeccion = (seccion) => {
@@ -46,12 +32,6 @@ const Dashboard = () => {
 
   return (
     <div>
-      {/* Barra de Navegación Superior */}
-      <nav className="navbar">
-        <img src={logo} alt="Photobella Logo" className="logo-img" />
-        <span className="admin-email">{correoAdmin}</span>
-      </nav>
-      
       <div className="dashboard-container">
         {/* Barra Lateral */}
         <div className="sidebar">
@@ -68,11 +48,12 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Contenido Dinámico */}
+        {/* Contenido Principal */}
         <div className="content">
           {mostrarSeccion === "bienvenida" && (
-            <div className="bienvenida-message">
+            <div className="welcome-section">
               <h2>Bienvenido Administrador</h2>
+              <p>Utiliza el menú lateral para gestionar el sistema.</p>
             </div>
           )}
           {mostrarSeccion === "categorias" && <Categorias />}
