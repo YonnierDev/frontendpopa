@@ -25,11 +25,7 @@ import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 import { AlertContainer } from "./components/alert/AlertManager";
 
-<<<<<<< HEAD
 // Navbar dinámico (solo en rutas privadas)
-=======
-
->>>>>>> 377ac9f3d51e90c33a004e6506c237d0696773b6
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const location = useLocation();
   const publicPaths = ['/login', '/register'];
@@ -79,11 +75,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
 
-<<<<<<< HEAD
           {/* Rutas SuperAdmin - rol 1 */}
-=======
-          {/* Rutas Superadmin */}
->>>>>>> 377ac9f3d51e90c33a004e6506c237d0696773b6
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
           >
@@ -94,7 +86,7 @@ function App() {
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
           >
-            <Route path="/admin/*" element={<DashboardAdmin />} />
+            <Route path="/admin/dashboard" element={<DashboardAdmin />} />
           </Route>
 
           {/* Rutas Propietario */}
@@ -108,7 +100,6 @@ function App() {
             <Route path="/propietario/reservas" element={<ReservasProp />} />
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
-            
           </Route>
 
           {/* Ruta por defecto */}
