@@ -5,8 +5,8 @@ import Roles from "./roles/RolesListPage";
 import Usuarios from "./usuarios/UsuariosListPage";
 import Categorias from "./categorias/CategoriasListPage";
 import Lugares from "./lugares/LugarListPage";
-// import Eventos from "./eventos/";
-// import Reservas from "./reservas/";
+import Eventos from "./eventos/EventosListPage";
+import Reservas from "./reservas/ReservasListPage";
 // import Calificaciones from "./calificaciones/";
 // import Comentarios from "./comentarios/";
 
@@ -43,8 +43,10 @@ const DashboardSuperAdmin = () => {
           <button onClick={() => handleMostrarSeccion("usuarios")} className="superadmin-menu-btn">Usuarios</button>
           <button onClick={() => handleMostrarSeccion("categorias")} className="superadmin-menu-btn">Categorías</button>
           <button onClick={() => handleMostrarSeccion("lugares")} className="superadmin-menu-btn">Lugares</button>
-          {/* <button onClick={() => handleMostrarSeccion("eventos")} className="superadmin-menu-btn">Eventos</button>
           <button onClick={() => handleMostrarSeccion("reservas")} className="superadmin-menu-btn">Reservas</button>
+          <button onClick={() => handleMostrarSeccion("eventos")} className="superadmin-menu-btn">Eventos</button>
+          {/* <button onClick={() => handleMostrarSeccion("eventos")} className="superadmin-menu-btn">Eventos</button>
+          // // <button onClick={() => handleMostrarSeccion("reservas")} className="superadmin-menu-btn">Reservas</button>
           <button onClick={() => handleMostrarSeccion("calificaciones")} className="superadmin-menu-btn">Calificaciones</button>
           <button onClick={() => handleMostrarSeccion("comentarios")} className="superadmin-menu-btn">Comentarios</button> */}
 
@@ -67,6 +69,9 @@ const DashboardSuperAdmin = () => {
           {mostrarSeccion === "usuarios" && <Usuarios />}
           {mostrarSeccion === "categorias" && <Categorias />}
           {mostrarSeccion === "lugares" && <Lugares />}
+          {mostrarSeccion === "reservas" && <Reservas />}
+          {mostrarSeccion === "eventos" && <Eventos />}
+
         </main>
       </div>
     </div>
