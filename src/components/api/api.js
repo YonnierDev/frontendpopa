@@ -18,3 +18,13 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
+// Interceptor para añadir el token a todas las peticiones
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});

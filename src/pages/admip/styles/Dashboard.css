@@ -50,6 +50,7 @@
     flex-direction: column;
     align-items: center;
     box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 80px;
 }
 
 /* Botones del menú lateral */
@@ -72,27 +73,25 @@
 
 /* Contenedor del botón de Cerrar Sesión en la barra lateral */
 .logout-container {
-    margin-top: auto; /* Envía el botón al fondo */
+    margin-top: 100px; /* Envía el botón al fondo */
     width: 100%;
     padding: 10px;
     display: flex;
     justify-content: center;
-    margin-bottom: 20px; /* Margen inferior para separarlo del borde de la pantalla */
 }
 
 /* Botón de Cerrar Sesión en la barra lateral */
 .logout-btn {
-    background-color: #ff4444; /* Rojo más brillante para mayor contraste */
+    background-color: rgb(68, 66, 66);
     color: white;
     border: none;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 10px 15px;
+    font-size: 16px;
     cursor: pointer;
     text-align: center;
-    width: 90%;
+    width: 100%;
     text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold; /* Texto en negrita para mayor visibilidad */
+    text-align: center;
 }
 
 .logout-btn:hover {
@@ -115,5 +114,5 @@
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-    color: white;
+    color: rgb(7, 7, 7);
 }

@@ -4,7 +4,6 @@ import "../admip/styles/Categorias.css";
 
 const Categorias = () => {
   const [categorias, setCategorias] = useState([]);
-  const [nuevaCategoria, setNuevaCategoria] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [editarId, setEditarId] = useState(null);
   const [nombreEditado, setNombreEditado] = useState("");
@@ -22,20 +21,6 @@ const Categorias = () => {
     }
   };
 
-  const crearCategoria = async () => {
-    if (!nuevaCategoria.trim()) return;
-    try {
-      await axios.post("https://popnocturna.vercel.app/api/categoria", {
-        tipo: nuevaCategoria,
-        estado: true,
-      });
-      setNuevaCategoria("");
-      obtenerCategorias();
-    } catch (error) {
-      console.error("Error al crear categoría:", error);
-    }
-  };
-
   const editarCategoria = async (id) => {
     if (!nombreEditado.trim()) return; // Asegura que no se edite con nombre vacío
     try {
@@ -46,15 +31,6 @@ const Categorias = () => {
       obtenerCategorias();
     } catch (error) {
       console.error("Error al editar categoría:", error);
-    }
-  };
-
-  const eliminarCategoria = async (id) => {
-    try {
-      await axios.delete(`https://popnocturna.vercel.app/api/categoria/${id}`);
-      obtenerCategorias();
-    } catch (error) {
-      console.error("Error al eliminar categoría:", error);
     }
   };
 
@@ -75,19 +51,18 @@ const Categorias = () => {
 
   return (
     <div className="categorias-box">
-      <h2>Categorías</h2>
-
-      <div className="buscador-centrado">
-        <input
-          className="buscador-categorias"
-          type="text"
-          placeholder="Buscar categoría..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
-      </div>
-
       <div className="card-categorias">
+        <h2>Categorías</h2>
+        <div className="buscador-centrado">
+          <input
+            className="buscador-categorias"
+            type="text"
+            placeholder="Buscar categoría..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </div>
+
         <table className="tabla-categorias">
           <thead>
             <tr>
@@ -123,7 +98,7 @@ const Categorias = () => {
                       Editar
                     </button>
                   )}
-                  <button className="boton-accion" onClick={() => eliminarCategoria(cat.id)}>Eliminar</button>
+                  {/* Botón eliminar eliminado */}
                 </td>
                 <td>
                   <label className="switch">
@@ -139,19 +114,6 @@ const Categorias = () => {
             ))}
           </tbody>
         </table>
-      </div>
-
-      <div className="card-formulario">
-        <h3>Agregar Nueva Categoría</h3>
-        <div className="formulario-categorias">
-          <input
-            type="text"
-            placeholder="Nueva categoría"
-            value={nuevaCategoria}
-            onChange={(e) => setNuevaCategoria(e.target.value)}
-          />
-          <button onClick={crearCategoria}>Crear</button>
-        </div>
       </div>
     </div>
   );

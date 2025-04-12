@@ -21,21 +21,6 @@ const Reservas = () => {
     }
   };
 
-  const handleEliminar = async (id) => {
-    if (!window.confirm("¿Seguro que quieres eliminar esta reserva?")) return;
-
-    try {
-      await axios.delete(`https://popnocturna.vercel.app/api/reserva/${id}`);
-      setReservas(reservas.filter(reserva => reserva.id !== id));
-      setMensaje("Reserva eliminada exitosamente");
-      setTimeout(() => setMensaje(""), 3000);
-    } catch (error) {
-      console.error("Error al eliminar reserva", error);
-      setMensaje("No se pudo eliminar la reserva");
-      setTimeout(() => setMensaje(""), 3000);
-    }
-  };
-
   const handleEditar = (reserva) => {
     setReservaSeleccionada({ ...reserva });
   };
@@ -78,19 +63,19 @@ const Reservas = () => {
 
   return (
     <div className="reservas-box">
-      <h2>Reservas</h2>
-
-      <input
-        type="text"
-        placeholder="Buscar reserva..."
-        value={busqueda}
-        onChange={handleBusqueda}
-        className="buscador-reservas"
-      />
-
-      {mensaje && <p className="mensaje-exito">{mensaje}</p>}
-
       <div className="card-reservas">
+        <h2>Reservas</h2>
+
+        <input
+          type="text"
+          placeholder="Buscar reserva..."
+          value={busqueda}
+          onChange={handleBusqueda}
+          className="buscador-reservas"
+        />
+
+        {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+
         {reservas.length === 0 ? (
           <p className="loading-text">Cargando...</p>
         ) : (
@@ -114,7 +99,6 @@ const Reservas = () => {
                   <td>{reserva.aprobacion}</td>
                   <td className="acciones">
                     <button className="editar" onClick={() => handleEditar(reserva)}>Editar</button>
-                    <button className="eliminar" onClick={() => handleEliminar(reserva.id)}>Eliminar</button>
                   </td>
                   <td>
                     <label className="switch">

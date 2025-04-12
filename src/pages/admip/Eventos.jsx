@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../admip/styles/Eventos.css";
 
-
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -121,23 +120,7 @@ const Eventos = () => {
   const cerrarModal = () => {
     setEventoSeleccionado(null);
   };
-
-  const eliminarEvento = async (id) => {
-    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar este evento?");
-    if (!confirmacion) return;
-
-    try {
-      await axios.delete(`https://popnocturna.vercel.app/api/evento/${id}`);
-      setEventos(eventos.filter((evento) => evento.id !== id));
-      setMensaje("Evento eliminado correctamente");
-      setTimeout(() => setMensaje(""), 3000);
-    } catch (error) {
-      console.error("Error al eliminar el evento", error);
-      setMensaje("Error al eliminar el evento");
-      setTimeout(() => setMensaje(""), 3000);
-    }
-  };
-
+  
   const cambiarEstadoEvento = async (id, estadoActual) => {
     try {
       const nuevoEstado = !estadoActual;
@@ -161,6 +144,9 @@ const Eventos = () => {
 
   return (
     <div className="eventos-contenedor">
+      {/* Título agregado aquí */}
+      <h2>Eventos</h2>
+
       <div className="formulario-container">
         <h3>{modoEdicion ? "Editar Evento" : "Crea un Evento"}</h3>
         <form onSubmit={handleCrearEvento}>
@@ -178,6 +164,8 @@ const Eventos = () => {
 
       <div className="tabla-container">
         {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+
+        <h3>Lista de Eventos</h3> {/* Título añadido dentro de la tabla */}
 
         <table className="eventos-tabla">
           <thead>
@@ -204,7 +192,6 @@ const Eventos = () => {
                   <td className="acciones">
                     <button className="detalles" onClick={() => mostrarDetalles(evento)}>Detalles</button>
                     <button className="editar" onClick={() => iniciarEdicion(evento)}>Editar</button>
-                    <button className="eliminar" onClick={() => eliminarEvento(evento.id)}>Eliminar</button>
                   </td>
                   <td>
                     <label className="switch">

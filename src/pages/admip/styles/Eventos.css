@@ -20,6 +20,17 @@
     position: relative;
 }
 
+/* Título del formulario */
+.formulario-container h2 {
+    background-color: black;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    text-align: center;
+}
+
 /* Botón del formulario */
 .formulario-container button {
     background-color: yellow;
@@ -82,46 +93,45 @@
     color: black;
     background-color: #ffffff;
 }
-.acciones{
- /* Botones de la tabla */
- .acciones button {
+
+/* Botones de la tabla */
+.acciones button {
     margin: 3px;
     padding: 6px 10px;
     border: none;
     cursor: pointer;
     font-weight: bold;
     border-radius: 5px;
- }
+}
 
- /* Botón Detalles */
- .detalles {
+/* Botón Detalles */
+.detalles {
     background-color: yellow;
     color: black;
- }
+}
 
- .detalles:hover {
+.detalles:hover {
     background-color: #e6c200;
- }
+}
 
- /* Botón Editar */
- .editar {
+/* Botón Editar */
+.editar {
     background-color: yellow;
     color: black;
- }
+}
 
- .editar:hover {
+.editar:hover {
     background-color: #e6c200;
- }
+}
 
- /* Botón Eliminar */
- .eliminar {
+/* Botón Eliminar */
+.eliminar {
     background-color: yellow;
     color: black;
- }
+}
 
- .eliminar:hover {
+.eliminar:hover {
     background-color: #f73030;
- }
 }
 
 /* --- SWITCH ACTIVAR/INACTIVAR --- */
@@ -182,9 +192,9 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     z-index: 999;
-  }
-  
-  .modal-contenido {
+}
+
+.modal-contenido {
     background-color: white;
     padding: 30px;
     border-radius: 10px;
@@ -194,20 +204,25 @@ input:checked + .slider:before {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
     max-height: 90vh;
-  }
-  
-  .modal-contenido h3,
-  .modal-contenido h5,
-  .modal-contenido p,
-  .modal-contenido li {
+}
+
+/* Título de la tabla */
+.tabla-container h3 {
+    color: black; /* Título en color negro */
+    font-weight: bold;
+}
+
+.modal-contenido h5,
+.modal-contenido p,
+.modal-contenido li {
     color: black;
-  }
-  
-  .modal-contenido ul {
+}
+
+.modal-contenido ul {
     padding-left: 20px;
-  }
-  
-  .cerrar-modal {
+}
+
+.cerrar-modal {
     margin-top: 20px;
     background-color: rgb(255, 255, 4);
     color: black;
@@ -216,13 +231,13 @@ input:checked + .slider:before {
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .cerrar-modal:hover {
+}
+
+.cerrar-modal:hover {
     background-color: #e6c200;
-  }
-  
-  .cerrar-modal {
+}
+
+.cerrar-modal {
     margin-top: 20px;
     background-color: yellow !important;
     color: black !important;
@@ -231,9 +246,8 @@ input:checked + .slider:before {
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .cerrar-modal:hover {
+}
+
+.cerrar-modal:hover {
     background-color: #e6c200 !important;
-  }
-  
+}

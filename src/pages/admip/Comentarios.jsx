@@ -55,22 +55,21 @@ const Comentarios = () => {
   };
 
   const comentariosFiltrados = comentarios.filter(c =>
-    c.usuarioid?.toString().includes(busqueda)
+    c.nombre?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
     <div className="comentarios-box">
-      <h2>Comentarios</h2>
-
-      <input
-        type="text"
-        placeholder="Buscar por ID de usuario..."
-        value={busqueda}
-        onChange={handleBusqueda}
-        className="buscador-comentarios"
-      />
-
       <div className="card-comentarios">
+        <h2>Comentarios</h2>
+        <input
+          type="text"
+          placeholder="Buscar por nombre de usuario..."
+          value={busqueda}
+          onChange={handleBusqueda}
+          className="buscador-comentarios"
+        />
+
         <table className="comentarios-tabla">
           <thead>
             <tr>
@@ -89,7 +88,7 @@ const Comentarios = () => {
             ) : (
               comentariosFiltrados.map((c) => (
                 <tr key={c.id} className="comentario-item">
-                  <td>{c.usuarioid}</td>
+                  <td>{c.nombre}</td>
                   <td>{c.contenido}</td>
                   <td>{new Date(c.fecha_hora).toLocaleString()}</td>
                   <td>

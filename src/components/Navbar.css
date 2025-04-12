@@ -13,10 +13,9 @@ body {
 
 /* Navbar estilizado */
 .navbar {
-    background-color: #000;
-    padding: 0.8rem 2rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
+    background-color: #333;
+    padding: 15px 0;
     position: fixed;
     top: 0;
     left: 0;
@@ -25,90 +24,23 @@ body {
 
 .nav-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    max-width: 12000px;
+    width: 90%;
+    max-width: 1200px;
     margin: 0 auto;
-    width: 100%;
-    position: relative;
-}
-
-.nav-left {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
 }
 
 .logo {
     color: white;
-    margin: 0;
-    font-size: 1.4rem;
+    font-size: 24px;
     font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
 }
 
-.nav-right {
+.nav-links {
+    list-style: none;
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 15px;
-    position: absolute;
-    right: 0;
-}
-
-/* Estilos para la información del usuario */
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.user-icon {
-    font-size: 18px;
-    color: white;
-}
-
-.user-name {
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.logout-btn-small {
-    background-color: #ffcc00;
-    color: black;
-    border: none;
-    padding: 0.3rem 0.6rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    font-size: 0.8rem;
-}
-
-.logout-btn-small:hover {
-    background-color: #e6b800;
-}
-
-.logout-btn {
-    background-color: #ffcc00;
-    color: black;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    font-size: 0.9rem;
-}
-
-.logout-btn:hover {
-    background-color: #e6b800;
+    gap: 20px;
 }
 
 .nav-links li {
@@ -119,7 +51,7 @@ body {
     text-decoration: none;
     color: white;
     font-size: 18px;
-    padding:15px;
+    padding: 10px;
     transition: 0.3s;
 }
 
@@ -130,24 +62,13 @@ body {
 
 /* Contenedor principal centrado */
 .main-container {
+    margin-top: 80px;
+    /* Para evitar que el navbar lo tape */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 0 20px; /* opcional, para espacio lateral */
-    box-sizing: border-box;
-  }
-  
-
-/* Ajustes responsivos */
-@media (max-width: 768px) {
-    .nav-container {
-        grid-template-columns: 1fr auto 1fr;
-    }
-    
-    .logo {
-        font-size: 1.2rem;
-    }
-    
-    .logout-btn {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.8rem;
-    }
+    height: 100vh;
 }  

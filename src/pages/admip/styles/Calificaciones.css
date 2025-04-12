@@ -1,5 +1,5 @@
 .calificaciones-box {
-  width: 90%;
+  width: 120%;
   margin: auto;
   padding: 20px;
   background: #ffffff;
@@ -47,7 +47,7 @@
   justify-content: center;
 }
 
-.detalles, .editar, .eliminar {
+.detalles, .editar{
   padding: 8px 12px;
   border: none;
   cursor: pointer;
@@ -72,15 +72,6 @@
 
 .editar:hover {
   background: #138496;
-}
-
-.eliminar {
-  background: #dc3545;
-  color: white;
-}
-
-.eliminar:hover {
-  background: #c82333;
 }
 
 .switch {

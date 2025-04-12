@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 // Importa todos los componentes
@@ -16,14 +16,13 @@ import "../admip/styles/Dashboard.css";
 const Dashboard = () => {
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
   const [correoAdmin, setCorreoAdmin] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     setMostrarSeccion("bienvenida");
 
-    const fetchCategoria = async () => {
+    const fetchUsuarios = async () => {
       try {
-        const response = await axios.get("https://popnocturna.vercel.app/api/categorias");
+        const response = await axios.get("https://popnocturna.vercel.app/api/usuarios");
         setCorreoAdmin(response.data.correo || "Admin no encontrado");
       } catch (error) {
         console.error("Error al obtener el administrador:", error);
@@ -31,17 +30,11 @@ const Dashboard = () => {
       }
     };
 
-    fetchCategoria();
+    fetchUsuarios();
   }, []);
 
   const handleMostrarSeccion = (seccion) => {
     setMostrarSeccion(seccion);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    navigate('/login');
   };
 
   return (
@@ -51,7 +44,7 @@ const Dashboard = () => {
         <img src={logo} alt="Photobella Logo" className="logo-img" />
         <span className="admin-email">{correoAdmin}</span>
       </nav>
-      
+
       <div className="dashboard-container">
         {/* Barra Lateral */}
         <div className="sidebar">
@@ -64,7 +57,7 @@ const Dashboard = () => {
           <button className="menu-btn" onClick={() => handleMostrarSeccion("calificaciones")}>Calificaciones</button>
 
           <div className="logout-container">
-            <button className="logout-btn" onClick={handleLogout}>Cerrar Sesión</button>
+            <Link to="/logout" className="logout-btn">Cerrar Sesión</Link>
           </div>
         </div>
 

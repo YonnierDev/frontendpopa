@@ -32,7 +32,7 @@
 .categorias-box {
   padding: 20px;
   font-family: Arial, sans-serif;
-  margin-top: 250px;
+  margin-top: 80px;
 }
 
 .card-categorias,
@@ -41,8 +41,12 @@
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  margin-top: 20px;
+  margin-top: 0;
   position: relative;
+  width: 200%; /* Ajusta el valor según lo que necesites */
+  max-width: 700px; /* Límite máximo para el ancho */
+  margin-left: 100px;
+  margin-right: 300px;
 }
 
 .card-formulario h3 {

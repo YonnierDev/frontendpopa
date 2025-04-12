@@ -22,17 +22,10 @@ body {
 /* --- Logo a la izquierda --- */
 .logo-container {
     text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    width: 100%;
 }
 
 .logo-container img {
-    width: 300px;
-    height: auto;
-    object-fit: contain;
+    width: 150px;
 }
 
 /* --- Título (centrado) --- */
@@ -49,7 +42,7 @@ body {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 5px 5px 15px rgba(15, 15, 15, 0.3);
-    width: 600px;
+    width: 350px;
     text-align: left;
     position: relative;
 }
@@ -132,10 +125,8 @@ body {
 
 /* --- Logo grande --- */
 .logo-img {
-    width: 350px;
-    height: auto;
-    object-fit: contain;
-    margin: 20px 0;
+    width: 400px;
+    height: 400px;
 }
 
 /* --- Iconos de redes sociales --- */
@@ -187,19 +178,10 @@ body {
     .auth-container {
         flex-direction: column;
         text-align: center;
-        padding: 20px;
     }
 
     .auth-box {
-        width: 550px;
-    }
-
-    .logo-container img {
-        width: 200px;
-    }
-
-    .logo-img {
-        width: 250px;
+        width: 90%;
     }
 }
 

@@ -84,6 +84,12 @@ const Reservas = () => {
     <>
       <Sidebar />
       <div className="app-container">
+        <div className="header">
+          <button className="cerrar-sesion" onClick={() => navigate('/login')}>
+            Cerrar sesión
+          </button>
+        </div>
+
         <div className="main-content">
           <h2>Reservas de Popayán Nocturna</h2>
 

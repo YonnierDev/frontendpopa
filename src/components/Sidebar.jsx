@@ -8,61 +8,53 @@ const Sidebar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    navigate('/login');
-  };
-
   return (
     <div className="sidebar">
+      <div className="sidebar-header">
+        <h3>Popayán Nocturna</h3>
+      </div>
       <div className="sidebar-menu">
         <button 
-          className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/dashboard')}
+          className={`sidebar-button ${isActive('/dashboard') ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard')}
         >
-          <span className="emoji">🏠</span> Panel
+          <span className="emoji">🏠</span> Dashboard
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/categorias') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/categorias')}
+          className={`sidebar-button ${isActive('/categorias') ? 'active' : ''}`}
+          onClick={() => navigate('/categorias')}
         >
           <span className="emoji">📝</span> Categorías
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/lugares') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/lugares')}
+          className={`sidebar-button ${isActive('/lugares') ? 'active' : ''}`}
+          onClick={() => navigate('/lugares')}
         >
           <span className="emoji">📍</span> Lugares
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/eventos')}
-        >
-          <span className="emoji">🎉</span> Eventos
-        </button>
-        <button 
-          className={`sidebar-button ${isActive('/propietario/reservas') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/reservas')}
-        >
-          <span className="emoji">📅</span> Reservas
-        </button>
-        <button 
-          className={`sidebar-button ${isActive('/propietario/comentarios') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/comentarios')}
+          className={`sidebar-button ${isActive('/comentarios') ? 'active' : ''}`}
+          onClick={() => navigate('/comentarios')}
         >
           <span className="emoji">💬</span> Comentarios
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/calificaciones')}
+          className={`sidebar-button ${isActive('/calificaciones') ? 'active' : ''}`}
+          onClick={() => navigate('/calificaciones')}
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>
-      </div>
-      <div className="logout-container">
-        <button className="logout-btn" onClick={handleLogout}>
-          Cerrar Sesión
+        <button 
+          className={`sidebar-button ${isActive('/eventos') ? 'active' : ''}`}
+          onClick={() => navigate('/eventos')}
+        >
+          <span className="emoji">🎉</span> Eventos
+        </button>
+        <button 
+          className={`sidebar-button ${isActive('/reservas') ? 'active' : ''}`}
+          onClick={() => navigate('/reservas')}
+        >
+          <span className="emoji">📅</span> Reservas
         </button>
       </div>
     </div>

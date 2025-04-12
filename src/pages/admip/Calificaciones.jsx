@@ -23,21 +23,6 @@ const Calificaciones = () => {
     }
   };
 
-  const handleEliminar = async (id) => {
-    if (!window.confirm("¿Seguro que quieres eliminar esta calificación?")) return;
-
-    try {
-      await axios.delete(`https://popnocturna.vercel.app/api/calificacion/${id}`);
-      setCalificaciones(prev => prev.filter(c => c.id !== id));
-      setMensaje("Calificación eliminada exitosamente");
-      setTimeout(() => setMensaje(""), 3000);
-    } catch (error) {
-      console.error("Error al eliminar calificación:", error);
-      setMensaje("No se pudo eliminar la calificación");
-      setTimeout(() => setMensaje(""), 3000);
-    }
-  };
-
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
 
@@ -106,7 +91,6 @@ const Calificaciones = () => {
                 <td className="acciones">
                   <button className="detalles" onClick={() => handleDetalles(c)}>Detalles</button>
                   <button className="editar">Editar</button>
-                  <button className="eliminar" onClick={() => handleEliminar(c.id)}>Eliminar</button>
                 </td>
                 <td>
                   <label className="switch">
