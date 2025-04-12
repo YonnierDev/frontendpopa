@@ -9,6 +9,9 @@ import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+// Admin (rol 1)
+import DashboardSuperAdmin from "./pages/superadmin/DashboardSuperAdmin";
+
 // Admin (rol 2)
 import DashboardAdmin from "./pages/admip/Dashboard";
 
@@ -20,6 +23,8 @@ import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
+import { AlertContainer } from "./components/alert/AlertManager";
+
 
 // Navbar dinámico (solo en rutas privadas)
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
@@ -76,7 +81,7 @@ function App() {
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
           >
             {/* Aquí puedes agregar rutas del SuperAdmin cuando estén listas */}
-            {/* <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} /> */}
+            <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} />
           </Route>
 
           {/* Rutas Administrador - rol 2 */}
@@ -103,6 +108,7 @@ function App() {
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
+      <AlertContainer />
     </Router>
   );
 }
