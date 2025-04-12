@@ -20,6 +20,9 @@ import CalificacionesAdmip from "./pages/admip/Calificaciones";
 import CategoriasAdmip from "./pages/admip/Categorias";
 import UsuariosAdmip from "./pages/admip/Usuarios";
 
+// SuperAdmin
+import DashboardSuperAdmin from "./pages/superadmin/DashboardSuperAdmin";
+
 // Propietario
 import DashboardProp from "./pages/propietario/DashboardPropietario";
 import ComentariosProp from "./pages/propietario/Comentarios";
@@ -28,6 +31,9 @@ import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
+
+import { AlertContainer } from "./components/alert/AlertManager";
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -75,6 +81,11 @@ function App() {
             <Route path="/admip/usuarios" element={<UsuariosAdmip />} />
           </Route>
 
+          {/* Rutas protegidas - SUPERADMIN (rol: 1) */}
+          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}>
+            <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} />
+          </Route>
+
           {/* Rutas protegidas - PROPIETARIO (rol: 2) */}
           <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}>
             <Route path="/propietario/dashboard" element={<DashboardProp />} />
@@ -90,6 +101,7 @@ function App() {
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
+      <AlertContainer />
     </Router>
   );
 }
