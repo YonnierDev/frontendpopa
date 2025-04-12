@@ -70,7 +70,7 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           {/* Rutas protegidas - ADMIN (rol: 1) */}
-          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}>
+          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}>
             <Route path="/admip/dashboard" element={<DashboardAdmip />} />
             <Route path="/admip/comentarios" element={<ComentariosAdmip />} />
             <Route path="/admip/lugares" element={<LugaresAdmip />} />
@@ -87,7 +87,7 @@ function App() {
           </Route>
 
           {/* Rutas protegidas - PROPIETARIO (rol: 2) */}
-          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}>
+          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} />}>
             <Route path="/propietario/dashboard" element={<DashboardProp />} />
             <Route path="/propietario/comentarios" element={<ComentariosProp />} />
             <Route path="/propietario/lugares" element={<LugaresProp />} />
