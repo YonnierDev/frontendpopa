@@ -1,13 +1,37 @@
-.validar-container {
+
+.auth-container {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 40px;
     width: 100%;
-    padding: 100px;
+    max-width: 4200px;
+    padding: 180px;
+  }
+
+  .auth-container-register{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 4200px;
+    padding: 50px;
   }
   
-  .validar-box {
+  .logo-container {
+    text-align: center;
+  }
+  
+  .logo-img {
+ 
+  }
+  
+  .logo-img.large {
+    
+  }
+  
+  .auth-box {
     background-color: #ffffff;
     padding: 30px;
     border-radius: 15px;
@@ -17,14 +41,14 @@
     text-align: center;
   }
   
-  .validar-box h2 {
+  .auth-box h2 {
     margin-bottom: 20px;
     font-size: 22px;
     font-weight: bold;
     color: #333;
   }
   
-  .validar-box input {
+  .auth-box input, .auth-box select {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
@@ -35,7 +59,7 @@
     font-size: 16px;
   }
   
-  .validar-box button {
+  .auth-box button {
     width: 100%;
     padding: 12px;
     border: none;
@@ -46,8 +70,7 @@
     cursor: pointer;
   }
   
-  .validar-box button:hover {
+  .auth-box button:hover {
     background-color: #be9608;
     color: #ffffff;
   }
-  

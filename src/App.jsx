@@ -1,29 +1,38 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Navbar from "./components/navbar/Navbar";
-import Header from "./components/header/Header";
-import Footer from "./components/footer/Footer";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import UserListPage from "./pages/UserListPage";
-import LugarListPage from "./pages/lugar/LugarListPage";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
-import { AlertContainer } from "./components/AlertManager"; 
-import ValidarCorreo from "./pages/ValidarCorreo";
+import Header from "./components/header/Header";
+import Navbar from "./components/navbar/Navbar";
+import Footer from "./components/footer/Footer";
+import PrivateRoute from "./routes/PrivateRoute";
+import Login from "./pages/autenticacion/login/Login";
+import Register from "./pages/autenticacion/registro/Register";
+import { AlertContainer } from "./components/alert/AlertManager";
+import RolesListPage from "./pages/superadmin/roles/RolesListPage";
+import UsuariosListPage from "./pages/superadmin/usuarios/UsuariosListPage";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import CategoriasListPage from "./pages/superadmin/categorias/CategoriasListPage";
+import LugaresListPage from "./pages/superadmin/lugares/LugarListPage";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
 
-  useEffect(() => {
+  const checkAuth = () => {
     const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-    if (token) {
-      const storedUser = localStorage.getItem("username") || "Usuario";
-      setUsername(storedUser);
+    if (token && usuario) {
+      setIsAuthenticated(true);
+      setUsername(usuario.nombre || "Usuario");
+    } else {
+      setIsAuthenticated(false);
     }
+  };
+
+  useEffect(() => {
+    checkAuth();
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   return (
@@ -38,14 +47,20 @@ const App = () => {
             </div>
           )}
 
-          <div className={`col ${isAuthenticated ? "col-md-19" : "col-12"} p-4`}>
+          <div className={`col ${isAuthenticated ? "col-md-10" : "col-12"} p-4`}>
             <Routes>
               <Route path="/" element={<Navigate to="/login" />} />
               <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-              <Route path="/registrar" element={<Register />} />
-              <Route path="/validar/correo" element={<ValidarCorreo />} />
-              <Route path="/usuarios" element={isAuthenticated ? <UserListPage /> : <Navigate to="/login" />} />
-			        <Route path="/lugares" element={isAuthenticated ? <LugarListPage /> : <Navigate to="/login" />} />
+              <Route path="/register" element={<Register />} />
+
+              
+             
+                <Route path="usuarios" element={<UsuariosListPage />} />
+                <Route path="roles" element={<RolesListPage />} />
+                <Route path="categorias" element={<CategoriasListPage />} />
+                <Route path="lugares" element={<LugaresListPage />} />
+                {/* Podés ir agregando más páginas acá (lugares, eventos, etc.) */}
+             
             </Routes>
           </div>
         </div>

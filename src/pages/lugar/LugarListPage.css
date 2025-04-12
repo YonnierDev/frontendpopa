@@ -1,26 +1,32 @@
-.btn-sm {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  width: 110px;
+.user-list-container {
+    text-align: center;
+    margin-top: 100px;
+    /* Baja la tabla */
+}
+ 
+.user-table {
+    width: 80%;
+    margin: 10px auto;
+    /* Centra la tabla */
+    border-collapse: collapse;
 }
 
-.btn-sm svg {
-  font-size: 16px;
+.user-table th,
+.user-table td {
+    border: 1px solid #fbfbfb;
+    padding: 3px;
+    text-align: left;
 }
 
-.badge {
-  font-size: 14px;
-  padding: 6px 12px;
+.user-table th {
+    background-color: #191a1a;
+    color: white;
 }
 
-.table th,
-.table td {
-  text-align: center;
-  vertical-align: middle;
+.user-table tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
 
-.d-flex.justify-content-center {
-  gap: 5px;
+.color1 {
+    background-color: antiquewhite;
 }
