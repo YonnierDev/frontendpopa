@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import './RolesListPage.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,6 +8,12 @@ import {
   updateRol,
   deleteRol,
 } from '../../../store/roles/rolesSlice';
+=======
+import './RolesListPage.css';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRoles, createRol, updateRol, deleteRol,} from '../../../store/roles/rolesSlice';
+>>>>>>> 8fda002cfaa423a7321cd849ed4abd72503f85ca
 
 const RolesListPage = () => {
   const dispatch = useDispatch();

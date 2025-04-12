@@ -1,5 +1,5 @@
+import { api } from "../../components/api/api";
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from "../../components/api/api";  
 
 export const fetchRoles = createAsyncThunk('roles/fetchRoles', async () => {
   const res = await api.get('/roles');

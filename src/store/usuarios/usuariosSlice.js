@@ -1,5 +1,5 @@
+import { api } from "../../components/api/api";
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../../components/api/api';
 
 // Obtener todos los usuarios
 export const fetchUsuarios = createAsyncThunk('usuarios/fetchUsuarios', async (_, { rejectWithValue }) => {

@@ -9,10 +9,17 @@ import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+<<<<<<< HEAD
 // Superadmin
 import DashboardSuperadmin from "./pages/superadmin/DashboardSuperadmin";
 
 // Admin
+=======
+// Admin (rol 1)
+import DashboardSuperAdmin from "./pages/superadmin/DashboardSuperAdmin";
+
+// Admin (rol 2)
+>>>>>>> 8fda002cfaa423a7321cd849ed4abd72503f85ca
 import DashboardAdmin from "./pages/admip/Dashboard";
 
 // Propietario
@@ -23,6 +30,8 @@ import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
+import { AlertContainer } from "./components/alert/AlertManager";
+
 
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const location = useLocation();
@@ -77,7 +86,12 @@ function App() {
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}
           >
+<<<<<<< HEAD
             <Route path="/superadmin/*" element={<DashboardSuperadmin />} />
+=======
+            {/* Aquí puedes agregar rutas del SuperAdmin cuando estén listas */}
+            <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} />
+>>>>>>> 8fda002cfaa423a7321cd849ed4abd72503f85ca
           </Route>
 
           {/* Rutas Administrador */}
@@ -105,6 +119,7 @@ function App() {
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
+      <AlertContainer />
     </Router>
   );
 }
