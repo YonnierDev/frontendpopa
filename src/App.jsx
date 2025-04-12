@@ -50,7 +50,7 @@ function App() {
         const usuario = JSON.parse(storedUsuario);
         setRol(usuario?.rol);
       } catch (err) {
-        console.error("Error al parsear el usuario:", err);
+        console.error("Error al parsear el usuario:", err);       
         setRol(null);
       }
     } else {
