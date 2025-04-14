@@ -17,6 +17,7 @@ import DashboardAdmin from "./pages/admip/Dashboard";
 
 // Propietario
 import DashboardPropietario from "./pages/propietario/DashboardPropietario";
+import LugarDetalle from "./pages/propietario/LugarDetalle";
 import ComentariosProp from "./pages/propietario/Comentarios";
 import LugaresProp from "./pages/propietario/Lugares";
 import EventosProp from "./pages/propietario/Eventos";
@@ -82,22 +83,23 @@ function App() {
             <Route path="/superadmin/dashboard" element={<DashboardSuperAdmin />} />
           </Route>
 
-          {/* Rutas Administrador */}
+          {/* Rutas Administrador - rol 2 */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}
           >
             <Route path="/admin/dashboard" element={<DashboardAdmin />} />
           </Route>
 
-          {/* Rutas Propietario */}
+          {/* Rutas Propietario - rol 3 */}
           <Route
             element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} />}
           >
             <Route path="/propietario/dashboard" element={<DashboardPropietario />} />
-            <Route path="/propietario/comentarios" element={<ComentariosProp />} />
+            <Route path="/propietario/lugar/:id" element={<LugarDetalle />} />
             <Route path="/propietario/lugares" element={<LugaresProp />} />
             <Route path="/propietario/eventos" element={<EventosProp />} />
             <Route path="/propietario/reservas" element={<ReservasProp />} />
+            <Route path="/propietario/comentarios" element={<ComentariosProp />} />
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
           </Route>
