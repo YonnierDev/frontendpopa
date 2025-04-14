@@ -1,7 +1,12 @@
-import './RolesListPage.css';
 import React, { useEffect, useState } from 'react';
+import './RolesListPage.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRoles, createRol, updateRol, deleteRol,} from '../../../store/roles/rolesSlice';
+import {
+  fetchRoles,
+  createRol,
+  updateRol,
+  deleteRol,
+} from '../../../store/roles/rolesSlice';
 
 const RolesListPage = () => {
   const dispatch = useDispatch();
