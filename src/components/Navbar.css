@@ -44,6 +44,7 @@ body {
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
+    margin-left: 150px; /* Agregar margen a la izquierda */
 }
 
 .nav-right {
@@ -119,7 +120,7 @@ body {
     text-decoration: none;
     color: white;
     font-size: 18px;
-    padding:15px;
+    padding: 15px;
     transition: 0.3s;
 }
 
@@ -130,19 +131,10 @@ body {
 
 /* Contenedor principal centrado */
 .main-container {
-<<<<<<< HEAD
-    margin-top: 80px;
-    padding: 20px;
-    width: 100%;
-    min-height: calc(100vh - 80px);
-}
-=======
     width: 100%;
     padding: 0 20px; /* opcional, para espacio lateral */
     box-sizing: border-box;
-  }
-  
->>>>>>> 377ac9f3d51e90c33a004e6506c237d0696773b6
+}
 
 /* Ajustes responsivos */
 @media (max-width: 768px) {
@@ -157,4 +149,4 @@ body {
     .user-name {
         font-size: 12px;
     }
-}  
+}

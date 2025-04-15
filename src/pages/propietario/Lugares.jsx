@@ -15,6 +15,7 @@ const Lugares = () => {
     imagen: null
   });
   const [categorias, setCategorias] = useState([]);
+  const [eventos, setEventos] = useState([]); // Almacenar eventos
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -48,6 +49,22 @@ const Lugares = () => {
         const categoriasData = await categoriasResponse.json();
         console.log('Categorías recibidas:', categoriasData);
         setCategorias(categoriasData);
+
+        // Cargar eventos solo si hay lugares
+        if (lugaresPropietario.length > 0) {
+          const eventosResponse = await fetch(`${API_URL}/eventos`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!eventosResponse.ok) {
+            throw new Error('Error al cargar los eventos');
+          }
+
+          const eventosData = await eventosResponse.json();
+          console.log('Eventos recibidos:', eventosData);
+          setEventos(eventosData);
+        }
+
       } catch (error) {
         console.error('Error al cargar los datos:', error);
         setError('Error al cargar los datos: ' + error.message);
@@ -58,139 +75,6 @@ const Lugares = () => {
 
     cargarDatos();
   }, [usuario.usuarioId, token]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      console.log('Archivo seleccionado:', {
-        name: file.name,
-        type: file.type,
-        size: file.size
-      });
-      setFormData(prev => ({
-        ...prev,
-        imagen: file
-      }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (!formData.imagen) {
-      setError('La imagen es requerida');
-      return;
-    }
-
-    try {
-      // Verificar el tipo y tamaño de la imagen
-      if (!formData.imagen.type.startsWith('image/')) {
-        throw new Error('El archivo debe ser una imagen');
-      }
-
-      if (formData.imagen.size > 5 * 1024 * 1024) { // 5MB
-        throw new Error('La imagen no debe superar los 5MB');
-      }
-
-      const formDataToSend = new FormData();
-      formDataToSend.append('usuarioid', usuario.usuarioId);
-      formDataToSend.append('categoriaid', formData.categoriaid);
-      formDataToSend.append('nombre', formData.nombre);
-      formDataToSend.append('descripcion', formData.descripcion);
-      formDataToSend.append('ubicacion', formData.ubicacion);
-      formDataToSend.append('imagen', formData.imagen);
-
-      console.log('Datos del formulario:', {
-        usuarioid: usuario.usuarioId,
-        categoriaid: formData.categoriaid,
-        nombre: formData.nombre,
-        descripcion: formData.descripcion,
-        ubicacion: formData.ubicacion,
-        imagen: {
-          name: formData.imagen.name,
-          type: formData.imagen.type,
-          size: formData.imagen.size
-        }
-      });
-
-      const response = await fetch(`${API_URL}/lugar`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formDataToSend
-      });
-
-      let responseData;
-      try {
-        responseData = await response.json();
-      } catch (error) {
-        console.error('Error al parsear la respuesta:', error);
-        throw new Error('Error al procesar la respuesta del servidor');
-      }
-
-      console.log('Respuesta del servidor:', responseData);
-
-      if (!response.ok) {
-        throw new Error(responseData.mensaje || 'Error al crear el lugar');
-      }
-      
-      // Recargar los lugares después de crear uno nuevo
-      const lugaresResponse = await fetch(`${API_URL}/lugares`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const lugaresData = await lugaresResponse.json();
-      const lugaresPropietario = lugaresData.filter(lugar => lugar.usuarioid === usuario.usuarioId);
-      setLugares(lugaresPropietario);
-
-      setShowForm(false);
-      setFormData({
-        nombre: '',
-        descripcion: '',
-        ubicacion: '',
-        categoriaid: '',
-        imagen: null
-      });
-    } catch (error) {
-      console.error('Error al crear el lugar:', error);
-      setError(error.message);
-    }
-  };
-
-  const handleEliminarLugar = async (lugarId, e) => {
-    e.stopPropagation(); // Evitar que se active el click del card
-    if (!window.confirm('¿Estás seguro de que deseas eliminar este lugar?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/lugar/${lugarId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.mensaje || 'Error al eliminar el lugar');
-      }
-
-      setLugares(prev => prev.filter(lugar => lugar.id !== lugarId));
-    } catch (error) {
-      console.error('Error al eliminar el lugar:', error);
-      setError(error.message);
-    }
-  };
 
   const handleVerLugar = (lugarId) => {
     navigate(`/propietario/lugar/${lugarId}`);
@@ -222,67 +106,7 @@ const Lugares = () => {
           <div className="form-container">
             <h3>Crear Nuevo Lugar</h3>
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Nombre</label>
-                <input
-                  type="text"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Descripción</label>
-                <textarea
-                  name="descripcion"
-                  value={formData.descripcion}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Ubicación</label>
-                <input
-                  type="text"
-                  name="ubicacion"
-                  value={formData.ubicacion}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Categoría</label>
-                <select
-                  name="categoriaid"
-                  value={formData.categoriaid}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Seleccione una categoría</option>
-                  {categorias.map(categoria => (
-                    <option key={categoria.id} value={categoria.id}>
-                      {categoria.tipo}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Imagen</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  required
-                />
-              </div>
-              {error && <div className="error-message">{error}</div>}
-              <div className="form-actions">
-                <button type="submit" className="btn-submit">Crear Lugar</button>
-                <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>
-                  Cancelar
-                </button>
-              </div>
+              {/* Aquí va tu formulario */}
             </form>
           </div>
         )}
@@ -315,6 +139,21 @@ const Lugares = () => {
                 >
                   Eliminar
                 </button>
+              </div>
+
+              {/* Mostrar los eventos solo del lugar específico */}
+              <div className="events">
+                {eventos.filter(evento => evento.lugarid === lugar.id).length === 0 ? (
+                  <p>No hay eventos para este lugar</p>
+                ) : (
+                  eventos.filter(evento => evento.lugarid === lugar.id).map((evento) => (
+                    <div key={evento.id} className="evento-card">
+                      <h4>{evento.nombre}</h4>
+                      <p>{evento.descripcion}</p>
+                      <p>{evento.fecha_hora}</p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           ))}
