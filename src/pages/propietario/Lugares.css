@@ -24,7 +24,7 @@
 }
 
 .header-section h2 {
-  color: #000;
+  color: #f4f3f3;
   font-size: 2rem;
   margin: 0;
 }
@@ -177,8 +177,8 @@
 }
 
 .item-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .item-image {
@@ -270,4 +270,24 @@
   .items-list {
     grid-template-columns: 1fr;
   }
-} 
+
+  .btn-crear,
+  .btn-submit,
+  .btn-cancel {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .header-section h2 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .item-info h3 {
+    font-size: 1.2rem;
+  }
+  .description {
+    font-size: 0.85rem;
+  }
+}

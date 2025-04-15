@@ -17,6 +17,7 @@ const Lugares = () => {
   const [categorias, setCategorias] = useState([]);
   const [eventos, setEventos] = useState([]); // Almacenar eventos
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -47,7 +48,6 @@ const Lugares = () => {
         }
 
         const categoriasData = await categoriasResponse.json();
-        console.log('Categorías recibidas:', categoriasData);
         setCategorias(categoriasData);
 
         // Cargar eventos solo si hay lugares
@@ -61,12 +61,10 @@ const Lugares = () => {
           }
 
           const eventosData = await eventosResponse.json();
-          console.log('Eventos recibidos:', eventosData);
           setEventos(eventosData);
         }
 
       } catch (error) {
-        console.error('Error al cargar los datos:', error);
         setError('Error al cargar los datos: ' + error.message);
       } finally {
         setLoading(false);
@@ -78,6 +76,60 @@ const Lugares = () => {
 
   const handleVerLugar = (lugarId) => {
     navigate(`/propietario/lugar/${lugarId}`);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(''); // Limpiar errores anteriores
+    setSuccess(''); // Limpiar mensaje de éxito anterior
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('nombre', formData.nombre);
+      formDataToSend.append('descripcion', formData.descripcion);
+      formDataToSend.append('ubicacion', formData.ubicacion);
+      formDataToSend.append('categoriaid', formData.categoriaid);
+      formDataToSend.append('imagen', formData.imagen);
+
+      const response = await fetch(`${API_URL}/lugares`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear el lugar');
+      }
+
+      const data = await response.json();
+      setSuccess('Lugar creado exitosamente');
+      setShowForm(false); // Ocultar el formulario después de crear el lugar
+      setLugares([...lugares, data]); // Agregar el lugar recién creado a la lista
+    } catch (error) {
+      setError('Error al crear el lugar: ' + error.message);
+    }
+  };
+
+  const handleEliminarLugar = async (lugarId, e) => {
+    e.stopPropagation(); // Evita que el evento "click" en el lugar sea disparado
+    try {
+      const response = await fetch(`${API_URL}/lugares/${lugarId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar el lugar');
+      }
+
+      setLugares(lugares.filter(lugar => lugar.id !== lugarId));
+    } catch (error) {
+      setError('Error al eliminar el lugar: ' + error.message);
+    }
   };
 
   if (loading) {
@@ -102,11 +154,76 @@ const Lugares = () => {
           </button>
         </div>
 
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="success-message">
+            {success}
+          </div>
+        )}
+
         {showForm && (
           <div className="form-container">
             <h3>Crear Nuevo Lugar</h3>
             <form onSubmit={handleSubmit}>
-              {/* Aquí va tu formulario */}
+              <div className="form-group">
+                <label htmlFor="nombre">Nombre:</label>
+                <input
+                  type="text"
+                  id="nombre"
+                  value={formData.nombre}
+                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="descripcion">Descripción:</label>
+                <textarea
+                  id="descripcion"
+                  value={formData.descripcion}
+                  onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="ubicacion">Ubicación:</label>
+                <input
+                  type="text"
+                  id="ubicacion"
+                  value={formData.ubicacion}
+                  onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="categoriaid">Categoría:</label>
+                <select
+                  id="categoriaid"
+                  value={formData.categoriaid}
+                  onChange={(e) => setFormData({ ...formData, categoriaid: e.target.value })}
+                  required
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categorias.map(categoria => (
+                    <option key={categoria.id} value={categoria.id}>
+                      {categoria.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="imagen">Imagen:</label>
+                <input
+                  type="file"
+                  id="imagen"
+                  onChange={(e) => setFormData({ ...formData, imagen: e.target.files[0] })}
+                />
+              </div>
+              <button type="submit" className="btn-submit">Crear Lugar</button>
             </form>
           </div>
         )}
@@ -142,19 +259,12 @@ const Lugares = () => {
               </div>
 
               {/* Mostrar los eventos solo del lugar específico */}
-              <div className="events">
-                {eventos.filter(evento => evento.lugarid === lugar.id).length === 0 ? (
-                  <p>No hay eventos para este lugar</p>
-                ) : (
-                  eventos.filter(evento => evento.lugarid === lugar.id).map((evento) => (
-                    <div key={evento.id} className="evento-card">
-                      <h4>{evento.nombre}</h4>
-                      <p>{evento.descripcion}</p>
-                      <p>{evento.fecha_hora}</p>
-                    </div>
-                  ))
-                )}
-              </div>
+              {eventos.filter(evento => evento.lugarid === lugar.id).map(evento => (
+                <div key={evento.id} className="evento-item">
+                  <p>{evento.nombre}</p>
+                  <p>{evento.descripcion}</p>
+                </div>
+              ))}
             </div>
           ))}
         </div>
