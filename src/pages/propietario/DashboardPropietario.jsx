@@ -1,125 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { api } from "../../components/api/api";
-import { useNavigate } from 'react-router-dom';
-import './DashboardPropietario.css';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
+import './DashboardPropietario.css';
+import { useNavigate } from 'react-router-dom'; // ✅ Importado
 
 const DashboardPropietario = () => {
-  const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    totalLugares: 0,
-    eventosActivos: 0,
-    reservasPendientes: 0
-  });
+  const [lugares, setLugares] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const API_URL = 'https://popnocturna.vercel.app/api';
+  const token = localStorage.getItem('token');
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const navigate = useNavigate(); // ✅ Inicializado
 
   useEffect(() => {
-    cargarEstadisticas();
-  }, []);
+    const obtenerLugaresDelPropietario = async () => {
+      try {
+        const response = await fetch(`${API_URL}/lugares`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
-  const cargarEstadisticas = async () => {
-    try {
-      const lugaresResponse = await api.get("/lugares");
-      const totalLugares = lugaresResponse.data.length;
+        if (!response.ok) {
+          throw new Error('No se pudo obtener los lugares');
+        }
 
-      const eventosResponse = await api.get("/eventos");
-      const eventosActivos = eventosResponse.data.filter(evento => evento.estado === true).length;
+        const data = await response.json();
 
-      const reservasResponse = await api.get("/reservas");
-      const reservasPendientes = reservasResponse.data.filter(reserva => reserva.estado === true).length;
+        const lugaresPropietario = data.filter(lugar => lugar.usuarioid === usuario.usuarioId);
+        setLugares(lugaresPropietario);
+      } catch (error) {
+        console.error('Error al obtener los lugares:', error);
+        setError('Error al cargar los lugares: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      setStats({
-        totalLugares,
-        eventosActivos,
-        reservasPendientes
-      });
-    } catch (error) {
-      console.error("Error al cargar estadísticas:", error);
+    if (usuario?.usuarioId) {
+      obtenerLugaresDelPropietario();
     }
-  };
+  }, [usuario?.usuarioId, token]);
+
+  if (loading) {
+    return (
+      <div className="dashboard-container">
+        <Sidebar />
+        <div className="dashboard-content">
+          <div className="loading">Cargando...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
+    <div className="dashboard-container">
       <Sidebar />
-      <div className="dashboard-container">
-        <div className="dashboard-content">
-          <div className="welcome-section">
-            <h2>Bienvenido al Panel Administrativo</h2>
-            <p>Gestiona tu negocio de manera eficiente</p>
+      <div className="dashboard-content">
+        <h2>Bienvenido, {usuario?.nombre || 'Propietario'}</h2>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <div className="dashboard-stats">
+          <div className="stat-card">
+            <h3>🗺️ Lugares Totales</h3>
+            <p>{lugares.length}</p>
           </div>
-
-          <div className="stats">
-            <div className="stat-item">
-              <h4>Total Lugares</h4>
-              <span className="stat-number">{stats.totalLugares}</span>
-            </div>
-            <div className="stat-item">
-              <h4>Eventos Activos</h4>
-              <span className="stat-number">{stats.eventosActivos}</span>
-            </div>
-            <div className="stat-item">
-              <h4>Reservas Pendientes</h4>
-              <span className="stat-number">{stats.reservasPendientes}</span>
-            </div>
+          <div className="stat-card">
+            <h3>⭐ Promedio Calificación</h3>
+            <p>
+              {lugares.length > 0
+                ? (
+                    lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length
+                  ).toFixed(1)
+                : 'N/A'}
+            </p>
           </div>
+          <div className="stat-card">
+            <h3>💬 Total Comentarios</h3>
+            <p>
+              {lugares.reduce((acc, lugar) => acc + (lugar.total_comentarios || 0), 0)}
+            </p>
+          </div>
+        </div>
 
-          <div className="dashboard-grid">
-            <div className="dashboard-card" onClick={() => navigate('/propietario/categorias')}>
-              <div className="card-icon">📝</div>
-              <h3>Categorías</h3>
-              <p>Gestiona las categorías</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
+        <div className="lugares-resumen">
+          <h3>Mis Lugares</h3>
+          <div className="lugares-lista">
+            {lugares.map((lugar) => (
+              <div
+                key={lugar.id}
+                className="lugar-card"
+                onClick={() => navigate(`/propietario/lugar/${lugar.id}`)} // ✅ Navegación agregada
+                style={{ cursor: 'pointer' }} // ✅ Mejora visual para saber que es clickeable
+              >
+                <div className="lugar-info">
+                  <h4>{lugar.nombre}</h4>
+                  <p>📍 {lugar.ubicacion}</p>
+                  <p>{lugar.descripcion}</p>
+                  <p>⭐ {lugar.calificacion_promedio?.toFixed(1) || 'N/A'} | 💬 {lugar.total_comentarios || 0}</p>
+                </div>
+                {lugar.imagen && (
+                  <img src={lugar.imagen} alt={lugar.nombre} className="lugar-imagen" />
+                )}
               </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/propietario/lugares')}>
-              <div className="card-icon">📍</div>
-              <h3>Lugares</h3>
-              <p>Administra los lugares</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/propietario/eventos')}>
-              <div className="card-icon">🎉</div>
-              <h3>Eventos</h3>
-              <p>Gestiona los eventos</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/propietario/reservas')}>
-              <div className="card-icon">📅</div>
-              <h3>Reservas</h3>
-              <p>Administra las reservas</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/propietario/comentarios')}>
-              <div className="card-icon">💬</div>
-              <h3>Comentarios</h3>
-              <p>Gestiona los comentarios</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/propietario/calificaciones')}>
-              <div className="card-icon">⭐</div>
-              <h3>Calificaciones</h3>
-              <p>Revisa las calificaciones</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

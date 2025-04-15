@@ -44,6 +44,7 @@ body {
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
+    margin-left: 150px; /* Agregar margen a la izquierda */
 }
 
 .nav-right {
@@ -119,7 +120,7 @@ body {
     text-decoration: none;
     color: white;
     font-size: 18px;
-    padding:15px;
+    padding: 10px;
     transition: 0.3s;
 }
 
@@ -130,11 +131,15 @@ body {
 
 /* Contenedor principal centrado */
 .main-container {
-<<<<<<< HEAD
     margin-top: 80px;
-    padding: 20px;
+    /* Para evitar que el navbar lo tape */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    min-height: calc(100vh - 80px);
+    height: 100vh;
 }
 =======
     width: 100%;
@@ -157,4 +162,4 @@ body {
     .user-name {
         font-size: 12px;
     }
-}  
+}

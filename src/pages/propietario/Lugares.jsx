@@ -1,198 +1,275 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "../../components/api/api";
 import { useNavigate } from 'react-router-dom';
-import './Lugares.css';
 import Sidebar from '../../components/Sidebar';
+import './Lugares.css';
 
 const Lugares = () => {
   const [lugares, setLugares] = useState([]);
-  const [nuevoLugar, setNuevoLugar] = useState({
-    categoriaid: '',
-    usuarioid: '',
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
     ubicacion: '',
-    estado: true
+    categoriaid: '',
+    imagen: null
   });
-  const [lugarEditar, setLugarEditar] = useState(null);
-  const [mensaje, setMensaje] = useState('');
+  const [categorias, setCategorias] = useState([]);
+  const [eventos, setEventos] = useState([]); // Almacenar eventos
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const API_URL = 'https://popnocturna.vercel.app/api';
 
   useEffect(() => {
-    cargarLugares();
-  }, []);
+    const cargarDatos = async () => {
+      try {
+        // Cargar lugares del propietario
+        const lugaresResponse = await fetch(`${API_URL}/lugares`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const lugaresData = await lugaresResponse.json();
+        // Filtrar lugares del propietario actual
+        const lugaresPropietario = lugaresData.filter(lugar => lugar.usuarioid === usuario.usuarioId);
+        setLugares(lugaresPropietario);
 
-  const cargarLugares = async () => {
-    try {
-      const response = await api.get("/lugares");
-      setLugares(response.data);
-    } catch (error) {
-      console.error("Error al cargar los lugares:", error.response || error);
-      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.mensaje || error.message));
-    }
+        // Cargar categorías
+        const categoriasResponse = await fetch(`${API_URL}/categorias`, {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!categoriasResponse.ok) {
+          throw new Error('Error al cargar las categorías');
+        }
+
+        const categoriasData = await categoriasResponse.json();
+        setCategorias(categoriasData);
+
+        // Cargar eventos solo si hay lugares
+        if (lugaresPropietario.length > 0) {
+          const eventosResponse = await fetch(`${API_URL}/eventos`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!eventosResponse.ok) {
+            throw new Error('Error al cargar los eventos');
+          }
+
+          const eventosData = await eventosResponse.json();
+          setEventos(eventosData);
+        }
+
+      } catch (error) {
+        setError('Error al cargar los datos: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarDatos();
+  }, [usuario.usuarioId, token]);
+
+  const handleVerLugar = (lugarId) => {
+    navigate(`/propietario/lugar/${lugarId}`);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const datos = {
-      usuarioid: parseInt(nuevoLugar.usuarioid),
-      categoriaid: parseInt(nuevoLugar.categoriaid),
-      nombre: nuevoLugar.nombre.trim(),
-      descripcion: nuevoLugar.descripcion.trim(),
-      ubicacion: nuevoLugar.ubicacion.trim(),
-      estado: true
-    };
-
-    if (!datos.usuarioid || !datos.categoriaid || !datos.nombre || !datos.descripcion || !datos.ubicacion) {
-      setMensaje("Por favor completa todos los campos correctamente.");
-      return;
-    }
+    setError(''); // Limpiar errores anteriores
+    setSuccess(''); // Limpiar mensaje de éxito anterior
 
     try {
-      if (lugarEditar) {
-        await api.put(`/lugar/${lugarEditar.id}`, datos);
-        setMensaje('Lugar actualizado exitosamente');
-      } else {
-        await api.post("/lugar", datos);
-        setMensaje('Lugar creado exitosamente');
-      }
+      const formDataToSend = new FormData();
+      formDataToSend.append('nombre', formData.nombre);
+      formDataToSend.append('descripcion', formData.descripcion);
+      formDataToSend.append('ubicacion', formData.ubicacion);
+      formDataToSend.append('categoriaid', formData.categoriaid);
+      formDataToSend.append('imagen', formData.imagen);
 
-      setNuevoLugar({
-        categoriaid: '',
-        usuarioid: '',
-        nombre: '',
-        descripcion: '',
-        ubicacion: '',
-        estado: true
+      const response = await fetch(`${API_URL}/lugares`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formDataToSend,
       });
-      setLugarEditar(null);
-      cargarLugares();
-    } catch (error) {
-      const errorMsg = error.response?.data?.mensaje || error.message;
-      setMensaje('Error: ' + errorMsg);
-      console.error("Error:", error);
-    }
-  };
 
-  const handleEditar = (lugar) => {
-    setLugarEditar(lugar);
-    setNuevoLugar({
-      categoriaid: lugar.categoriaid,
-      usuarioid: lugar.usuarioid,
-      nombre: lugar.nombre,
-      descripcion: lugar.descripcion,
-      ubicacion: lugar.ubicacion,
-      estado: lugar.estado
-    });
-  };
-
-  const handleEliminar = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este lugar?')) {
-      try {
-        await api.delete(`/lugar/${id}`);
-        setMensaje('Lugar eliminado exitosamente');
-        cargarLugares();
-      } catch (error) {
-        setMensaje('Error al eliminar el lugar');
-        console.error("Error:", error);
+      if (!response.ok) {
+        throw new Error('Error al crear el lugar');
       }
+
+      const data = await response.json();
+      setSuccess('Lugar creado exitosamente');
+      setShowForm(false); // Ocultar el formulario después de crear el lugar
+      setLugares([...lugares, data]); // Agregar el lugar recién creado a la lista
+    } catch (error) {
+      setError('Error al crear el lugar: ' + error.message);
     }
   };
 
-  return (
-    <>
-      <Sidebar />
-      <div className="app-container">
-        <div className="main-content">
-          <h2>Lugares de Popayán Nocturna</h2>
+  const handleEliminarLugar = async (lugarId, e) => {
+    e.stopPropagation(); // Evita que el evento "click" en el lugar sea disparado
+    try {
+      const response = await fetch(`${API_URL}/lugares/${lugarId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-          {mensaje && <div className="mensaje">{mensaje}</div>}
+      if (!response.ok) {
+        throw new Error('Error al eliminar el lugar');
+      }
 
-          <form onSubmit={handleSubmit} className="form-container">
-            <div className="form-group">
-              <input
-                type="number"
-                value={nuevoLugar.categoriaid}
-                onChange={(e) => {
-                  const valor = e.target.value;
-                  if (/^\d*$/.test(valor)) {
-                    setNuevoLugar({ ...nuevoLugar, categoriaid: valor });
-                  }
-                }}
-                placeholder="ID Categoría"
-                required
-              />
-              <input
-                type="number"
-                value={nuevoLugar.usuarioid}
-                onChange={(e) => {
-                  const valor = e.target.value;
-                  if (/^\d*$/.test(valor)) {
-                    setNuevoLugar({ ...nuevoLugar, usuarioid: valor });
-                  }
-                }}
-                placeholder="ID Usuario"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                value={nuevoLugar.nombre}
-                onChange={(e) => setNuevoLugar({ ...nuevoLugar, nombre: e.target.value })}
-                placeholder="Nombre del lugar"
-                required
-              />
-              <input
-                type="text"
-                value={nuevoLugar.ubicacion}
-                onChange={(e) => setNuevoLugar({ ...nuevoLugar, ubicacion: e.target.value })}
-                placeholder="Ubicación"
-                required
-              />
-            </div>
-            <textarea
-              value={nuevoLugar.descripcion}
-              onChange={(e) => setNuevoLugar({ ...nuevoLugar, descripcion: e.target.value })}
-              placeholder="Descripción del lugar"
-              required
-            />
-            <button type="submit" className="btn-crear">
-              {lugarEditar ? 'Actualizar' : 'Crear'} Lugar
-            </button>
-          </form>
+      setLugares(lugares.filter(lugar => lugar.id !== lugarId));
+    } catch (error) {
+      setError('Error al eliminar el lugar: ' + error.message);
+    }
+  };
 
-          <div className="items-list">
-            {lugares.map((lugar) => (
-              <div key={lugar.id} className="item-card">
-                <div className="item-header">
-                  <h3>{lugar.nombre}</h3>
-                  <span className="estado-badge">
-                    {lugar.estado ? '🟢 Activo' : '🔴 Inactivo'}
-                  </span>
-                </div>
-                <div className="item-content">
-                  <p><strong>📍 Ubicación:</strong> {lugar.ubicacion}</p>
-                  <p>{lugar.descripcion}</p>
-                  <div className="item-details">
-                    <span>👤 Usuario ID: {lugar.usuarioid}</span>
-                    <span>🏷️ Categoría ID: {lugar.categoriaid}</span>
-                  </div>
-                </div>
-                <div className="item-footer">
-                  <span>Actualizado: {new Date(lugar.updatedAt).toLocaleDateString()}</span>
-                  <div className="item-actions">
-                    <button onClick={() => handleEditar(lugar)}>Editar</button>
-                    <button onClick={() => handleEliminar(lugar.id)}>Eliminar</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+  if (loading) {
+    return (
+      <div className="dashboard-container">
+        <Sidebar />
+        <div className="dashboard-content">
+          <div className="loading">Cargando...</div>
         </div>
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="dashboard-container">
+      <Sidebar />
+      <div className="dashboard-content">
+        <div className="header-section">
+          <h2>Mis Lugares</h2>
+          <button className="btn-crear" onClick={() => setShowForm(true)}>
+            Crear Nuevo Lugar
+          </button>
+        </div>
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="success-message">
+            {success}
+          </div>
+        )}
+
+        {showForm && (
+          <div className="form-container">
+            <h3>Crear Nuevo Lugar</h3>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="nombre">Nombre:</label>
+                <input
+                  type="text"
+                  id="nombre"
+                  value={formData.nombre}
+                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="descripcion">Descripción:</label>
+                <textarea
+                  id="descripcion"
+                  value={formData.descripcion}
+                  onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="ubicacion">Ubicación:</label>
+                <input
+                  type="text"
+                  id="ubicacion"
+                  value={formData.ubicacion}
+                  onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="categoriaid">Categoría:</label>
+                <select
+                  id="categoriaid"
+                  value={formData.categoriaid}
+                  onChange={(e) => setFormData({ ...formData, categoriaid: e.target.value })}
+                  required
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categorias.map(categoria => (
+                    <option key={categoria.id} value={categoria.id}>
+                      {categoria.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="imagen">Imagen:</label>
+                <input
+                  type="file"
+                  id="imagen"
+                  onChange={(e) => setFormData({ ...formData, imagen: e.target.files[0] })}
+                />
+              </div>
+              <button type="submit" className="btn-submit">Crear Lugar</button>
+            </form>
+          </div>
+        )}
+
+        <div className="items-list">
+          {lugares.map((lugar) => (
+            <div
+              key={lugar.id}
+              className="item-card"
+              onClick={() => handleVerLugar(lugar.id)}
+            >
+              <div className="item-image">
+                {lugar.imagen ? (
+                  <img src={lugar.imagen} alt={lugar.nombre} />
+                ) : (
+                  <div className="image-placeholder">🏪</div>
+                )}
+              </div>
+              <div className="item-info">
+                <h3>{lugar.nombre}</h3>
+                <p className="location">📍 {lugar.ubicacion}</p>
+                <p className="description">{lugar.descripcion}</p>
+                <div className="item-stats">
+                  <span>⭐ {lugar.calificacion_promedio?.toFixed(1) || 'N/A'}</span>
+                  <span>💬 {lugar.total_comentarios || 0}</span>
+                </div>
+                <button 
+                  className="btn-delete"
+                  onClick={(e) => handleEliminarLugar(lugar.id, e)}
+                >
+                  Eliminar
+                </button>
+              </div>
+
+              {/* Mostrar los eventos solo del lugar específico */}
+              {eventos.filter(evento => evento.lugarid === lugar.id).map(evento => (
+                <div key={evento.id} className="evento-item">
+                  <p>{evento.nombre}</p>
+                  <p>{evento.descripcion}</p>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
