@@ -1,16 +1,22 @@
+/* Contenedor principal */
 .categorias-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #f4f5f7;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
 }
 
+/* Cabecera de la página */
 .page-header {
   background-color: white;
   padding: 20px 30px;
   border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
   display: flex;
   justify-content: space-between;
@@ -20,10 +26,12 @@
 .page-header h2 {
   margin: 0;
   color: #2c3e50;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
+/* Botones de navegación */
 .navigation-buttons {
   display: flex;
   gap: 15px;
@@ -42,12 +50,12 @@
   transition: all 0.3s ease;
   font-size: 16px;
   font-weight: 500;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.2);
 }
 
 .nav-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
   background: linear-gradient(135deg, #1976D2, #1565C0);
 }
 
@@ -55,13 +63,15 @@
   font-size: 20px;
 }
 
+/* Sección de contenido principal */
 .content-section {
   background-color: white;
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Mensaje de éxito o error */
 .mensaje {
   padding: 15px;
   margin: 0 0 20px 0;
@@ -73,10 +83,11 @@
   box-shadow: 0 2px 5px rgba(76, 175, 80, 0.2);
 }
 
+/* Lista de categorías */
 .categorias-lista {
   display: grid;
   gap: 15px;
-  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(320px, 1fr));
   padding: 20px;
   margin: 0;
 }
@@ -84,102 +95,78 @@
 .categoria-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
+  flex-direction: column;
 }
 
 .categoria-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .categoria-item h3 {
-  font-size: 18px;
-  margin-bottom: 15px;
+  font-size: 20px;
+  margin-bottom: 10px;
   color: #2c3e50;
+  font-weight: 600;
 }
 
 .categoria-item .lugar-card {
   font-size: 14px;
   margin-top: 10px;
+  line-height: 1.6;
+  color: #555;
 }
 
 .categoria-item .lugar-card p {
   margin: 5px 0;
 }
 
+/* Responsividad */
 @media (max-width: 768px) {
-  .app-container {
-    margin-left: 0;
-  }
-
-  .header {
-    left: 0;
-  }
-
   .categorias-lista {
     grid-template-columns: 1fr;
   }
 
   .categoria-item {
-    flex-direction: column;
     gap: 15px;
     text-align: center;
+    padding: 15px;
   }
 }
 
 /* Ajustes para las tarjetas de categorías */
 .items-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(320px, 1fr));
   gap: 25px;
   width: 100%;
   padding: 20px;
   margin: 0;
   max-width: 1200px;
-  margin: 0 auto;
-}
-
-@media (min-width: 1400px) {
-  .items-list {
-    grid-template-columns: repeat(3, minmax(300px, 1fr));
-    max-width: 1600px;
-  }
 }
 
 @media (max-width: 768px) {
-  .app-container {
-    margin-left: 0;
-  }
-
-  .header {
-    left: 0;
-  }
-
   .items-list {
     grid-template-columns: 1fr;
-  }
-
-  .item-card {
-    height: auto;
-    min-height: 250px;
   }
 }
 
 .item-card {
   background-color: #f5f5f5;
   border-radius: 10px;
-  padding: 25px;
-  border: 1px solid #000;
+  padding: 20px;
+  border: 1px solid #ddd;
   display: flex;
   flex-direction: column;
-  height: 300px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  justify-content: space-between;
+  height: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  justify-content: flex-start;
 }
 
 .item-content {
@@ -190,12 +177,13 @@
 
 .item-content h3 {
   font-size: 18px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: #000;
+  font-weight: 600;
 }
 
 .item-details {
-  color: #666;
+  color: #777;
   font-size: 14px;
 }
 

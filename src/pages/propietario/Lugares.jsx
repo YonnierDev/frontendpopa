@@ -112,26 +112,6 @@ const Lugares = () => {
     }
   };
 
-  const handleEliminarLugar = async (lugarId, e) => {
-    e.stopPropagation(); // Evita que el evento "click" en el lugar sea disparado
-    try {
-      const response = await fetch(`${API_URL}/lugares/${lugarId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al eliminar el lugar');
-      }
-
-      setLugares(lugares.filter(lugar => lugar.id !== lugarId));
-    } catch (error) {
-      setError('Error al eliminar el lugar: ' + error.message);
-    }
-  };
-
   if (loading) {
     return (
       <div className="dashboard-container">
@@ -210,7 +190,7 @@ const Lugares = () => {
                   <option value="">Selecciona una categoría</option>
                   {categorias.map(categoria => (
                     <option key={categoria.id} value={categoria.id}>
-                      {categoria.nombre}
+                      {categoria.tipo}
                     </option>
                   ))}
                 </select>
@@ -246,16 +226,12 @@ const Lugares = () => {
                 <h3>{lugar.nombre}</h3>
                 <p className="location">📍 {lugar.ubicacion}</p>
                 <p className="description">{lugar.descripcion}</p>
+                <p className="owner">Propietario: {lugar.usuario.nombre}</p>
+                <p className="category">Categoría: {lugar.categoria.tipo}</p>
                 <div className="item-stats">
                   <span>⭐ {lugar.calificacion_promedio?.toFixed(1) || 'N/A'}</span>
                   <span>💬 {lugar.total_comentarios || 0}</span>
                 </div>
-                <button 
-                  className="btn-delete"
-                  onClick={(e) => handleEliminarLugar(lugar.id, e)}
-                >
-                  Eliminar
-                </button>
               </div>
 
               {/* Mostrar los eventos solo del lugar específico */}
