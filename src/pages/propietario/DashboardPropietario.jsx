@@ -41,24 +41,32 @@ const DashboardPropietario = () => {
     <>
       <Sidebar />
       <div className="dashboard-container">
-        <div className="dashboard-header">
-          <h1>Panel de Control - Popayán Nocturna</h1>
-          <button className="logout-btn" onClick={() => navigate('/login')}>
-            Cerrar sesión
-          </button>
-        </div>
-
         <div className="dashboard-content">
           <div className="welcome-section">
             <h2>Bienvenido al Panel Administrativo</h2>
-            <p>Selecciona una sección para administrar</p>
+            <p>Gestiona tu negocio de manera eficiente</p>
+          </div>
+
+          <div className="stats">
+            <div className="stat-item">
+              <h4>Total Lugares</h4>
+              <span className="stat-number">{stats.totalLugares}</span>
+            </div>
+            <div className="stat-item">
+              <h4>Eventos Activos</h4>
+              <span className="stat-number">{stats.eventosActivos}</span>
+            </div>
+            <div className="stat-item">
+              <h4>Reservas Pendientes</h4>
+              <span className="stat-number">{stats.reservasPendientes}</span>
+            </div>
           </div>
 
           <div className="dashboard-grid">
             <div className="dashboard-card" onClick={() => navigate('/propietario/categorias')}>
               <div className="card-icon">📝</div>
               <h3>Categorías</h3>
-              <p>Gestiona las categorías de lugares</p>
+              <p>Gestiona las categorías</p>
               <div className="card-footer">
                 <button className="card-btn">Administrar</button>
               </div>
@@ -67,25 +75,7 @@ const DashboardPropietario = () => {
             <div className="dashboard-card" onClick={() => navigate('/propietario/lugares')}>
               <div className="card-icon">📍</div>
               <h3>Lugares</h3>
-              <p>Administra los lugares registrados</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/propietario/comentarios')}>
-              <div className="card-icon">💬</div>
-              <h3>Comentarios</h3>
-              <p>Gestiona los comentarios de usuarios</p>
-              <div className="card-footer">
-                <button className="card-btn">Administrar</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card" onClick={() => navigate('/propietario/calificaciones')}>
-              <div className="card-icon">⭐</div>
-              <h3>Calificaciones</h3>
-              <p>Revisa las calificaciones de lugares</p>
+              <p>Administra los lugares</p>
               <div className="card-footer">
                 <button className="card-btn">Administrar</button>
               </div>
@@ -94,7 +84,7 @@ const DashboardPropietario = () => {
             <div className="dashboard-card" onClick={() => navigate('/propietario/eventos')}>
               <div className="card-icon">🎉</div>
               <h3>Eventos</h3>
-              <p>Gestiona los eventos programados</p>
+              <p>Gestiona los eventos</p>
               <div className="card-footer">
                 <button className="card-btn">Administrar</button>
               </div>
@@ -103,24 +93,27 @@ const DashboardPropietario = () => {
             <div className="dashboard-card" onClick={() => navigate('/propietario/reservas')}>
               <div className="card-icon">📅</div>
               <h3>Reservas</h3>
-              <p>Administra las reservas de eventos</p>
+              <p>Administra las reservas</p>
               <div className="card-footer">
                 <button className="card-btn">Administrar</button>
               </div>
             </div>
 
-            <div className="dashboard-card stats">
-              <div className="stat-item">
-                <h4>Total Lugares</h4>
-                <span className="stat-number">{stats.totalLugares}</span>
+            <div className="dashboard-card" onClick={() => navigate('/propietario/comentarios')}>
+              <div className="card-icon">💬</div>
+              <h3>Comentarios</h3>
+              <p>Gestiona los comentarios</p>
+              <div className="card-footer">
+                <button className="card-btn">Administrar</button>
               </div>
-              <div className="stat-item">
-                <h4>Eventos Activos</h4>
-                <span className="stat-number">{stats.eventosActivos}</span>
-              </div>
-              <div className="stat-item">
-                <h4>Reservas Pendientes</h4>
-                <span className="stat-number">{stats.reservasPendientes}</span>
+            </div>
+
+            <div className="dashboard-card" onClick={() => navigate('/propietario/calificaciones')}>
+              <div className="card-icon">⭐</div>
+              <h3>Calificaciones</h3>
+              <p>Revisa las calificaciones</p>
+              <div className="card-footer">
+                <button className="card-btn">Administrar</button>
               </div>
             </div>
           </div>

@@ -30,30 +30,35 @@ const Login = ({ setIsAuthenticated }) => {
         contrasena,
       });
 
-      const { token, rol, nombre, usuarioId } = response.data;
+      console.log("Respuesta del servidor:", response.data);
 
-      if (!token || rol === undefined) {
+      const { token, usuario } = response.data;
+      const { rolid, nombre, id: usuarioId, correo: correoUsuario } = usuario;
+
+      if (!token || rolid === undefined) {
         setError("Respuesta inválida del servidor.");
         return;
       }
 
-      const rolId = parseInt(rol);
+      const rolId = parseInt(rolid);
 
       localStorage.setItem("token", token);
-      localStorage.setItem("usuario", JSON.stringify({ rol: rolId, nombre, usuarioId }));
+      localStorage.setItem("usuario", JSON.stringify({
+        rol: rolId,
+        nombre,
+        usuarioId,
+        correo: correoUsuario
+      }));
 
       setIsAuthenticated(true);
       setError("");
-      console.log("rolllllll"+response.data.rol);
 
-      switch (response.data.rol) {
-        
-
-        case 2:
-          navigate("/admip/dashboard");
-          break;
+      switch (rolId) {
         case 1:
           navigate("/superadmin/dashboard");
+          break;
+        case 2:
+          navigate("/admip/dashboard");
           break;
         case 3:
           navigate("/propietario/dashboard");

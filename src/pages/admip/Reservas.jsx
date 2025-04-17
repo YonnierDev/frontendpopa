@@ -27,7 +27,7 @@ const Reservas = () => {
 
   const handleGuardarEdicion = async () => {
     try {
-      await axios.put(`https://popnocturna.vercel.app/api/reserva/${reservaSeleccionada.id}`, reservaSeleccionada);
+      await axios.patch(`https://popnocturna.vercel.app/api/reserva/${reservaSeleccionada.id}`, reservaSeleccionada);
       setMensaje("Reserva actualizada correctamente");
       fetchReservas();
       setReservaSeleccionada(null);
@@ -46,7 +46,7 @@ const Reservas = () => {
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://popnocturna.vercel.app/api/reserva/${id}`, {
+      await axios.patch(`https://popnocturna.vercel.app/api/reserva/estado/${id}`, {
         estado: nuevoEstado,
       });
       setReservas(reservas.map(reserva =>
@@ -63,6 +63,8 @@ const Reservas = () => {
 
   return (
     <div className="reservas-box">
+      {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+
       <div className="card-reservas">
         <h2>Reservas</h2>
 
@@ -73,8 +75,6 @@ const Reservas = () => {
           onChange={handleBusqueda}
           className="buscador-reservas"
         />
-
-        {mensaje && <p className="mensaje-exito">{mensaje}</p>}
 
         {reservas.length === 0 ? (
           <p className="loading-text">Cargando...</p>
@@ -109,6 +109,9 @@ const Reservas = () => {
                       />
                       <span className="slider"></span>
                     </label>
+                    <div className="estado-texto">
+                      {reserva.estado ? "Activo" : "Inactivo"}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -135,7 +138,7 @@ const Reservas = () => {
             />
             <input
               type="datetime-local"
-              value={new Date(reservaSeleccionada.fecha_hora).toISOString().slice(0,16)}
+              value={new Date(reservaSeleccionada.fecha_hora).toISOString().slice(0, 16)}
               onChange={(e) => setReservaSeleccionada({ ...reservaSeleccionada, fecha_hora: e.target.value })}
             />
             <input

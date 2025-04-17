@@ -15,22 +15,23 @@ import "../admip/styles/Dashboard.css";
 
 const Dashboard = () => {
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
-  const [correoAdmin, setCorreoAdmin] = useState("");
+  const [nombreAdmin, setNombreAdmin] = useState("");  // Estado para almacenar el nombre del administrador
 
   useEffect(() => {
     setMostrarSeccion("bienvenida");
 
-    const fetchUsuarios = async () => {
+    const fetchAdminNombre = async () => {
       try {
-        const response = await axios.get("https://popnocturna.vercel.app/api/usuarios");
-        setCorreoAdmin(response.data.correo || "Admin no encontrado");
+        // Aquí puedes poner el endpoint correcto que te devuelva el nombre del usuario logueado
+        const response = await axios.get("https://popnocturna.vercel.app/api/usuario/me"); 
+        setNombreAdmin(response.data.nombre || "Administrador no encontrado");  // Asumiendo que la respuesta tiene un campo 'nombre'
       } catch (error) {
         console.error("Error al obtener el administrador:", error);
-        setCorreoAdmin("Admin no encontrado");
+        setNombreAdmin("Administrador no encontrado");
       }
     };
 
-    fetchUsuarios();
+    fetchAdminNombre();
   }, []);
 
   const handleMostrarSeccion = (seccion) => {
@@ -42,7 +43,7 @@ const Dashboard = () => {
       {/* Barra de Navegación Superior */}
       <nav className="navbar">
         <img src={logo} alt="Photobella Logo" className="logo-img" />
-        <span className="admin-email">{correoAdmin}</span>
+        <span className="admin-email">{nombreAdmin}</span>  {/* Mostrar nombre del administrador */}
       </nav>
 
       <div className="dashboard-container">
@@ -65,7 +66,7 @@ const Dashboard = () => {
         <div className="content">
           {mostrarSeccion === "bienvenida" && (
             <div className="bienvenida-message">
-              <h2>Bienvenido Administrador</h2>
+              <h2>Bienvenido {nombreAdmin}</h2>  {/* Mostrar nombre aquí también */}
             </div>
           )}
           {mostrarSeccion === "categorias" && <Categorias />}

@@ -30,7 +30,7 @@ const Usuarios = () => {
       setUsuarios(usuarios.map(u => (u.id === id ? { ...u, estado: nuevoEstado } : u)));
       setMensajesEstado(prev => ({
         ...prev,
-        [id]: nuevoEstado ? "Usuario activo" : "Usuario inactivo"
+        [id]: nuevoEstado ? "Activo" : "Inactivo"
       }));
     } catch (error) {
       console.error("Error al cambiar estado del usuario", error);

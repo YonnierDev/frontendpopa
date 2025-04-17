@@ -51,6 +51,9 @@ const Register = () => {
 
   return (
     <div className="auth-container">
+      <div className="logo-container">
+        <img src={logo} alt="Photobella Logo" />
+      </div>
       <div className="auth-box">
         <div className="title">
           <h2>Registro</h2>
@@ -106,10 +109,6 @@ const Register = () => {
             ¿Tienes cuenta? <Link to="/login">Login</Link>
           </p>
         </div>
-      </div>
-      <div className="logo">
-        <img src={logo} alt="Photobella Logo" className="logo-img" />
-        <div className="logo-text"></div>
       </div>
     </div>
   );

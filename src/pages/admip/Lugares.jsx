@@ -40,13 +40,13 @@ const Lugares = () => {
     }
   };
 
-  const toggleEstado = async (id, estadoActual) => {
+  const cambiarEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://popnocturna.vercel.app/api/lugar/${id}/estado`, {
-        activo: nuevoEstado,
+      await axios.patch(`https://popnocturna.vercel.app/api/lugar/estado/${id}`, {
+        estado: nuevoEstado,
       });
-      setLugares(lugares.map(l => (l.id === id ? { ...l, activo: nuevoEstado } : l)));
+      fetchLugares();
     } catch (error) {
       console.error("Error al cambiar estado del lugar", error);
     }
@@ -98,11 +98,12 @@ const Lugares = () => {
                   <label className="switch">
                     <input
                       type="checkbox"
-                      checked={l.activo}
-                      onChange={() => toggleEstado(l.id, l.activo)}
+                      checked={l.estado || false}
+                      onChange={() => cambiarEstado(l.id, l.estado)}
                     />
                     <span className="slider"></span>
                   </label>
+                  <p>{l.estado ? "Activo" : "Inactivo"}</p>
                 </td>
               </tr>
             ))}
@@ -116,20 +117,20 @@ const Lugares = () => {
             <h3>Editar Lugar</h3>
             <input
               type="text"
-              value={lugarSeleccionado.nombre}
+              value={lugarSeleccionado.nombre || ""}
               onChange={(e) =>
                 setLugarSeleccionado({ ...lugarSeleccionado, nombre: e.target.value })
               }
             />
             <input
               type="text"
-              value={lugarSeleccionado.ubicacion}
+              value={lugarSeleccionado.ubicacion || ""}
               onChange={(e) =>
                 setLugarSeleccionado({ ...lugarSeleccionado, ubicacion: e.target.value })
               }
             />
             <textarea
-              value={lugarSeleccionado.descripcion}
+              value={lugarSeleccionado.descripcion || ""}
               onChange={(e) =>
                 setLugarSeleccionado({ ...lugarSeleccionado, descripcion: e.target.value })
               }

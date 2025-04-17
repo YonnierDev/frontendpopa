@@ -27,7 +27,7 @@ const Calificaciones = () => {
     const nuevoEstado = !estadoActual;
 
     try {
-      await axios.put(`https://popnocturna.vercel.app/api/calificacion/${id}/estado`, {
+      await axios.patch(`https://popnocturna.vercel.app/api/calificacion/${id}/estado`, {
         estado: nuevoEstado,
       });
 
@@ -101,6 +101,9 @@ const Calificaciones = () => {
                     />
                     <span className="slider"></span>
                   </label>
+                  <div className="estado-texto">
+                    {c.estado ? "Activo" : "Inactivo"}
+                  </div>
                 </td>
               </tr>
             ))}

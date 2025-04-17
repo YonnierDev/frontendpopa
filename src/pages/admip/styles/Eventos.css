@@ -23,11 +23,11 @@
 /* Título del formulario */
 .formulario-container h2 {
     background-color: black;
-    color: white;
-    padding: 10px 15px;
+    color: yellow;
+    padding: 30px 15px;
     border-radius: 5px;
     margin-bottom: 15px;
-    font-size: 18px;
+    font-size: 35px;
     text-align: center;
 }
 
@@ -67,6 +67,16 @@
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     position: relative;
+}
+
+.tabla-container h3 {
+    background-color: black;
+    color: yellow;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    text-align: center;
 }
 
 /* Tabla */
@@ -206,12 +216,6 @@ input:checked + .slider:before {
     max-height: 90vh;
 }
 
-/* Título de la tabla */
-.tabla-container h3 {
-    color: black; /* Título en color negro */
-    font-weight: bold;
-}
-
 .modal-contenido h5,
 .modal-contenido p,
 .modal-contenido li {
@@ -220,21 +224,6 @@ input:checked + .slider:before {
 
 .modal-contenido ul {
     padding-left: 20px;
-}
-
-.cerrar-modal {
-    margin-top: 20px;
-    background-color: rgb(255, 255, 4);
-    color: black;
-    border: none;
-    padding: 8px 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.cerrar-modal:hover {
-    background-color: #e6c200;
 }
 
 .cerrar-modal {

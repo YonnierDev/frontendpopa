@@ -1,11 +1,10 @@
-/* ====== Barra de navegación superior ====== */
 .navbar {
     background-color: #000; /* Negro */
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 0% 20px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -21,7 +20,7 @@
 /* Logo en la barra de navegación */
 .logo-img {
     width: 120px;
-    height: 50px;
+    height: 75px;
 }
 
 /* Enlace de Cerrar Sesión en la barra superior */
@@ -36,21 +35,18 @@
     color: #ffcc00;
 }
 
-/* ====== Barra de navegación lateral ====== */
+/*Barra de navegación lateral*/
 .sidebar {
-    width: 150px;  /* Ancho de la barra lateral */
-    height: 100vh; /* Altura completa de la pantalla */
     background-color: #000; /* Negro oscuro */
     color: white;
     position: fixed;
     left: 0;
     top: 0;
-    padding-top: 120px; /* Espacio debajo de la barra superior */
+    margin-top: 115px;
     display: flex;
     flex-direction: column;
     align-items: center;
     box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.2);
-    margin-top: 80px;
 }
 
 /* Botones del menú lateral */
@@ -64,7 +60,6 @@
     font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
-    
 }
 
 .menu-btn:hover {
@@ -73,39 +68,41 @@
 
 /* Contenedor del botón de Cerrar Sesión en la barra lateral */
 .logout-container {
-    margin-top: 100px; /* Envía el botón al fondo */
+    margin-top: auto; /* Envía el botón al fondo */
     width: 100%;
     padding: 10px;
     display: flex;
     justify-content: center;
+    margin-bottom: 20px; /* Margen inferior para separarlo del borde de la pantalla */
 }
 
 /* Botón de Cerrar Sesión en la barra lateral */
 .logout-btn {
-    background-color: rgb(68, 66, 66);
+    background-color: #ff4444;
     color: white;
     border: none;
-    padding: 10px 15px;
-    font-size: 16px;
+    padding: 8px 12px;
+    font-size: 14px;
     cursor: pointer;
     text-align: center;
-    width: 100%;
+    width: 90%;
     text-decoration: none;
-    text-align: center;
+    border-radius: 5px;
+    font-weight: bold; /* Texto en negrita para mayor visibilidad */
+    margin-block-end: 90px;
 }
 
 .logout-btn:hover {
     background-color: rgb(250, 216, 21);
 }
 
-/* ====== Contenido Principal ====== */
 .dashboard-container {
     display: flex;
 }
 
 .content {
-    margin-left: 200px; /* Ajuste para que no se solape con la barra lateral */
-    padding: 20px;
+    margin-left: 100px; /* Ajuste para que no se solape con la barra lateral */
+    margin-top: 200px;
     flex-grow: 1;
 }
   
@@ -114,5 +111,5 @@
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-    color: rgb(7, 7, 7);
+    color: white;
 }

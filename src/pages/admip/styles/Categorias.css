@@ -17,8 +17,7 @@
 }
 
 /* Decoración en la esquina superior izquierda */
-.card-categorias::before,
-.card-formulario::before {
+.card-categorias::before {
   content: "";
   position: absolute;
   top: -5px;
@@ -32,54 +31,17 @@
 .categorias-box {
   padding: 20px;
   font-family: Arial, sans-serif;
-  margin-top: 80px;
+  margin-right: 100px;
+  margin-top: 0%;
+  width: 130%;
 }
 
-.card-categorias,
-.card-formulario {
+.card-categorias {
   background-color: #fff;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  margin-top: 0;
   position: relative;
-  width: 200%; /* Ajusta el valor según lo que necesites */
-  max-width: 700px; /* Límite máximo para el ancho */
-  margin-left: 100px;
-  margin-right: 300px;
-}
-
-.card-formulario h3 {
-  margin-bottom: 10px;
-  color: black;
-}
-
-.formulario-categorias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.formulario-categorias input {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
-  flex: 1;
-}
-
-.formulario-categorias button {
-  background-color: #ffc107;
-  color: black;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.formulario-categorias button:hover {
-  background-color: #e0a800;
 }
 
 .buscador-categorias {
@@ -94,7 +56,7 @@
 .tabla-categorias {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .tabla-categorias th,

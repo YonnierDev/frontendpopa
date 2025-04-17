@@ -22,7 +22,7 @@ const Categorias = () => {
   };
 
   const editarCategoria = async (id) => {
-    if (!nombreEditado.trim()) return; // Asegura que no se edite con nombre vacío
+    if (!nombreEditado.trim()) return;
     try {
       await axios.put(`https://popnocturna.vercel.app/api/categoria/${id}`, {
         tipo: nombreEditado,
@@ -34,12 +34,14 @@ const Categorias = () => {
     }
   };
 
-  const cambiarEstado = async (id, estadoActual) => {
+  const cambiarEstado = async (id, estadoActual, tipo) => {
     try {
-      await axios.put(`https://popnocturna.vercel.app/api/categoria/${id}`, {
-        estado: !estadoActual,
+      const nuevoEstado = !estadoActual;
+      // Realizamos el PATCH para cambiar solo el estado
+      await axios.patch(`https://popnocturna.vercel.app/api/categoria/estado/${id}`, {
+        estado: nuevoEstado,
       });
-      obtenerCategorias();
+      obtenerCategorias();  // Actualizamos las categorías
     } catch (error) {
       console.error("Error al cambiar estado:", error);
     }
@@ -53,6 +55,7 @@ const Categorias = () => {
     <div className="categorias-box">
       <div className="card-categorias">
         <h2>Categorías</h2>
+
         <div className="buscador-centrado">
           <input
             className="buscador-categorias"
@@ -91,24 +94,29 @@ const Categorias = () => {
                   {editarId === cat.id ? (
                     <button className="boton-accion" onClick={() => editarCategoria(cat.id)}>Guardar</button>
                   ) : (
-                    <button className="boton-accion" onClick={() => {
-                      setEditarId(cat.id);
-                      setNombreEditado(cat.tipo);
-                    }}>
+                    <button
+                      className="boton-accion"
+                      onClick={() => {
+                        setEditarId(cat.id);
+                        setNombreEditado(cat.tipo);
+                      }}
+                    >
                       Editar
                     </button>
                   )}
-                  {/* Botón eliminar eliminado */}
                 </td>
                 <td>
                   <label className="switch">
                     <input
                       type="checkbox"
                       checked={cat.estado}
-                      onChange={() => cambiarEstado(cat.id, cat.estado)}
+                      onChange={() => cambiarEstado(cat.id, cat.estado, cat.tipo)}
                     />
                     <span className="slider"></span>
                   </label>
+                  <div>
+                    {cat.estado ? "Activo" : "Inactivo"}
+                  </div>
                 </td>
               </tr>
             ))}

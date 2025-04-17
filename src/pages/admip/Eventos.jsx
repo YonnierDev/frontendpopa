@@ -120,11 +120,11 @@ const Eventos = () => {
   const cerrarModal = () => {
     setEventoSeleccionado(null);
   };
-  
+
   const cambiarEstadoEvento = async (id, estadoActual) => {
     try {
       const nuevoEstado = !estadoActual;
-      await axios.put(`https://popnocturna.vercel.app/api/evento/${id}`, {
+      await axios.patch(`https://popnocturna.vercel.app/api/evento/estado/${id}`, {
         estado: nuevoEstado
       });
 
@@ -133,7 +133,6 @@ const Eventos = () => {
           evento.id === id ? { ...evento, estado: nuevoEstado } : evento
         )
       );
-      setMensaje("Estado actualizado");
       setTimeout(() => setMensaje(""), 3000);
     } catch (error) {
       console.error("Error al cambiar el estado", error);
@@ -144,11 +143,11 @@ const Eventos = () => {
 
   return (
     <div className="eventos-contenedor">
-      {/* Título agregado aquí */}
-      <h2>Eventos</h2>
-
       <div className="formulario-container">
-        <h3>{modoEdicion ? "Editar Evento" : "Crea un Evento"}</h3>
+        <h2>Eventos</h2>
+        <div className="formulario-titulo">
+          <h3>{modoEdicion ? "Editar Evento" : "Crea un Evento"}</h3>
+        </div>
         <form onSubmit={handleCrearEvento}>
           <input type="text" name="lugar" placeholder="Lugar" value={nuevoEvento.lugar} onChange={handleChange} required />
           <input type="text" name="descripcion" placeholder="Descripción" value={nuevoEvento.descripcion} onChange={handleChange} required />
@@ -165,7 +164,7 @@ const Eventos = () => {
       <div className="tabla-container">
         {mensaje && <p className="mensaje-exito">{mensaje}</p>}
 
-        <h3>Lista de Eventos</h3> {/* Título añadido dentro de la tabla */}
+        <h3>Lista de Eventos</h3>
 
         <table className="eventos-tabla">
           <thead>
@@ -202,6 +201,9 @@ const Eventos = () => {
                       />
                       <span className="slider"></span>
                     </label>
+                    <div style={{ textAlign: "center", marginTop: "5px", fontWeight: "bold" }}>
+                      {evento.estado ? "Activo" : "Inactivo"}
+                    </div>
                   </td>
                 </tr>
               ))}
