@@ -10,7 +10,6 @@ import Categorias from "./Categorias";
 import Usuarios from "./Usuarios";
 import Lugares from "./Lugares";
 import Comentarios from "./Comentarios";
-import logo from "../../assets/logos.png";
 import "../admip/styles/Dashboard.css";
 
 const Dashboard = () => {
@@ -40,12 +39,6 @@ const Dashboard = () => {
 
   return (
     <div>
-      {/* Barra de Navegación Superior */}
-      <nav className="navbar">
-        <img src={logo} alt="Photobella Logo" className="logo-img" />
-        <span className="admin-email">{nombreAdmin}</span>  {/* Mostrar nombre del administrador */}
-      </nav>
-
       <div className="dashboard-container">
         {/* Barra Lateral */}
         <div className="sidebar">
@@ -62,7 +55,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Contenido Dinámico */}
+        {/* Contenido Principal */}
         <div className="content">
           {mostrarSeccion === "bienvenida" && (
             <div className="bienvenida-message">

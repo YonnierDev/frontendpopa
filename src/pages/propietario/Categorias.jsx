@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "../../components/api/api";
-import { useNavigate } from 'react-router-dom';
+import { api } from "../../components/api/api";  // Asegúrate de que 'api' esté configurado correctamente
 import './Categorias.css';
 import Sidebar from '../../components/Sidebar';
 
 const Categorias = () => {
   const [categorias, setCategorias] = useState([]);
-  const [nuevaCategoria, setNuevaCategoria] = useState({
-    tipo: ''
-  });
-  const [categoriaEditar, setCategoriaEditar] = useState(null);
   const [mensaje, setMensaje] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     cargarCategorias();
@@ -19,48 +13,26 @@ const Categorias = () => {
 
   const cargarCategorias = async () => {
     try {
-      const response = await api.get("/categorias");
+      const token = localStorage.getItem('token');  // O desde un estado global si estás usando Redux
+
+      // Asegúrate de incluir el token en la cabecera
+      const response = await api.get('/propietario/categorias', {
+        headers: {
+          Authorization: `Bearer ${token}`  // Incluye el token en la cabecera
+        }
+      });
+
       console.log('Categorías cargadas:', response.data);
       setCategorias(response.data);
     } catch (error) {
       console.error("Error detallado:", error.response || error);
-      setMensaje('Error al cargar las categorías: ' + (error.response?.data?.message || error.message));
-    }
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (categoriaEditar) {
-        await api.put(`/categoria/${categoriaEditar.id}`, nuevaCategoria);
-        setMensaje('Categoría actualizada exitosamente');
+      if (error.response && error.response.status === 403) {
+        setMensaje('No tienes permisos para acceder a esta información.');
+      } else if (error.response && error.response.status === 404) {
+        setMensaje('No se encontraron categorías.');
       } else {
-        await api.post("/categoria", nuevaCategoria);
-        setMensaje('Categoría creada exitosamente');
-      }
-      setNuevaCategoria({ tipo: '' });
-      setCategoriaEditar(null);
-      cargarCategorias();
-    } catch (error) {
-      setMensaje('Error al procesar la categoría');
-      console.error("Error:", error);
-    }
-  };
-
-  const handleEditar = (categoria) => {
-    setCategoriaEditar(categoria);
-    setNuevaCategoria({ tipo: categoria.tipo });
-  };
-
-  const handleEliminar = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar esta categoría?')) {
-      try {
-        await api.delete(`/categoria/${id}`);
-        setMensaje('Categoría eliminada exitosamente');
-        cargarCategorias();
-      } catch (error) {
-        setMensaje('Error al eliminar la categoría');
-        console.error("Error:", error);
+        setMensaje('Error al cargar las categorías: ' + (error.response?.data?.message || error.message));
       }
     }
   };
@@ -70,41 +42,35 @@ const Categorias = () => {
       <Sidebar />
       <div className="app-container">
         <div className="main-content">
-          <h2>Categorías de Popayán Nocturna</h2>
-          
+          <h2>Categorías y Negocios</h2>
+
           {mensaje && <div className="mensaje">{mensaje}</div>}
 
-          <form onSubmit={handleSubmit} className="form-container">
-            <div className="form-group">
-              <input
-                type="text"
-                value={nuevaCategoria.tipo}
-                onChange={(e) => setNuevaCategoria({ tipo: e.target.value })}
-                placeholder="Nombre de la categoría"
-                required
-              />
-            </div>
-            <button type="submit" className="btn-crear">
-              {categoriaEditar ? 'Actualizar' : 'Crear'} Categoría
-            </button>
-          </form>
-
           <div className="items-list">
-            {categorias.map((categoria) => (
-              <div key={categoria.id} className="item-card">
-                <div className="item-content">
-                  <h3>{categoria.tipo}</h3>
-                  <p className="item-details">
-                    <span>Creado: {new Date(categoria.createdAt).toLocaleDateString()}</span>
-                    <span>Actualizado: {new Date(categoria.updatedAt).toLocaleDateString()}</span>
-                  </p>
+            {categorias.length > 0 ? (
+              categorias.map((categoria) => (
+                <div key={categoria.tipo} className="item-card">
+                  <div className="item-content">
+                    <h3>{categoria.tipo}</h3>
+                    <div className="item-lugares">
+                      {categoria.lugares && categoria.lugares.length > 0 ? (
+                        categoria.lugares.map((lugar, index) => (
+                          <div key={index} className="lugar-card">
+                            <p><strong>Nombre del negocio:</strong> {lugar.nombre}</p>
+                            <p><strong>Descripción:</strong> {lugar.descripcion}</p>
+                            <p><strong>Ubicación:</strong> {lugar.ubicacion}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <p>No hay negocios asociados a esta categoría.</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="item-actions">
-                  <button onClick={() => handleEditar(categoria)}>Editar</button>
-                  <button onClick={() => handleEliminar(categoria.id)}>Eliminar</button>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>No hay categorías disponibles para este propietario.</p>
+            )}
           </div>
         </div>
       </div>

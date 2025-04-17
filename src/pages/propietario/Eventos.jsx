@@ -6,10 +6,10 @@ import Sidebar from '../../components/Sidebar';
 
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
+  const [lugares, setLugares] = useState([]);  // Estado para los lugares
   const [nuevoEvento, setNuevoEvento] = useState({
     nombre: '',
-    lugarid: '',
-    comentarioid: '',
+    lugar: '',  // Ahora almacenamos el nombre del lugar en lugar de lugarid
     capacidad: '',
     precio: '',
     descripcion: '',
@@ -19,10 +19,13 @@ const Eventos = () => {
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
 
+  // Cargar eventos y lugares al montar el componente
   useEffect(() => {
     cargarEventos();
+    cargarLugares();
   }, []);
 
+  // Función para cargar los eventos
   const cargarEventos = async () => {
     try {
       const response = await api.get("/eventos");
@@ -34,20 +37,40 @@ const Eventos = () => {
     }
   };
 
+  // Función para cargar los lugares
+  const cargarLugares = async () => {
+    try {
+      const response = await api.get("/lugares");  // Asume que tienes esta API para obtener lugares
+      setLugares(response.data);
+    } catch (error) {
+      console.error("Error al cargar los lugares:", error);
+      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const lugarSeleccionado = lugares.find(lugar => lugar.nombre === nuevoEvento.lugar); // Buscar el lugar por nombre
+      if (!lugarSeleccionado) {
+        setMensaje('El lugar seleccionado no es válido.');
+        return;
+      }
+      const eventoData = {
+        ...nuevoEvento,
+        lugarid: lugarSeleccionado.id,  // Asignar el lugarid correspondiente
+      };
+
       if (eventoEditar) {
-        await api.put(`/evento/${eventoEditar.id}`, nuevoEvento);
+        await api.put(`/evento/${eventoEditar.id}`, eventoData);
         setMensaje('Evento actualizado exitosamente');
       } else {
-        await api.post("/evento", nuevoEvento);
+        await api.post("/evento", eventoData);
         setMensaje('Evento creado exitosamente');
       }
       setNuevoEvento({
         nombre: '',
-        lugarid: '',
-        comentarioid: '',
+        lugar: '',
         capacidad: '',
         precio: '',
         descripcion: '',
@@ -62,11 +85,11 @@ const Eventos = () => {
   };
 
   const handleEditar = (evento) => {
+    const lugar = lugares.find(lugar => lugar.id === evento.lugarid)?.nombre || ''; // Obtener el nombre del lugar
     setEventoEditar(evento);
     setNuevoEvento({
       nombre: evento.nombre,
-      lugarid: evento.lugarid,
-      comentarioid: evento.comentarioid,
+      lugar: lugar,
       capacidad: evento.capacidad,
       precio: evento.precio,
       descripcion: evento.descripcion,
@@ -105,20 +128,16 @@ const Eventos = () => {
                 placeholder="Nombre del evento"
                 required
               />
-              <input
-                type="number"
-                value={nuevoEvento.lugarid}
-                onChange={(e) => setNuevoEvento({ ...nuevoEvento, lugarid: e.target.value })}
-                placeholder="ID Lugar"
+              <select
+                value={nuevoEvento.lugar}
+                onChange={(e) => setNuevoEvento({ ...nuevoEvento, lugar: e.target.value })}
                 required
-              />
-              <input
-                type="number"
-                value={nuevoEvento.comentarioid}
-                onChange={(e) => setNuevoEvento({ ...nuevoEvento, comentarioid: e.target.value })}
-                placeholder="ID Comentario"
-                required
-              />
+              >
+                <option value="">Selecciona un lugar</option>
+                {lugares.map((lugar) => (
+                  <option key={lugar.id} value={lugar.nombre}>{lugar.nombre}</option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <input
@@ -165,6 +184,7 @@ const Eventos = () => {
                   <div className="item-details">
                     <span>💰 Precio: ${evento.precio}</span>
                     <span>👥 Capacidad: {evento.capacidad}</span>
+                    <span>📍 Lugar: {lugares.find(lugar => lugar.id === evento.lugarid)?.nombre}</span> {/* Mostrar el nombre del lugar */}
                   </div>
                 </div>
                 <div className="item-footer">
