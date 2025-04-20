@@ -6,6 +6,7 @@
     width: 100%;
     gap: 40px; /* Espacio entre el formulario y la tabla */
     margin-top: 500px; /* Separación de la barra superior */
+    margin-left: 130px;
 }
 
 /* --- FORMULARIO --- */

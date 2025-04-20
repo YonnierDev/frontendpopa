@@ -23,10 +23,10 @@ const Dashboard = () => {
       try {
         // Aquí puedes poner el endpoint correcto que te devuelva el nombre del usuario logueado
         const response = await axios.get("https://popnocturna.vercel.app/api/usuario/me"); 
-        setNombreAdmin(response.data.nombre || "Administrador no encontrado");  // Asumiendo que la respuesta tiene un campo 'nombre'
+        setNombreAdmin(response.data.nombre || "Administrador");  // Asumiendo que la respuesta tiene un campo 'nombre'
       } catch (error) {
         console.error("Error al obtener el administrador:", error);
-        setNombreAdmin("Administrador no encontrado");
+        setNombreAdmin("Administrador");
       }
     };
 
@@ -41,7 +41,7 @@ const Dashboard = () => {
     <div>
       <div className="dashboard-container">
         {/* Barra Lateral */}
-        <div className="sidebar">
+            <div className="sidebar">
           <button className="menu-btn" onClick={() => handleMostrarSeccion("categorias")}>Categorías</button>
           <button className="menu-btn" onClick={() => handleMostrarSeccion("usuarios")}>Usuarios</button>
           <button className="menu-btn" onClick={() => handleMostrarSeccion("lugares")}>Lugares</button>

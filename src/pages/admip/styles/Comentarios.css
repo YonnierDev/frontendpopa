@@ -1,12 +1,11 @@
 .comentarios-box {
-  width: 100%;
-  margin: auto;
-  padding: 20px;
-
+  width: 800px;
+  margin-top: -5%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-left: 150px;
 }
 
 /* Contenedor tipo card para la tabla, ahora incluye título y buscador */
@@ -18,7 +17,6 @@
   box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
   margin-top: 20px;
   position: relative; /* Necesario para la decoración */
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,6 +37,7 @@
 /* Título dentro de la card */
 .card-comentarios h2 {
   margin-bottom: 10px;
+  width: 700px;
 }
 
 /* Buscador dentro de la card */
