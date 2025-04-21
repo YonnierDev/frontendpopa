@@ -71,6 +71,7 @@ const usuariosSlice = createSlice({
     usuarios: [],
     loading: false,
     error: null,
+<<<<<<< HEAD
     filtro: '',
   },
   reducers: {
@@ -78,6 +79,10 @@ const usuariosSlice = createSlice({
       state.filtro = action.payload;
     }
   },
+=======
+  },
+  reducers: {},
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsuarios.pending, (state) => {
@@ -115,5 +120,8 @@ const usuariosSlice = createSlice({
   }
 });
 
+<<<<<<< HEAD
 export const { setFiltro } = usuariosSlice.actions;
+=======
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 export default usuariosSlice.reducer;

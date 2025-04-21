@@ -1,4 +1,5 @@
 .reserva-list-container {
+<<<<<<< HEAD
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -44,3 +45,32 @@
 .gap-3 {
   gap: 1rem;
 }
+=======
+    text-align: center;
+    margin-top: 100px;
+    /* Baja la tabla */
+}
+ 
+.reserva-table {
+    width: 80%;
+    margin: 10px auto;
+    /* Centra la tabla */
+    border-collapse: collapse;
+}
+
+.reserva-table th,
+.reserva-table td {
+    border: 1px solid #ddd;
+    padding: 3px;
+    text-align: left;
+}
+
+.reserva-table th {
+    background-color: #191a1a;
+    color: white;
+}
+
+.reserva-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425

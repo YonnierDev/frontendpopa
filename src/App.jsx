@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+=======
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "./components/header/Header";
 import Navbar from "./components/navbar/Navbar";
@@ -10,6 +13,7 @@ import Register from "./pages/autenticacion/registro/Register";
 import { AlertContainer } from "./components/alert/AlertManager";
 import RolesListPage from "./pages/superadmin/roles/RolesListPage";
 import UsuariosListPage from "./pages/superadmin/usuarios/UsuariosListPage";
+<<<<<<< HEAD
 import CategoriasListPage from "./pages/superadmin/categorias/CategoriasListPage";
 import LugaresListPage from "./pages/superadmin/lugares/LugarListPage";
 import PerfilListPage from "./pages/superadmin/perfil/PerfilListPage";
@@ -34,6 +38,15 @@ const AppContent = () => {
 
   const location = useLocation();
   const hideHeaderFooter = ["/login", "/register"].includes(location.pathname);
+=======
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import CategoriasListPage from "./pages/superadmin/categorias/CategoriasListPage";
+import LugaresListPage from "./pages/superadmin/lugares/LugarListPage";
+
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 
   const checkAuth = () => {
     const token = localStorage.getItem("token");
@@ -44,7 +57,10 @@ const AppContent = () => {
       setUsername(usuario.nombre || "Usuario");
     } else {
       setIsAuthenticated(false);
+<<<<<<< HEAD
       setUsername("");
+=======
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
     }
   };
 
@@ -55,6 +71,7 @@ const AppContent = () => {
   }, []);
 
   return (
+<<<<<<< HEAD
     <div className="container-fluid d-flex flex-column min-vh-100">
       {!hideHeaderFooter && (
         isAuthenticated
@@ -135,6 +152,41 @@ const AppContent = () => {
       {!hideHeaderFooter && (isAuthenticated ? <Footer /> : <Footer2 />)}
       <AlertContainer />
     </div>
+=======
+    <Router>
+      <div className="container-fluid d-flex flex-column min-vh-100">
+        {isAuthenticated && <Header username={username} />}
+
+        <div className="row flex-grow-1">
+          {isAuthenticated && (
+            <div className="col-md-2">
+              <Navbar setIsAuthenticated={setIsAuthenticated} />
+            </div>
+          )}
+
+          <div className={`col ${isAuthenticated ? "col-md-10" : "col-12"} p-4`}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+              <Route path="/register" element={<Register />} />
+
+              
+             
+                <Route path="usuarios" element={<UsuariosListPage />} />
+                <Route path="roles" element={<RolesListPage />} />
+                <Route path="categorias" element={<CategoriasListPage />} />
+                <Route path="lugares" element={<LugaresListPage />} />
+                {/* Podés ir agregando más páginas acá (lugares, eventos, etc.) */}
+             
+            </Routes>
+          </div>
+        </div>
+
+        {isAuthenticated && <Footer />}
+      </div>
+      <AlertContainer />
+    </Router>
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   );
 };
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 
+=======
+import './RolesListPage.css';
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRoles, createRol, updateRol, deleteRol,} from '../../../store/roles/rolesSlice';

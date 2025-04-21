@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 /* Estilos del Header */
 .header {
   width: 100%;
   height: 60px;
   background-color: #000 !important;
+=======
+/* Estilos generales del Header */
+.header {
+  width: 100%;
+  height: 60px; /* Aumenta la altura del header para que no se mueva */
+  background-color: #000 !important; /* Negro sólido */
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   display: flex;
   align-items: center;
   padding: 0 20px;
@@ -13,6 +21,7 @@
   z-index: 1000;
 }
 
+<<<<<<< HEAD
 /* Logo */
 .logo {
   height: 121px !important;
@@ -21,6 +30,15 @@
 }
 
 /* Sección usuario */
+=======
+/* Logo más grande y centrado verticalmente */
+.logo {
+  height: 70px !important;
+  margin-top: -6px;
+}
+
+/* Sección de usuario alineada a la derecha */
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 .user-section {
   display: flex;
   align-items: center;
@@ -28,22 +46,40 @@
   margin-left: auto;
 }
 
+<<<<<<< HEAD
 .user-icon {
   font-size: 28px;
   color: white;
+=======
+/* Icono de usuario */
+.user-icon {
+  font-size: 28px;
+  color: white; /* Blanco para contrastar con el fondo negro */
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   cursor: pointer;
   transition: color 0.3s;
 }
 
 .user-icon:hover {
+<<<<<<< HEAD
   color: #ffcc00;
 }
 
+=======
+  color: #ffcc00; /* Amarillo para resaltar */
+}
+
+/* Dropdown con el nombre del usuario */
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 .user-dropdown {
   position: absolute;
   top: 55px;
   right: 0;
+<<<<<<< HEAD
   background: #252525;
+=======
+  background: white;
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -53,6 +89,7 @@
 .user-dropdown p {
   margin: 0;
   font-size: 14px;
+<<<<<<< HEAD
   color: white;
 }
 
@@ -64,4 +101,7 @@
 
 .user-dropdown button:hover {
   background-color: #ffcc00;
+=======
+  color: #333;
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 }

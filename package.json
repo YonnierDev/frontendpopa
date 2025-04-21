@@ -12,14 +12,21 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
     "axios": "^1.8.4",
+<<<<<<< HEAD
     "bootstrap": "^5.3.5",
     "leaflet": "^1.9.4",
+=======
+    "bootstrap": "^5.3.3",
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+<<<<<<< HEAD
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.2.0",
+=======
+>>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
     "react-router-dom": "^7.4.0",
     "react-switch": "^7.1.0",
     "react-toastify": "^11.0.5"
