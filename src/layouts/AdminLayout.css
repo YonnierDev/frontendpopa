@@ -1,0 +1,91 @@
+.admin-layout {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.admin-sidebar {
+  background-color: #343a40;
+  min-height: calc(100vh - 56px);
+  padding: 1rem;
+  position: sticky;
+  top: 56px;
+}
+
+.admin-content {
+  padding: 2rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  margin: 1rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.admin-header {
+  background-color: #343a40;
+  color: white;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.admin-nav-link {
+  color: #adb5bd;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  display: block;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+}
+
+.admin-nav-link:hover,
+.admin-nav-link.active {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.admin-table {
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.admin-table th {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  font-weight: 600;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.admin-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.admin-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.admin-btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.admin-btn-primary:hover {
+  background-color: #0056b3;
+}

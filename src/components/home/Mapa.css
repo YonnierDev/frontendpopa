@@ -1,0 +1,55 @@
+.popup-content {
+  max-width: 300px;
+  padding: 10px;
+}
+
+.popup-content h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.popup-content p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.popup-content img {
+  margin-top: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos para el modal del mapa */
+.modal-90w {
+  max-width: 98% !important;
+  margin: 0;
+}
+
+.modal-90w .modal-content {
+  background-color: #f8f9fa;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Estilos para los popups del mapa */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+}
+
+.leaflet-popup-content {
+  margin: 12px;
+  min-width: 200px;
+}
+
+.leaflet-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+}

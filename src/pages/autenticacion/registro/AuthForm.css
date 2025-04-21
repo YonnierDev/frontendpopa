@@ -1,0 +1,83 @@
+
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 4200px;
+    padding: 180px;
+  }
+
+  .auth-container-register{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 4200px;
+    padding: 50px;
+  }
+  
+  .logo-container {
+    text-align: center;
+  }
+  
+  .mt-3 {
+    
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .logo-img {
+ 
+  }
+  
+  .logo-img.large {
+    
+  }
+  
+  .auth-box {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 15px rgba(15, 15, 15, 0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .auth-box h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .auth-box input, .auth-box select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    color: #333;
+    font-size: 16px;
+  }
+  
+  .auth-box button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    background-color: #ffcc00;
+    color: #000000;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .auth-box button:hover {
+    background-color: #be9608;
+    color: #ffffff;
+  }
