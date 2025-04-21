@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Button, Badge, Form } from "react-bootstrap";
@@ -20,17 +19,6 @@ const UsuariosListPage = () => {
   const { loading, error } = useSelector((state) => state.usuarios);
   const usuarios = useSelector(selectUsuariosFiltrados);
 
-=======
-import "./UsuariosListPage.css";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUsuarios, createUsuario, updateUsuario, deleteUsuario, toggleEstadoUsuario} from "../../../store/usuarios/usuariosSlice";
-
-const UsuariosListPage = () => {
-  console.log("👉 Cargando UsuariosListPage"); // Este log te va a confirmar si entra
-  const dispatch = useDispatch();
-  const { usuarios, loading, error } = useSelector((state) => state.usuarios);
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
@@ -41,7 +29,6 @@ const UsuariosListPage = () => {
   });
   const [modoEdicion, setModoEdicion] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
-<<<<<<< HEAD
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -49,11 +36,6 @@ const UsuariosListPage = () => {
     dispatch(fetchUsuarios())
       .unwrap()
       .catch((err) => showError(`Error al cargar usuarios: ${err}`));
-=======
-
-  useEffect(() => {
-    dispatch(fetchUsuarios());
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -71,7 +53,6 @@ const UsuariosListPage = () => {
     });
     setModoEdicion(false);
     setUsuarioEditando(null);
-<<<<<<< HEAD
     setIsModalOpen(false);
   };
 
@@ -94,19 +75,6 @@ const UsuariosListPage = () => {
     } catch (err) {
       showError(`Error al ${modoEdicion ? "actualizar" : "crear"} usuario: ${err}`);
     }
-=======
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (modoEdicion && usuarioEditando) {
-      const datosActualizados = { ...form, rolid: usuarioEditando.rolid, estado: usuarioEditando.estado };
-      dispatch(updateUsuario({ id: usuarioEditando.id, usuario: datosActualizados }));
-    } else {
-      dispatch(createUsuario(form));
-    }
-    limpiarFormulario();
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   };
 
   const handleEditar = (usuario) => {
@@ -117,7 +85,6 @@ const UsuariosListPage = () => {
       apellido: usuario.apellido,
       correo: usuario.correo,
       fecha_nacimiento: usuario.fecha_nacimiento?.split("T")[0] || "",
-<<<<<<< HEAD
       contrasena: "",
       genero: usuario.genero,
     });
@@ -189,41 +156,6 @@ const UsuariosListPage = () => {
         <p>Error: {error}</p>
       ) : (
         <table className="styled-table compact">
-=======
-      contrasena: "", // No se muestra
-      genero: usuario.genero,
-    });
-  };
-
-  const handleEliminar = (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este usuario?")) {
-      dispatch(deleteUsuario(id));
-    }
-  };
-
-  const handleEstado = (usuario) => {
-    dispatch(toggleEstadoUsuario({ id: usuario.id, estado: !usuario.estado }));
-  };
-
-  return (
-    <div className="role-list-container">
-      <h2>Gestión de Usuarios</h2>
-      <form className="create-role-form" onSubmit={handleSubmit}>
-        <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} required />
-        <input name="apellido" placeholder="Apellido" value={form.apellido} onChange={handleChange} required />
-        <input name="correo" placeholder="Correo" type="email" value={form.correo} onChange={handleChange} required />
-        <input name="fecha_nacimiento" type="date" value={form.fecha_nacimiento} onChange={handleChange} required />
-        <input name="genero" placeholder="Género" value={form.genero} onChange={handleChange} required />
-        {!modoEdicion && (
-          <input name="contrasena" placeholder="Contraseña" type="password" value={form.contrasena} onChange={handleChange} required />
-        )}
-        <button className="btn" type="submit">{modoEdicion ? "Guardar Cambios" : "Crear Usuario"}</button>
-        {modoEdicion && <button className="btn" type="button" onClick={limpiarFormulario}>Cancelar</button>}
-      </form>
-
-      {loading ? <p>Cargando usuarios...</p> : error ? <p>Error: {error}</p> : (
-        <table className="styled-table">
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
           <thead>
             <tr>
               <th>Nombre</th>
@@ -235,18 +167,13 @@ const UsuariosListPage = () => {
             </tr>
           </thead>
           <tbody>
-<<<<<<< HEAD
             {usuariosFiltrados.map((usuario) => (
-=======
-            {usuarios.map((usuario) => (
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
               <tr key={usuario.id}>
                 <td>{usuario.nombre}</td>
                 <td>{usuario.apellido}</td>
                 <td>{usuario.correo}</td>
                 <td>{usuario.genero}</td>
                 <td>
-<<<<<<< HEAD
                   <label className="switch">
                     <input
                       type="checkbox"
@@ -263,15 +190,6 @@ const UsuariosListPage = () => {
                   <button className="btn btn-delete" onClick={() => handleEliminar(usuario.id)}>
                     <FaTrash />
                   </button>
-=======
-                  <button className="btn" onClick={() => handleEstado(usuario)}>
-                    {usuario.estado ? "Activo" : "Inactivo"}
-                  </button>
-                </td>
-                <td>
-                  <button className="btn" onClick={() => handleEditar(usuario)}>Editar</button>
-                  <button className="btn" onClick={() => handleEliminar(usuario.id)}>Eliminar</button>
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
                 </td>
               </tr>
             ))}

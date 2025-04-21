@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button, Badge, Form } from 'react-bootstrap';
-=======
-import './LugarListPage.css';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 import {
   fetchLugares,
   createLugar,
@@ -17,11 +11,8 @@ import {
 import { fetchUsuarios } from '../../../store/usuarios/usuariosSlice';
 import { fetchCategorias } from '../../../store/categorias/categoriasSlice';
 import { showSuccess, showError, showInfo } from '../../../components/alert/AlertManager';
-<<<<<<< HEAD
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import '../styles/SuperAdmin.css';
-=======
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
 
 const LugaresListPage = () => {
   const dispatch = useDispatch();
@@ -36,11 +27,7 @@ const LugaresListPage = () => {
     descripcion: '',
     ubicacion: '',
   });
-<<<<<<< HEAD
   const [imagen, setImagen] = useState(null);
-=======
-
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   const [editandoId, setEditandoId] = useState(null);
 
   useEffect(() => {
@@ -59,7 +46,6 @@ const LugaresListPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
       const formDataToSend = new FormData();
       formDataToSend.append('usuarioid', formData.usuarioid);
       formDataToSend.append('categoriaid', formData.categoriaid);
@@ -81,16 +67,6 @@ const LugaresListPage = () => {
 
       setFormData({ usuarioid: '', categoriaid: '', nombre: '', descripcion: '', ubicacion: '' });
       setImagen(null);
-=======
-      if (editandoId) {
-        await dispatch(updateLugar({ id: editandoId, datos: formData })).unwrap();
-        showSuccess('Lugar actualizado correctamente');
-      } else {
-        await dispatch(createLugar(formData)).unwrap();
-        showSuccess('Lugar creado exitosamente');
-      }
-      setFormData({ usuarioid: '', categoriaid: '', nombre: '', descripcion: '', ubicacion: '' });
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
       setEditandoId(null);
     } catch (err) {
       showError('Error al guardar el lugar', err);
@@ -106,10 +82,7 @@ const LugaresListPage = () => {
       descripcion: lugar.descripcion,
       ubicacion: lugar.ubicacion,
     });
-<<<<<<< HEAD
     setImagen(null); // No cargamos la imagen existente en el formulario
-=======
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   };
 
   const handleDelete = async (id) => {
@@ -158,7 +131,6 @@ const LugaresListPage = () => {
         <input name="descripcion" value={formData.descripcion} onChange={handleChange} placeholder="Descripción" required />
         <input name="ubicacion" value={formData.ubicacion} onChange={handleChange} placeholder="Ubicación" required />
 
-<<<<<<< HEAD
         {/* Campo para cargar la imagen */}
         <input
           type="file"
@@ -178,14 +150,6 @@ const LugaresListPage = () => {
               setImagen(null);
             }}
           >
-=======
-        <button className="btn" type="submit">{editandoId ? 'Actualizar' : 'Crear'}</button>
-        {editandoId && (
-          <button type="button" className="btn btn-cancel" onClick={() => {
-            setEditandoId(null);
-            setFormData({ usuarioid: '', categoriaid: '', nombre: '', descripcion: '', ubicacion: '' });
-          }}>
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
             Cancelar
           </button>
         )}
@@ -199,10 +163,7 @@ const LugaresListPage = () => {
         <table className="styled-table">
           <thead>
             <tr>
-<<<<<<< HEAD
               <th>Imagen</th> {/* Nueva columna para la imagen */}
-=======
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
               <th>Nombre</th>
               <th>Descripción</th>
               <th>Ubicación</th>
@@ -215,7 +176,6 @@ const LugaresListPage = () => {
           <tbody>
             {lugares.map((lugar) => (
               <tr key={lugar.id}>
-<<<<<<< HEAD
                 <td>
                   {lugar.imagen ? (
                     <img
@@ -227,8 +187,6 @@ const LugaresListPage = () => {
                     <span>Sin imagen</span>
                   )}
                 </td>
-=======
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
                 <td>{lugar.nombre}</td>
                 <td>{lugar.descripcion}</td>
                 <td>{lugar.ubicacion}</td>
@@ -257,8 +215,4 @@ const LugaresListPage = () => {
   );
 };
 
-<<<<<<< HEAD
 export default LugaresListPage;
-=======
-export default LugaresListPage;
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425

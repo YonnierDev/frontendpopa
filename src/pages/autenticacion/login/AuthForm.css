@@ -24,19 +24,14 @@
   }
   
   .logo-img {
-<<<<<<< HEAD
     height: 375px;
     width: auto;
     object-fit: contain;
-=======
- 
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   }
   
   .logo-img.large {
     
   }
-<<<<<<< HEAD
   .mt-3 {
     
     font-size: 16px;
@@ -48,8 +43,6 @@
     color: #333;
     text-decoration: underline;
 }
-=======
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   
   .auth-box {
     background-color: #ffffff;
@@ -91,7 +84,6 @@
   }
   
   .auth-box button:hover {
-<<<<<<< HEAD
     background-color: #dbb012;
     color: #ffffff;
   }
@@ -106,8 +98,4 @@
   .register-text a:hover {
     color: #ffcc00;  /* Cambio de color al pasar el mouse (amarillo oscuro) */
     text-decoration: underline; /* Subrayado al pasar el ratón */
-=======
-    background-color: #be9608;
-    color: #ffffff;
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
   }

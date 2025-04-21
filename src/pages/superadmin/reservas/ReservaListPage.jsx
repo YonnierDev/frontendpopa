@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Button, Badge, Form } from "react-bootstrap";
@@ -87,69 +86,21 @@ const ReservaListPage = () => {
         </div>
       ) : (
         <Table responsive hover className="superadmin-table">
-=======
-import { useEffect, useState } from "react";
-import { api } from "../api/api";
-import "./ReservaListPage.css"; // Asegúrate de importar los estilos
- 
-const ReservaListPage = () => {
-  const [reservas, setReservas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [buscar, setBuscar] = useState("");
-
-  useEffect(() => {
-    api.get("/reservas")
-      .then((res) => {
-        setReservas(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error al obtener reservas:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  const handleBuscar = (e) => {
-    setBuscar(e.target.value);
-  }
-
-  return (
-    <div className="reserva-list-container">
-      <h2>Lista de Reservas</h2>
-      <input
-      type="text"
-      placeholder="Buscar Reserva"
-      value={search}
-      onChange={handleBuscar}
-      />
-      {loading ? (
-        <p>Cargando...</p>
-      ) : reservas.length === 0 ? (
-        <p>No hay Reservas registradas.</p>
-      ) : (
-        <table className="reserva-table">
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
           <thead>
             <tr>
               <th>ID</th>
               <th>Usuario</th>
               <th>Evento</th>
-<<<<<<< HEAD
               <th>Lugar</th>
               <th>Fecha</th>
               <th>Estado</th>
               <th>Acciones</th>
-=======
-              <th>Fecha/hora</th>
-              <th>Estado</th>
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
             </tr>
           </thead>
           <tbody>
             {reservas.map((reserva) => (
               <tr key={reserva.id}>
                 <td>{reserva.id}</td>
-<<<<<<< HEAD
                 <td>{reserva.usuario?.nombre}</td>
                 <td>{reserva.evento?.nombre}</td>
                 <td>{reserva.evento?.lugar?.nombre}</td>
@@ -196,16 +147,6 @@ const ReservaListPage = () => {
             ))}
           </tbody>
         </Table>
-=======
-                <td>{reserva.usuarioid}</td>
-                <td>{reserva.eventoid}</td>
-                <td>{reserva.fecha_hora}</td>
-                <td>{reserva.estado}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
->>>>>>> ccc46c449c7b88d96706a7a04dd4d76f73543425
       )}
     </div>
   );
