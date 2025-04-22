@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import './DashboardPropietario.css';
 import { useNavigate } from 'react-router-dom';
-import { FaMapMarkerAlt, FaCheckCircle, FaTimesCircle, FaStar, FaComments } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding } from 'react-icons/fa';
 
 const DashboardPropietario = () => {
   const [lugares, setLugares] = useState([]);
@@ -35,10 +35,8 @@ const DashboardPropietario = () => {
         }
 
         const data = await response.json();
-        console.log('Lugares obtenidos:', data);
         setLugares(data);
       } catch (error) {
-        console.error('Error al obtener los lugares:', error);
         setError('Error al cargar los lugares: ' + error.message);
       } finally {
         setLoading(false);
@@ -50,89 +48,107 @@ const DashboardPropietario = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container">
+      <div className="propietario-dashboard">
         <Sidebar />
-        <div className="dashboard-content">
-          <div className="loading">Cargando...</div>
+        <div className="propietario-content">
+          <div className="propietario-loading">Cargando...</div>
         </div>
       </div>
     );
   }
 
-  const lugaresActivos = lugares.filter(lugar => lugar.estado).length;
-  const lugaresPendientes = lugares.length - lugaresActivos;
   const promedioCalificacion = lugares.length > 0
     ? (lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length).toFixed(1)
-    : 'N/A';
+    : '0.0';
   const totalComentarios = lugares.reduce((acc, lugar) => acc + (lugar.total_comentarios || 0), 0);
 
   return (
-    <div className="dashboard-container">
+    <div className="propietario-dashboard">
       <Sidebar />
-      <div className="dashboard-content">
-        <div className="dashboard-header">
-          <h2>Bienvenido, {usuario?.nombre || 'Propietario'}</h2>
+      <div className="propietario-content">
+        {/* Mensaje de bienvenida */}
+        <div className="propietario-welcome">
+          <h1>Bienvenido, {usuario?.nombre || 'Propietario'}</h1>
+          <p>Gestiona tus lugares y revisa tus estadísticas</p>
         </div>
 
         {error && (
-          <div className="error-message">
-            <FaTimesCircle />
+          <div className="propietario-error">
             {error}
           </div>
         )}
 
-        <div className="dashboard-stats">
-          <div className="stat-card">
-            <h3>🏠 Lugares Totales</h3>
-            <p>{lugares.length}</p>
-            <div className="stat-detail">
-              <span className="stat-active">✅ {lugaresActivos} activos</span>
-              <span className="stat-pending">⏳ {lugaresPendientes} pendientes</span>
+        {/* Estadísticas */}
+        <div className="propietario-stats">
+          <div className="propietario-stat-box">
+            <div className="propietario-stat-icon">
+              <FaBuilding />
+            </div>
+            <div className="propietario-stat-content">
+              <h3>Lugares Registrados</h3>
+              <p className="propietario-stat-value">{lugares.length}</p>
             </div>
           </div>
-          <div className="stat-card">
-            <h3>⭐ Promedio Calificación</h3>
-            <p>{promedioCalificacion}</p>
+
+          <div className="propietario-stat-box">
+            <div className="propietario-stat-icon">
+              <FaStar />
+            </div>
+            <div className="propietario-stat-content">
+              <h3>Calificación Promedio</h3>
+              <p className="propietario-stat-value">{promedioCalificacion}</p>
+            </div>
           </div>
-          <div className="stat-card">
-            <h3>💬 Total Comentarios</h3>
-            <p>{totalComentarios}</p>
+
+          <div className="propietario-stat-box">
+            <div className="propietario-stat-icon">
+              <FaComments />
+            </div>
+            <div className="propietario-stat-content">
+              <h3>Total de Comentarios</h3>
+              <p className="propietario-stat-value">{totalComentarios}</p>
+            </div>
           </div>
         </div>
 
-        <div className="lugares-resumen">
-          <h3>Mis Lugares</h3>
-          <div className="lugares-lista">
+        {/* Lista de lugares */}
+        <div className="propietario-places">
+          <h2>Mis Lugares</h2>
+          <div className="propietario-places-grid">
             {lugares.length === 0 ? (
-              <div className="no-lugares">
-                No tienes lugares registrados aún. ¡Crea tu primer lugar!
+              <div className="propietario-no-places">
+                No tienes lugares registrados aún
               </div>
             ) : (
               lugares.map((lugar) => (
                 <div
                   key={lugar.id}
-                  className="lugar-card"
+                  className="propietario-place-card"
                   onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
                 >
-                  {lugar.imagen && (
-                    <img src={lugar.imagen} alt={lugar.nombre} className="lugar-imagen" />
-                  )}
-                  <div className="lugar-info">
-                    <h4>{lugar.nombre}</h4>
-                    <p><FaMapMarkerAlt /> {lugar.ubicacion}</p>
-                    <p className="lugar-descripcion">{lugar.descripcion}</p>
-                    <p>
-                      <FaStar /> {lugar.calificacion_promedio?.toFixed(1) || 'N/A'}
-                      <span className="separador">•</span>
-                      <FaComments /> {lugar.total_comentarios || 0}
-                      <span className={`lugar-estado ${lugar.estado ? 'activo' : 'pendiente'}`}>
-                        {lugar.estado ? (
-                          <><FaCheckCircle /> Activo</>
-                        ) : (
-                          <><FaTimesCircle /> Pendiente</>
-                        )}
-                      </span>
+                  <div className="propietario-place-image">
+                    {lugar.imagen ? (
+                      <img src={lugar.imagen} alt={lugar.nombre} />
+                    ) : (
+                      <div className="propietario-no-image">Sin imagen</div>
+                    )}
+                  </div>
+                  <div className="propietario-place-info">
+                    <h3>{lugar.nombre}</h3>
+                    <p className="propietario-place-location">
+                      <FaMapMarkerAlt />
+                      {lugar.ubicacion}
                     </p>
+                    <div className="propietario-place-stats">
+                      <span>
+                        <FaStar /> 
+                        {lugar.calificacion_promedio?.toFixed(1) || '0.0'}
+                      </span>
+                      <span>
+                        <FaComments />
+                        {lugar.total_comentarios || 0} comentarios
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))
