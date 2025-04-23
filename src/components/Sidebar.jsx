@@ -16,18 +16,15 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
+      <div className="sidebar-header">
+        <h3>PopNocturna</h3>
+      </div>
       <div className="sidebar-menu">
         <button 
           className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}
           onClick={() => navigate('/propietario/dashboard')}
         >
-          <span className="emoji">🏠</span> Panel
-        </button>
-        <button 
-          className={`sidebar-button ${isActive('/propietario/categorias') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/categorias')}
-        >
-          <span className="emoji">📝</span> Categorías
+          <span className="emoji">🏠</span> Inicio
         </button>
         <button 
           className={`sidebar-button ${isActive('/propietario/lugares') ? 'active' : ''}`}
@@ -62,7 +59,7 @@ const Sidebar = () => {
       </div>
       <div className="logout-container">
         <button className="logout-btn" onClick={handleLogout}>
-          Cerrar Sesión
+          <span className="emoji">🚪</span> Cerrar Sesión
         </button>
       </div>
     </div>
