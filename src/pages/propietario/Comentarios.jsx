@@ -8,9 +8,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Comentarios = () => {
   const [comentarios, setComentarios] = useState([]);
-  const [cargando, setCargando] = useState(true);
   const [comentarioSeleccionado, setComentarioSeleccionado] = useState(null);
   const [motivoReporte, setMotivoReporte] = useState('');
+  const [cargando, setCargando] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     cargarComentarios();
@@ -19,46 +20,61 @@ const Comentarios = () => {
   const cargarComentarios = async () => {
     try {
       setCargando(true);
-      const response = await api.get("/comentarios");
-      setComentarios(response.data.datos || []);
+      const response = await api.get('/comentarios/evento');
+      setComentarios(response.data.comentarios || []);
     } catch (error) {
-      console.error("Error al cargar los comentarios:", error);
+      console.error('Error al cargar comentarios:', error);
       toast.error('Error al cargar los comentarios');
     } finally {
       setCargando(false);
     }
   };
 
-  const handleSolicitarOcultar = async (comentarioId) => {
-    setComentarioSeleccionado(comentarioId);
+  const handleShowModal = (comentario) => {
+    setComentarioSeleccionado(comentario);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setComentarioSeleccionado(null);
     setMotivoReporte('');
   };
 
-  const handleEnviarSolicitud = async () => {
-    if (!motivoReporte.trim()) {
-      toast.error('Por favor, ingrese el motivo del reporte');
-      return;
-    }
-
+  const reportarComentario = async () => {
     try {
-      await api.post(`/comentario/${comentarioSeleccionado}/reportar`, {
-        motivo_reporte: motivoReporte
+      if (!comentarioSeleccionado || !motivoReporte.trim()) {
+        toast.error('Por favor ingrese un motivo para el reporte');
+        return;
+      }
+
+      const comentarioId = comentarioSeleccionado.id;
+
+      if (!comentarioId) {
+        toast.error('ID del comentario inválido');
+        return;
+      }
+
+      await api.post(`/comentario/${comentarioId}/reportar`, {
+        motivo: motivoReporte,
       });
-      toast.success('Solicitud enviada correctamente');
-      setComentarioSeleccionado(null);
-      setMotivoReporte('');
+
+      toast.success('Comentario reportado correctamente');
+      handleCloseModal();
       cargarComentarios();
     } catch (error) {
-      console.error('Error al enviar la solicitud:', error);
-      toast.error('Error al enviar la solicitud');
+      console.error('Error al reportar el comentario:', error);
+      const mensaje =
+        error?.response?.data?.mensaje || 'Error al reportar el comentario';
+      toast.error(mensaje);
     }
   };
 
   return (
-    <div className="comentarios-container">
+    <div className="dashboard">
       <Sidebar />
       <div className="content-container">
-        <h1>Gestión de Comentarios</h1>
+        <h1>Comentarios</h1>
 
         {cargando ? (
           <div className="text-center">
@@ -67,42 +83,42 @@ const Comentarios = () => {
             </div>
           </div>
         ) : (
-          <div className="table-container">
+          <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Usuario</th>
-                  <th>Fecha</th>
-                  <th>Comentario</th>
+                  <th>Evento</th>
                   <th>Lugar</th>
+                  <th>Comentario</th>
+                  <th>Fecha</th>
                   <th>Estado</th>
+                  <th>Reportes</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {comentarios?.map((comentario) => (
+                {comentarios.map((comentario) => (
                   <tr key={comentario.id}>
-                    <td>
-                      <div>
-                        <div>{comentario.usuario?.nombre}</div>
-                        <small className="text-muted">{comentario.usuario?.correo}</small>
-                      </div>
-                    </td>
-                    <td>{new Date(comentario.fecha).toLocaleString()}</td>
-                    <td>{comentario.contenido}</td>
+                    <td>{comentario.evento?.nombre}</td>
                     <td>{comentario.lugar?.nombre}</td>
+                    <td>{comentario.contenido}</td>
+                    <td>{new Date(comentario.fecha_hora).toLocaleString()}</td>
                     <td>
-                      <span className={`badge ${comentario.visible ? 'bg-success' : 'bg-danger'}`}>
-                        {comentario.visible ? 'Visible' : 'Oculto'}
-                      </span>
+                      <span className="badge bg-success">Activo</span>
+                    </td>
+                    <td>
+                      {comentario.reportado ? (
+                        <span className="badge bg-danger">Reportado</span>
+                      ) : (
+                        <span className="badge bg-success">Sin Reportes</span>
+                      )}
                     </td>
                     <td>
                       <button
-                        className="btn btn-warning btn-sm"
-                        onClick={() => handleSolicitarOcultar(comentario.id)}
-                        disabled={!comentario.visible}
+                        className="btn btn-sm btn-warning"
+                        onClick={() => handleShowModal(comentario)}
                       >
-                        Solicitar Ocultar
+                        Reportar
                       </button>
                     </td>
                   </tr>
@@ -112,31 +128,40 @@ const Comentarios = () => {
           </div>
         )}
 
-        {/* Modal para solicitar ocultar comentario */}
-        {comentarioSeleccionado && (
+        {/* Modal de Reporte */}
+        {showModal && comentarioSeleccionado && (
           <div className="modal show d-block" tabIndex="-1">
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">Solicitar Ocultar Comentario</h5>
+                  <h5 className="modal-title">Reportar Comentario</h5>
                   <button
                     type="button"
                     className="btn-close"
-                    onClick={() => setComentarioSeleccionado(null)}
+                    onClick={handleCloseModal}
+                    aria-label="Close"
                   ></button>
                 </div>
                 <div className="modal-body">
-                  <div className="form-group">
-                    <label htmlFor="motivoReporte" className="form-label">
+                  <div className="mb-3">
+                    <label htmlFor="comentario" className="form-label">
+                      Comentario a reportar:
+                    </label>
+                    <p id="comentario" className="border p-2 rounded">
+                      {comentarioSeleccionado.contenido}
+                    </p>
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="motivo" className="form-label">
                       Motivo del reporte:
                     </label>
                     <textarea
-                      id="motivoReporte"
+                      id="motivo"
                       className="form-control"
-                      rows="3"
                       value={motivoReporte}
                       onChange={(e) => setMotivoReporte(e.target.value)}
-                      placeholder="Explique por qué desea ocultar este comentario..."
+                      rows="3"
+                      placeholder="Ingrese el motivo del reporte"
                     ></textarea>
                   </div>
                 </div>
@@ -144,23 +169,24 @@ const Comentarios = () => {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => setComentarioSeleccionado(null)}
+                    onClick={handleCloseModal}
                   >
                     Cancelar
                   </button>
                   <button
                     type="button"
-                    className="btn btn-primary"
-                    onClick={handleEnviarSolicitud}
+                    className="btn btn-warning"
+                    onClick={reportarComentario}
                   >
-                    Enviar Solicitud
+                    Reportar
                   </button>
                 </div>
               </div>
             </div>
           </div>
         )}
-        <ToastContainer position="bottom-right" />
+
+        <ToastContainer />
       </div>
     </div>
   );
