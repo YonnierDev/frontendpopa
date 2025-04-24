@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
-import { FaPlus, FaEdit, FaTrash, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Sidebar from '../../components/Sidebar';
 
 const Lugares = () => {
@@ -35,29 +35,38 @@ const Lugares = () => {
           throw new Error('Error al cargar categorías');
         }
         const categoriasData = await categoriasRes.json();
-        console.log('Categorías cargadas:', categoriasData);
         setCategorias(categoriasData);
 
         // Luego intentamos obtener los lugares
-        const lugaresRes = await fetch('https://popnocturna.vercel.app/api/propietario/lugares', {
-          headers: {
-            'Authorization': `Bearer ${usuario.token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const obtenerLugares = async () => {
+          const lugaresRes = await fetch('https://popnocturna.vercel.app/api/propietario/lugares', {
+            headers: {
+              'Authorization': `Bearer ${usuario.token}`,
+              'Content-Type': 'application/json'
+            }
+          });
 
-        if (!lugaresRes.ok) {
-          if (lugaresRes.status === 404) {
-            // Si no hay lugares, establecemos un array vacío
-            setLugares([]);
-            return;
+          if (!lugaresRes.ok) {
+            if (lugaresRes.status === 404) {
+              setLugares([]);
+              return;
+            }
+            throw new Error('Error al cargar lugares');
           }
-          throw new Error('Error al cargar lugares');
-        }
 
-        const lugaresData = await lugaresRes.json();
-        console.log('Lugares del usuario:', lugaresData);
-        setLugares(lugaresData); // Ya no necesitamos filtrar porque el backend ya nos da los lugares del propietario
+          const lugaresData = await lugaresRes.json();
+          setLugares(lugaresData);
+        };
+
+        // Cargar lugares inicialmente
+        await obtenerLugares();
+
+        // Configurar intervalo para actualizar lugares cada 30 segundos
+        const intervalo = setInterval(obtenerLugares, 30000);
+
+        // Limpiar intervalo cuando el componente se desmonte
+        return () => clearInterval(intervalo);
+
       } catch (error) {
         console.error('Error detallado:', error);
         setError(error.message);
@@ -325,12 +334,6 @@ const Lugares = () => {
                       onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
                     >
                       <FaEdit /> Editar
-                    </button>
-                    <button 
-                      className="btn-delete"
-                      onClick={() => handleDelete(lugar.id)}
-                    >
-                      <FaTrash /> Eliminar
                     </button>
                   </div>
                 </div>
