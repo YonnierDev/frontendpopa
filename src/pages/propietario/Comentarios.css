@@ -9,6 +9,7 @@
   padding: 2rem;
   margin-left: 250px;
   width: calc(100% - 250px);
+  overflow-x: hidden; /* Quita el scroll horizontal */
 }
 
 .content-container h1 {
@@ -26,7 +27,7 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   padding: 1.5rem;
   margin-top: 1rem;
-  overflow-x: auto;
+  overflow-x: hidden; /* Quita scroll */
 }
 
 .table {
@@ -35,26 +36,33 @@
   border-collapse: collapse;
 }
 
+/* Encabezados que no se cortan */
 .table th {
   background-color: #f8f9fa;
   border-bottom: 2px solid #dee2e6;
   padding: 1rem;
   font-weight: 600;
   color: #495057;
-  white-space: nowrap;
+  white-space: normal !important;
+  word-wrap: break-word;
+  max-width: none;
 }
 
+/* Celdas que no se cortan */
 .table td {
   padding: 1rem;
   vertical-align: middle;
   border-bottom: 1px solid #dee2e6;
+  white-space: normal !important;
+  word-wrap: break-word;
+  max-width: none;
 }
 
 .table tbody tr:hover {
   background-color: #f8f9fa;
 }
 
-/* Estilos para los badges */
+/* Badges */
 .badge {
   padding: 0.5em 0.8em;
   font-size: 0.85em;
@@ -62,7 +70,7 @@
   border-radius: 4px;
 }
 
-/* Estilos para los botones de acción */
+/* Botones de acción */
 .btn-group {
   display: flex;
   gap: 0.5rem;
@@ -74,7 +82,7 @@
   border-radius: 4px;
 }
 
-/* Estilos para el modal */
+/* Modal */
 .modal.show {
   display: block;
   background-color: rgba(0, 0, 0, 0.5);
@@ -84,13 +92,13 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  color: #212529; /* Texto negro */
+  color: #212529;
 }
 
 .modal-header,
 .modal-body,
 .modal-footer {
-  color: #212529; /* Asegura texto negro en todas las secciones del modal */
+  color: #212529;
 }
 
 .modal-header {
@@ -107,7 +115,7 @@
   padding: 1rem 1.5rem;
 }
 
-/* Estilos para los estados */
+/* Estados */
 .badge.bg-success {
   background-color: #28a745 !important;
 }
@@ -121,7 +129,7 @@
   color: #000;
 }
 
-/* Botones de acción */
+/* Botones */
 .btn-warning {
   background-color: #ffc107;
   border-color: #ffc107;
@@ -144,14 +152,14 @@
   border-color: #bd2130;
 }
 
-/* Spinner de carga */
+/* Spinner */
 .spinner-border {
   margin: 2rem auto;
   width: 3rem;
   height: 3rem;
 }
 
-/* Ajustes para dispositivos móviles */
+/* Móvil */
 @media (max-width: 768px) {
   .content-container {
     margin-left: 0;
@@ -180,7 +188,7 @@
   }
 }
 
-/* Estilos para el formulario */
+/* Formulario */
 .form-label {
   font-weight: 500;
   color: #495057;
