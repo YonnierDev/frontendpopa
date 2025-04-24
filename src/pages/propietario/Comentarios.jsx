@@ -20,7 +20,7 @@ const Comentarios = () => {
     try {
       setCargando(true);
       const response = await api.get("/comentarios");
-      setComentarios(response.data.datos);
+      setComentarios(response.data.datos || []);
     } catch (error) {
       console.error("Error al cargar los comentarios:", error);
       toast.error('Error al cargar los comentarios');
@@ -80,7 +80,7 @@ const Comentarios = () => {
                 </tr>
               </thead>
               <tbody>
-                {comentarios.map((comentario) => (
+                {comentarios?.map((comentario) => (
                   <tr key={comentario.id}>
                     <td>
                       <div>

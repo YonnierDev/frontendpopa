@@ -92,7 +92,6 @@ const Reservas = () => {
                   <th>Fecha Reserva</th>
                   <th>Fecha Evento</th>
                   <th>Estado Reserva</th>
-                  <th>Estado Evento</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -113,11 +112,6 @@ const Reservas = () => {
                     <td>
                       <span className={getAprobacionBadgeClass(reserva.aprobacion)}>
                         {reserva.aprobacion}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`badge ${reserva.estado ? 'bg-primary' : 'bg-secondary'}`}>
-                        {reserva.estado ? 'Evento Activo' : 'Evento Finalizado'}
                       </span>
                     </td>
                     <td>
