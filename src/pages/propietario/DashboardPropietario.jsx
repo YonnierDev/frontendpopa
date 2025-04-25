@@ -1,110 +1,158 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import './DashboardPropietario.css';
-import { useNavigate } from 'react-router-dom'; // ✅ Importado
+import { useNavigate } from 'react-router-dom';
+import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding } from 'react-icons/fa';
 
 const DashboardPropietario = () => {
   const [lugares, setLugares] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const API_URL = 'https://popnocturna.vercel.app/api';
-  const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
-  const navigate = useNavigate(); // ✅ Inicializado
+  const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerLugaresDelPropietario = async () => {
       try {
-        const response = await fetch(`${API_URL}/lugares`, {
+        if (!usuario || !usuario.token) {
+          navigate('/login');
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/propietario/lugares`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${usuario.token}`
           }
         });
 
         if (!response.ok) {
+          if (response.status === 401) {
+            navigate('/login');
+            return;
+          }
           throw new Error('No se pudo obtener los lugares');
         }
 
         const data = await response.json();
-
-        const lugaresPropietario = data.filter(lugar => lugar.usuarioid === usuario.usuarioId);
-        setLugares(lugaresPropietario);
+        setLugares(data);
       } catch (error) {
-        console.error('Error al obtener los lugares:', error);
         setError('Error al cargar los lugares: ' + error.message);
       } finally {
         setLoading(false);
       }
     };
 
-    if (usuario?.usuarioId) {
-      obtenerLugaresDelPropietario();
-    }
-  }, [usuario?.usuarioId, token]);
+    obtenerLugaresDelPropietario();
+  }, [usuario, navigate]);
 
   if (loading) {
     return (
-      <div className="dashboard-container">
+      <div className="propietario-dashboard">
         <Sidebar />
-        <div className="dashboard-content">
-          <div className="loading">Cargando...</div>
+        <div className="propietario-content">
+          <div className="propietario-loading">Cargando...</div>
         </div>
       </div>
     );
   }
 
+  const promedioCalificacion = lugares.length > 0
+    ? (lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length).toFixed(1)
+    : '0.0';
+  const totalComentarios = lugares.reduce((acc, lugar) => acc + (lugar.total_comentarios || 0), 0);
+
   return (
-    <div className="dashboard-container">
+    <div className="propietario-dashboard">
       <Sidebar />
-      <div className="dashboard-content">
-        <h2>Bienvenido, {usuario?.nombre || 'Propietario'}</h2>
+      <div className="propietario-content">
+        {/* Mensaje de bienvenida */}
+        <div className="propietario-welcome">
+          <h1>Bienvenido, {usuario?.nombre || 'Propietario'}</h1>
+          <p>Gestiona tus lugares y revisa tus estadísticas</p>
+        </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="propietario-error">
+            {error}
+          </div>
+        )}
 
-        <div className="dashboard-stats">
-          <div className="stat-card">
-            <h3>🗺️ Lugares Totales</h3>
-            <p>{lugares.length}</p>
+        {/* Estadísticas */}
+        <div className="propietario-stats">
+          <div className="propietario-stat-box">
+            <div className="propietario-stat-icon">
+              <FaBuilding />
+            </div>
+            <div className="propietario-stat-content">
+              <h3>Lugares Registrados</h3>
+              <p className="propietario-stat-value">{lugares.length}</p>
+            </div>
           </div>
-          <div className="stat-card">
-            <h3>⭐ Promedio Calificación</h3>
-            <p>
-              {lugares.length > 0
-                ? (
-                    lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length
-                  ).toFixed(1)
-                : 'N/A'}
-            </p>
+
+          <div className="propietario-stat-box">
+            <div className="propietario-stat-icon">
+              <FaStar />
+            </div>
+            <div className="propietario-stat-content">
+              <h3>Calificación Promedio</h3>
+              <p className="propietario-stat-value">{promedioCalificacion}</p>
+            </div>
           </div>
-          <div className="stat-card">
-            <h3>💬 Total Comentarios</h3>
-            <p>
-              {lugares.reduce((acc, lugar) => acc + (lugar.total_comentarios || 0), 0)}
-            </p>
+
+          <div className="propietario-stat-box">
+            <div className="propietario-stat-icon">
+              <FaComments />
+            </div>
+            <div className="propietario-stat-content">
+              <h3>Total de Comentarios</h3>
+              <p className="propietario-stat-value">{totalComentarios}</p>
+            </div>
           </div>
         </div>
 
-        <div className="lugares-resumen">
-          <h3>Mis Lugares</h3>
-          <div className="lugares-lista">
-            {lugares.map((lugar) => (
-              <div
-                key={lugar.id}
-                className="lugar-card"
-                onClick={() => navigate(`/propietario/lugar/${lugar.id}`)} // ✅ Navegación agregada
-                style={{ cursor: 'pointer' }} // ✅ Mejora visual para saber que es clickeable
-              >
-                <div className="lugar-info">
-                  <h4>{lugar.nombre}</h4>
-                  <p>📍 {lugar.ubicacion}</p>
-                  <p>{lugar.descripcion}</p>
-                  <p>⭐ {lugar.calificacion_promedio?.toFixed(1) || 'N/A'} | 💬 {lugar.total_comentarios || 0}</p>
-                </div>
-                {lugar.imagen && (
-                  <img src={lugar.imagen} alt={lugar.nombre} className="lugar-imagen" />
-                )}
+        {/* Lista de lugares */}
+        <div className="propietario-places">
+          <h2>Mis Lugares</h2>
+          <div className="propietario-places-grid">
+            {lugares.length === 0 ? (
+              <div className="propietario-no-places">
+                No tienes lugares registrados aún
               </div>
-            ))}
+            ) : (
+              lugares.map((lugar) => (
+                <div
+                  key={lugar.id}
+                  className="propietario-place-card"
+                  onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
+                >
+                  <div className="propietario-place-image">
+                    {lugar.imagen ? (
+                      <img src={lugar.imagen} alt={lugar.nombre} />
+                    ) : (
+                      <div className="propietario-no-image">Sin imagen</div>
+                    )}
+                  </div>
+                  <div className="propietario-place-info">
+                    <h3>{lugar.nombre}</h3>
+                    <p className="propietario-place-location">
+                      <FaMapMarkerAlt />
+                      {lugar.ubicacion}
+                    </p>
+                    <div className="propietario-place-stats">
+                      <span>
+                        <FaStar /> 
+                        {lugar.calificacion_promedio?.toFixed(1) || '0.0'}
+                      </span>
+                      <span>
+                        <FaComments />
+                        {lugar.total_comentarios || 0} comentarios
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

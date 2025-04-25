@@ -7,6 +7,7 @@ import Sidebar from '../../components/Sidebar';
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
   const [lugares, setLugares] = useState([]);  // Estado para los lugares
+  const [usuario, setUsuario] = useState('');
   const [nuevoEvento, setNuevoEvento] = useState({
     nombre: '',
     lugar: '',  // Ahora almacenamos el nombre del lugar en lugar de lugarid
@@ -19,10 +20,14 @@ const Eventos = () => {
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
 
-  // Cargar eventos y lugares al montar el componente
+  // Cargar eventos, lugares y usuario al montar el componente
   useEffect(() => {
     cargarEventos();
     cargarLugares();
+    const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'));
+    if (usuarioGuardado) {
+      setUsuario(usuarioGuardado.nombre || usuarioGuardado.username || 'Usuario');
+    }
   }, []);
 
   // Función para cargar los eventos
@@ -97,16 +102,15 @@ const Eventos = () => {
     });
   };
 
-  const handleEliminar = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este evento?')) {
-      try {
-        await api.delete(`/evento/${id}`);
-        setMensaje('Evento eliminado exitosamente');
-        cargarEventos();
-      } catch (error) {
-        setMensaje('Error al eliminar el evento');
-        console.error("Error:", error);
-      }
+  const handleCambiarEstado = async (evento) => {
+    try {
+      const nuevoEstado = !evento.estado;
+      await api.put(`/evento/${evento.id}`, { ...evento, estado: nuevoEstado });
+      setMensaje(`Evento ${nuevoEstado ? 'activado' : 'inactivado'} exitosamente`);
+      cargarEventos();
+    } catch (error) {
+      setMensaje(`Error al ${evento.estado ? 'inactivar' : 'activar'} el evento`);
+      console.error("Error:", error);
     }
   };
 
@@ -115,7 +119,7 @@ const Eventos = () => {
       <Sidebar />
       <div className="app-container">
         <div className="main-content">
-          <h2>Eventos de Popayán Nocturna</h2>
+          <h2>Eventos de {usuario}</h2>
 
           {mensaje && <div className="mensaje">{mensaje}</div>}
 
@@ -174,9 +178,12 @@ const Eventos = () => {
 
           <div className="items-list">
             {eventos.map((evento) => (
-              <div key={evento.id} className="item-card">
+              <div key={evento.id} className={`item-card ${!evento.estado ? 'inactivo' : ''}`}>
                 <div className="item-header">
                   <strong>{evento.nombre}</strong>
+                  <span className={`estado-badge ${evento.estado ? 'activo' : 'inactivo'}`}>
+                    {evento.estado ? 'Activo' : 'Inactivo'}
+                  </span>
                   <span>{new Date(evento.fecha_hora).toLocaleString()}</span>
                 </div>
                 <div className="item-content">
@@ -184,13 +191,18 @@ const Eventos = () => {
                   <div className="item-details">
                     <span>💰 Precio: ${evento.precio}</span>
                     <span>👥 Capacidad: {evento.capacidad}</span>
-                    <span>📍 Lugar: {lugares.find(lugar => lugar.id === evento.lugarid)?.nombre}</span> {/* Mostrar el nombre del lugar */}
+                    <span>📍 Lugar: {lugares.find(lugar => lugar.id === evento.lugarid)?.nombre}</span>
                   </div>
                 </div>
                 <div className="item-footer">
                   <div className="item-actions">
                     <button onClick={() => handleEditar(evento)}>Editar</button>
-                    <button onClick={() => handleEliminar(evento.id)}>Eliminar</button>
+                    <button 
+                      onClick={() => handleCambiarEstado(evento)}
+                      className={evento.estado ? 'btn-inactivar' : 'btn-activar'}
+                    >
+                      {evento.estado ? 'Inactivar' : 'Activar'}
+                    </button>
                   </div>
                 </div>
               </div>

@@ -1,90 +1,307 @@
-.dashboard-container {
+/* Estilos base para asegurar que el scroll funcione correctamente */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.propietario-dashboard {
   display: flex;
-  background-color: #fff;
-  color: #000;
+  min-height: 100vh;
+  background-color: #f5f6fa;
+  overflow-x: hidden;
 }
 
-.dashboard-content {
+.propietario-content {
   flex: 1;
-  padding: 20px;
-  color: #000;
+  padding: 1rem;
+  margin-left: 250px;
+  overflow-y: auto;
+  height: 100vh;
+  margin-top: 6rem;
+  padding-top: 3rem;
 }
 
-.dashboard-content h2 {
-  margin-top: 50px; /* Aumenté el margen para mover el texto más abajo */
-  margin-bottom: 30px;
-  font-size: 26px;
-  color: #ffffff;
+/* Sección de bienvenida */
+.propietario-welcome {
+  background: #000;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
-.dashboard-stats {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.stat-card {
-  flex: 1;
-  min-width: 250px;
-  background-color: #f5f5f5;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  color: #000 !important;
-}
-
-.stat-card h3,
-.stat-card p {
-  color: #000 !important;
-  margin: 10px 0;
+.propietario-welcome h1 {
+  margin: 0;
+  font-size: 1.5em;
   font-weight: 600;
+  line-height: 1.2;
 }
 
-.lugares-resumen h3 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #000;
+.propietario-welcome p {
+  margin: 0.5em 0 0;
+  opacity: 0.9;
+  font-size: 1em;
+  line-height: 1.4;
 }
 
-.lugares-lista {
+/* Sección de estadísticas */
+.propietario-stats {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.lugar-card {
-  background-color: #fafafa;
-  padding: 15px;
-  border-radius: 10px;
-  width: calc(33.33% - 20px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.propietario-stat-box {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.propietario-stat-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.propietario-stat-icon {
+  background: #f8f9fa;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
   color: #000;
+  flex-shrink: 0;
 }
 
-.lugar-card h4,
-.lugar-card p {
-  margin: 8px 0;
+.propietario-stat-content {
+  flex: 1;
+  min-width: 0; /* Permite que el contenido se ajuste */
+}
+
+.propietario-stat-content h3 {
+  margin: 0;
+  font-size: 1em;
+  color: #6c757d;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.propietario-stat-value {
+  margin: 0.25em 0 0;
+  font-size: 1.5em;
+  font-weight: 600;
   color: #000;
+  line-height: 1.2;
 }
 
-.lugar-imagen {
+/* Sección de lugares */
+.propietario-places {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.propietario-places h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.25em;
+  color: #ffffff;
+  font-weight: 600;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.propietario-places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.propietario-place-card {
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  gap: 1.25rem;
+}
+
+.propietario-place-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.propietario-place-image {
+  width: 12rem;
+  height: 9rem;
+  flex-shrink: 0;
+}
+
+.propietario-place-image img {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-top: 10px;
+  height: 100%;
+  object-fit: cover;
 }
 
-.error-message {
-  color: red;
-  font-weight: bold;
-  margin: 10px 0;
+.propietario-no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  color: #adb5bd;
+  font-size: 0.875em;
 }
 
-.loading {
-  font-size: 18px;
-  font-weight: bold;
+.propietario-place-info {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Permite que el contenido se ajuste */
+}
+
+.propietario-place-info h3 {
+  margin: 0;
+  font-size: 1.125em;
   color: #000;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.propietario-place-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.875em;
+  margin: 0.75rem 0;
+  line-height: 1.4;
+}
+
+.propietario-place-stats {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: auto;
+  color: #495057;
+}
+
+.propietario-place-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875em;
+  white-space: nowrap;
+}
+
+.propietario-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.875em;
+  line-height: 1.4;
+}
+
+.propietario-no-places {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  color: #6c757d;
+  border: 2px dashed #dee2e6;
+  font-size: 0.875em;
+}
+
+.propietario-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 10rem;
+  color: #6c757d;
+  font-size: 0.875em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .propietario-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .propietario-place-card {
+    flex-direction: column;
+  }
+
+  .propietario-place-image {
+    width: 100%;
+    height: 12rem;
+  }
+
+  .propietario-place-info {
+    padding: 1.25rem;
+  }
+
+  .propietario-stat-box {
+    padding: 1rem;
+  }
+
+  .propietario-stat-icon {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.25em;
+  }
+
+  .propietario-welcome,
+  .propietario-places {
+    padding: 1.25rem;
+  }
+}
+
+/* Media query para tamaños de texto más grandes */
+@media screen and (min-width: 769px) {
+  .propietario-content {
+    padding: 1.5rem;
+  }
+
+  .propietario-welcome {
+    padding: 2rem;
+  }
+
+  .propietario-welcome h1 {
+    font-size: 1.75em;
+  }
+
+  .propietario-stat-box {
+    padding: 1.5rem;
+  }
+
+  .propietario-places {
+    padding: 2rem;
+  }
 }

@@ -1,212 +1,148 @@
-/* Contenedor principal */
-.categorias-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
+/* Contenedor general */
+.app-container {
+  margin-left: 10px;
   min-height: 100vh;
-  background-color: #f4f5f7;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  box-sizing: border-box;
-}
-
-/* Cabecera de la página */
-.page-header {
-  background-color: white;
-  padding: 20px 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-/* Botones de navegación */
-.navigation-buttons {
-  display: flex;
-  gap: 15px;
-}
-
-.nav-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #2196F3, #1976D2);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 16px;
-  font-weight: 500;
-  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.2);
-}
-
-.nav-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
-  background: linear-gradient(135deg, #1976D2, #1565C0);
-}
-
-.nav-button .icon {
-  font-size: 20px;
-}
-
-/* Sección de contenido principal */
-.content-section {
-  background-color: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Mensaje de éxito o error */
-.mensaje {
-  padding: 15px;
-  margin: 0 0 20px 0;
-  border-radius: 8px;
-  background-color: #4CAF50;
-  color: white;
-  text-align: center;
-  font-weight: 500;
-  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.2);
-}
-
-/* Lista de categorías */
-.categorias-lista {
-  display: grid;
-  gap: 15px;
-  grid-template-columns: repeat(3, minmax(320px, 1fr));
-  padding: 20px;
-  margin: 0;
-}
-
-.categoria-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
   background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
-.categoria-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-}
-
-.categoria-item h3 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #2c3e50;
-  font-weight: 600;
-}
-
-.categoria-item .lugar-card {
-  font-size: 14px;
-  margin-top: 10px;
-  line-height: 1.6;
-  color: #555;
-}
-
-.categoria-item .lugar-card p {
-  margin: 5px 0;
-}
-
-/* Responsividad */
-@media (max-width: 768px) {
-  .categorias-lista {
-    grid-template-columns: 1fr;
-  }
-
-  .categoria-item {
-    gap: 15px;
-    text-align: center;
-    padding: 15px;
-  }
-}
-
-/* Ajustes para las tarjetas de categorías */
-.items-list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(320px, 1fr));
-  gap: 25px;
+/* Área principal */
+.main-content {
+  padding: 90px 30px 30px;
   width: 100%;
+}
+
+/* Contenedor del Título */
+.titulo-container {
+  margin-bottom: 10px; /* Ajusta la separación entre el título y las tarjetas */
+  margin-top: 20px; /* Mueve el título un poco hacia abajo */
+}
+
+/* Título */
+h2 {
+  font-size: 34px;
   padding: 20px;
-  margin: 0;
-  max-width: 1200px;
-}
-
-@media (max-width: 768px) {
-  .items-list {
-    grid-template-columns: 1fr;
-  }
-}
-
-.item-card {
-  background-color: #f5f5f5;
+  background-color: #000;
   border-radius: 10px;
-  padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid #ffcc00;
+  text-align: center;
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0;
+  margin-left: 230px;
+  margin-top: 80px; /* Añadido: para bajar un poco el título */
+}
+
+/* Mensajes de error/estado */
+.mensaje {
+  color: red;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+/* --- Nuevo: lista en columna --- */
+.items-list {
   display: flex;
   flex-direction: column;
-  height: auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  justify-content: flex-start;
+  gap: 20px;
+  width: 100%;
+  margin-left: 20px; /* Mueve las tarjetas hacia la izquierda */
+  margin-top: 20px; /* Baja un poco la lista de categorías */
 }
 
-.item-content {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-.item-content h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #000;
-  font-weight: 600;
-}
-
-.item-details {
-  color: #777;
-  font-size: 14px;
-}
-
-.item-actions {
+/* Tarjeta de categoría */
+.item-card {
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #ddd;
+  flex-direction: column;
+  overflow: visible;
+  width: 100%;
 }
 
-/* Personalizar scrollbar */
-.item-content::-webkit-scrollbar {
-  width: 6px;
+/* Cabecera de tarjeta: imagen + info */
+.item-header {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background-color: #101010;
+  border-bottom: 1px solid #eee;
 }
 
-.item-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+.categoria-imagen {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
-.item-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
+.item-info {
+  margin-left: 15px;
+}
+
+.item-info h3 {
+  margin: 0 0 5px;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.item-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+/* Sección de lugares */
+.item-lugares {
+  padding: 1px;
+  margin-top: 0px; /* Añadido: mueve la sección de lugares un poco hacia abajo */
+}
+
+/* Cada lugar como fila completa */
+.lugar-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: #060606;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  padding: 15px;
+  overflow: visible;
+}
+
+.lugar-imagen {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+  margin-right: 15px;
+}
+
+.lugar-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.lugar-info p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.lugar-info strong {
+  color: #ffffff;
+}
+
+/* Mensaje cuando no hay lugares */
+.sin-lugares {
+  font-style: italic;
+  color: #999999;
+  margin: 10px 0 0;
 }
