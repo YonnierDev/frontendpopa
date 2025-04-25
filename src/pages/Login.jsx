@@ -86,8 +86,8 @@ const Login = ({ setIsAuthenticated }) => {
       </div>
 
       <div className="auth-box">
-        <div className="title">
-          <h2>LOGIN</h2>
+        <div className="title" style={{ justifyContent: 'center', width: '100%' }}>
+          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0 }}>ACCESO</h2>
         </div>
 
         {error && <div className="error-message">{error}</div>}
