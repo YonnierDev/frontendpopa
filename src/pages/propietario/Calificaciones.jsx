@@ -1,46 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { api } from "../../components/api/api";
+import { api } from '../../components/api/api';
 import './Calificaciones.css';
 import Sidebar from '../../components/Sidebar';
 
 const Calificaciones = () => {
   const [calificaciones, setCalificaciones] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
   const [mensaje, setMensaje] = useState('');
 
   useEffect(() => {
     cargarCalificaciones();
-    cargarUsuarios();
   }, []);
 
   const cargarCalificaciones = async () => {
     try {
-      const response = await api.get("/calificaciones");
-      // El backend retorna { mensaje, datos }
-      setCalificaciones(response.data.datos || []);
+      const response = await api.get('/calificaciones');
+      const datos = response.data?.datos || [];
+      setCalificaciones(datos);
+      setMensaje('');
     } catch (error) {
-      console.error("Error:", error.response || error);
-      setMensaje('Error al cargar las calificaciones: ' + (error.response?.data?.mensaje || error.message));
-    }
-  };
-
-  const cargarUsuarios = async () => {
-    try {
-      const response = await api.get("/usuarios");
-      setUsuarios(response.data);
-    } catch (error) {
-      console.error("Error al cargar usuarios:", error.response || error);
+      console.error('Error al cargar calificaciones:', error.response || error);
+      setMensaje(
+        'Error al cargar las calificaciones: ' +
+        (error.response?.data?.mensaje || error.message)
+      );
     }
   };
 
   const calcularPromedio = () => {
-    const total = calificaciones.reduce((acc, c) => acc + c.puntuacion, 0);
-    return (total / calificaciones.length) || 0;
+    if (!calificaciones.length) return 0;
+    const suma = calificaciones.reduce((acc, c) => acc + c.puntuacion, 0);
+    return suma / calificaciones.length;
   };
 
-  const obtenerNombreUsuario = (usuarioid) => {
-    const usuario = usuarios.find(user => user.id === usuarioid);
-    return usuario ? usuario.nombre : 'Desconocido';
+  const verDetalle = async (id) => {
+    try {
+      const response = await api.get(`/calificacion/${id}`);
+      const detalle = response.data?.datos || response.data;
+      setDetalleSeleccionado(detalle);
+      setMensaje('');
+    } catch (error) {
+      console.error('Error al obtener detalle:', error.response || error);
+      setMensaje('Error al obtener el detalle de la calificación.');
+    }
+  };
+
+  const cerrarDetalle = () => {
+    setDetalleSeleccionado(null);
   };
 
   return (
@@ -48,12 +54,12 @@ const Calificaciones = () => {
       <Sidebar />
       <div className="app-container">
         <div className="main-content">
-          <h2>Calificaciones de Popayán Nocturna</h2>
+          <h2>Calificaciones de tus Eventos</h2>
 
           {mensaje && <div className="mensaje">{mensaje}</div>}
 
           <p className="promedio-texto">
-            Promedio de Calificaciones: ⭐ {calcularPromedio().toFixed(1)}
+            Promedio de Calificaciones: <span className="estrellas">★</span> {calcularPromedio().toFixed(1)}
           </p>
 
           <table className="tabla-calificaciones">
@@ -62,20 +68,66 @@ const Calificaciones = () => {
                 <th>Usuario</th>
                 <th>Evento</th>
                 <th>Calificación</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {calificaciones.map((calificacion) => (
-                <tr key={calificacion.id}>
-                  <td>{obtenerNombreUsuario(calificacion.usuarioid)}</td>
-                  <td>{calificacion.evento?.nombre || 'Sin evento'}</td>
-                  <td>⭐ {calificacion.puntuacion}/5</td>
+              {calificaciones.map((cal) => (
+                <tr key={cal.id}>
+                  <td>{cal.usuario?.nombre || 'Desconocido'}</td>
+                  <td>{cal.evento?.nombre || 'Evento eliminado'}</td>
+                  <td>
+                    <span className="estrellas">★</span> {cal.puntuacion}/5
+                  </td>
+                  <td>
+                    <button onClick={() => verDetalle(cal.id)}>
+                      Ver detalle
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {detalleSeleccionado && (
+        <div className="modal-overlay" onClick={cerrarDetalle}>
+          <div
+            className="modal-content"
+            onClick={e => e.stopPropagation()}
+          >
+            <h3>Detalle de Calificación</h3>
+
+            <section>
+              <h4>Usuario</h4>
+              <p>Nombre: {detalleSeleccionado.usuario?.nombre || 'Desconocido'}</p>
+              <p>Correo: {detalleSeleccionado.usuario?.correo || '-'}</p>
+            </section>
+
+            <section>
+              <h4>Evento</h4>
+              <p>Nombre: {detalleSeleccionado.evento?.nombre || 'Evento eliminado'}</p>
+              <p>Descripción: {detalleSeleccionado.evento?.descripcion || 'No disponible'}</p>
+            </section>
+
+            <section>
+              <h4>Calificación</h4>
+              <p>
+                <span className="estrellas">★</span> {detalleSeleccionado.puntuacion}/5
+              </p>
+              <p>Fecha: {new Date(detalleSeleccionado.createdAt).toLocaleString()}</p>
+              {detalleSeleccionado.mensaje && (
+                <div className="advertencia">
+                 ⚠️ {detalleSeleccionado.mensaje}
+                </div>
+              )}
+            </section>
+
+            <button onClick={cerrarDetalle}>Cerrar</button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
