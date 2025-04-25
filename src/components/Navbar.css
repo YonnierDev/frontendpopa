@@ -1,0 +1,152 @@
+/* Estilos generales */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* Navbar estilizado */
+.navbar {
+    background-color: #000;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    color: white;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    margin-left: 150px; /* Agregar margen a la izquierda */
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Estilos para la información del usuario */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.user-info:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.user-icon {
+    font-size: 18px;
+    color: white;
+}
+
+.user-name {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.logout-btn-small {
+    background-color: #ffcc00;
+    color: black;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    font-size: 0.8rem;
+}
+
+.logout-btn-small:hover {
+    background-color: #e6b800;
+}
+
+.logout-btn {
+    background-color: #ffcc00;
+    color: black;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    font-size: 0.9rem;
+}
+
+.logout-btn:hover {
+    background-color: #e6b800;
+}
+
+.nav-links li {
+    display: inline;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    padding: 15px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+/* Contenedor principal centrado */
+.main-container {
+    width: 100%;
+    padding: 0 20px; /* opcional, para espacio lateral */
+    box-sizing: border-box;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.8rem 1rem;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .user-name {
+        font-size: 12px;
+    }
+}

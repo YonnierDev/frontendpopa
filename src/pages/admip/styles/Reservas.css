@@ -1,0 +1,235 @@
+/* Contenedor principal */
+.reservas-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 40px; /* Espacio entre el formulario y la tabla */
+    margin-top: 150px; /* Separación de la barra superior */
+}
+
+/* --- FORMULARIO --- */
+.formulario-container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+}
+
+/* Estilos para el título del formulario */
+.formulario-container h3 {
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Decoración en la esquina superior izquierda */
+.formulario-container::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, gold, transparent);
+    border-top-left-radius: 15px;
+}
+
+/* Inputs del formulario */
+.formulario-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    color: black;
+}
+
+/* Botón del formulario */
+.formulario-container button {
+    background-color: yellow;
+    color: black;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.formulario-container button:hover {
+    background-color: #e6c200;
+}
+
+/* --- TABLA --- */
+.tabla-container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Decoración en la esquina superior izquierda */
+.card-reservas::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, gold, transparent);
+    border-top-left-radius: 15px;
+}
+
+/* Tabla */
+.reservas-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: white;
+}
+
+/* Encabezados */
+.reservas-tabla th {
+    background: black;
+    font-weight: bold;
+    color: white;
+    padding: 10px;
+}
+
+/* Celdas */
+.reservas-tabla td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    color: black;
+    background-color: #ffffff;
+}
+
+/* Buscador */
+.buscador-reservas {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    color: black;
+    background-color: #f8f8f8;
+}
+
+/* --- Botón Editar --- */
+.acciones{
+ .editar {
+    background: rgb(243, 208, 11); /* Amarillo */
+    color: black;
+ }
+
+ .editar:hover {
+    background: #e6c200; /* Amarillo oscuro */
+ }
+} 
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: #28a745;
+}
+
+input:checked + .slider:before {
+    transform: translateX(14px);
+}
+
+.buscador-reservas {
+    width: 100%;
+    padding: 10px;
+    margin: 20px 0;
+  }
+  
+  .card-reservas {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 100px;
+    margin-left: 150px;
+  }
+  
+  .modal-editar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .modal-contenido {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 300px;
+  }
+  
+  .modal-botones {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .modal-botones button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  

@@ -1,0 +1,148 @@
+/* Contenedor general */
+.app-container {
+  margin-left: 10px;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Área principal */
+.main-content {
+  padding: 90px 30px 30px;
+  width: 100%;
+}
+
+/* Contenedor del Título */
+.titulo-container {
+  margin-bottom: 10px; /* Ajusta la separación entre el título y las tarjetas */
+  margin-top: 20px; /* Mueve el título un poco hacia abajo */
+}
+
+/* Título */
+h2 {
+  font-size: 34px;
+  padding: 20px;
+  background-color: #000;
+  border-radius: 10px;
+  border: 1px solid #ffcc00;
+  text-align: center;
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0;
+  margin-left: 230px;
+  margin-top: 80px; /* Añadido: para bajar un poco el título */
+}
+
+/* Mensajes de error/estado */
+.mensaje {
+  color: red;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+/* --- Nuevo: lista en columna --- */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  margin-left: 20px; /* Mueve las tarjetas hacia la izquierda */
+  margin-top: 20px; /* Baja un poco la lista de categorías */
+}
+
+/* Tarjeta de categoría */
+.item-card {
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  width: 100%;
+}
+
+/* Cabecera de tarjeta: imagen + info */
+.item-header {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background-color: #101010;
+  border-bottom: 1px solid #eee;
+}
+
+.categoria-imagen {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.item-info {
+  margin-left: 15px;
+}
+
+.item-info h3 {
+  margin: 0 0 5px;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.item-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+/* Sección de lugares */
+.item-lugares {
+  padding: 1px;
+  margin-top: 0px; /* Añadido: mueve la sección de lugares un poco hacia abajo */
+}
+
+/* Cada lugar como fila completa */
+.lugar-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: #060606;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  padding: 15px;
+  overflow: visible;
+}
+
+.lugar-imagen {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+  margin-right: 15px;
+}
+
+.lugar-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.lugar-info p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.lugar-info strong {
+  color: #ffffff;
+}
+
+/* Mensaje cuando no hay lugares */
+.sin-lugares {
+  font-style: italic;
+  color: #999999;
+  margin: 10px 0 0;
+}

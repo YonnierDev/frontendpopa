@@ -1,0 +1,95 @@
+.app-container {
+  margin-left: 250px;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 250px;
+  height: 70px;
+  background-color: #000;
+  padding: 0 30px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 100;
+}
+
+.main-content {
+  padding: 90px 30px 30px;
+  width: 100%;
+}
+
+h2 {
+  font-size: 34px;
+  margin-bottom: 35px;
+  padding: 20px;
+  background-color: #000;
+  border-radius: 10px;
+  border: 1px solid #ffcc00;
+  text-align: center;
+  color: #ffcc00;
+  font-weight: 600;
+}
+
+.promedio-texto {
+  font-size: 20px;
+  color: #000;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Tabla de calificaciones */
+.tabla-calificaciones {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabla-calificaciones th,
+.tabla-calificaciones td {
+  border: 1px solid #000;
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  color: #000;
+}
+
+.tabla-calificaciones th {
+  background-color: #ffcc00;
+}
+
+.tabla-calificaciones td {
+  background-color: #f5f5f5;
+}
+
+.mensaje {
+  background-color: #ffcc00;
+  color: #000;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    margin-left: 0;
+  }
+
+  .header {
+    left: 0;
+  }
+
+  .tabla-calificaciones {
+    font-size: 14px;
+  }
+
+  .main-content {
+    padding: 80px 15px 30px;
+  }
+}

@@ -1,105 +1,83 @@
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { FaUsers, FaUser, FaLock, FaKey, FaLayerGroup, FaCity, FaCalendar, FaCreditCard, FaLaptopHouse, FaStar, FaComment, FaEnvelope } from "react-icons/fa";
 import "./navbar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import { Link, useLocation } from "react-router-dom";
-import { FaUsers, FaUser, FaLock, FaKey, FaLayerGroup, FaCity, FaCalendar, FaCreditCard, FaLaptopHouse } from "react-icons/fa";
 
-const Navbar = () => {
+const Navbar = ({ setIsAuthenticated }) => {
   const location = useLocation();
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const rolId = usuario?.rolid;
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    setIsAuthenticated(false);
+  };
+
+  const getMenuItems = () => {
+    switch (Number(rolId)) {
+      case 1: // SuperAdmin
+        return [
+          { to: "/superadmin", text: "Panel de Control", icon: FaLaptopHouse },
+          { to: "/superadmin/usuarios", text: "Usuarios", icon: FaUsers },
+          { to: "/superadmin/roles", text: "Roles", icon: FaKey },
+          { to: "/superadmin/categorias", text: "Categorías", icon: FaLayerGroup },
+          { to: "/superadmin/lugares", text: "Lugares", icon: FaCity },
+          { to: "/superadmin/reservas", text: "Reservas", icon: FaCreditCard },
+          { to: "/superadmin/perfil", text: "Perfil", icon: FaUser }
+        ];
+      case 2: // Adminp
+        return [
+          { to: "/adminp", text: "Panel de Control", icon: FaLaptopHouse },
+          { to: "/adminp/categorias", text: "Categorías", icon: FaLayerGroup },
+          { to: "/adminp/lugares", text: "Lugares", icon: FaCity },
+          { to: "/adminp/reservas", text: "Reservas", icon: FaCreditCard },
+          { to: "/adminp/usuarios", text: "Usuarios", icon: FaUsers },
+          { to: "/adminp/eventos", text: "Eventos", icon: FaCalendar },
+          { to: "/adminp/calificaciones", text: "Calificaciones", icon: FaStar },
+          { to: "/adminp/comentarios", text: "Comentarios", icon: FaComment },
+          { to: "/adminp/solicitudes", text: "Solicitudes", icon: FaEnvelope }
+        ];
+      case 3: // Propietario
+        return [
+          { to: "/propietario", text: "Panel de Control", icon: FaLaptopHouse },
+          { to: "/propietario/lugares", text: "Mis Lugares", icon: FaCity },
+          { to: "/propietario/reservas", text: "Mis Reservas", icon: FaCreditCard },
+          { to: "/propietario/perfil", text: "Mi Perfil", icon: FaUser }
+        ];
+      case 8: // Usuario normal
+        return [
+          { to: "/panel-de-control", text: "Panel de Control", icon: FaLaptopHouse },
+          { to: "/mis-reservas", text: "Mis Reservas", icon: FaCreditCard },
+          { to: "/mi-perfil", text: "Mi Perfil", icon: FaUser }
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <nav className="navbar-custom d-flex flex-column align-items-center p-3">
-      <ul className="nav-links w-100">
-      <li className="nav-item" title="panel">
-          <Link to="/panel-de-control" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/panel-de-control" ? "active" : ""}`}>
-            <FaLaptopHouse /> <span>Panel de Control</span>
-          </Link>
-        </li>  
-        {/* Cuenta */}
-        <li className="nav-section-title">Cuenta</li>
-        <li className="nav-item" title="Mi Cuenta">
-          <Link to="/perfil" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/perfil" ? "active" : ""}`}>
-            <FaUser /> <span>Perfil</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Cambio de Contraseña">
-          <Link to="/cambiar-contraseña" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/cambiar-contraseña" ? "active" : ""}`}>
-            <FaLock /> <span>Cambiar contraseña</span>
+      <ul className="nav flex-column w-100">
+        {menuItems.map((item) => (
+          <li className="nav-item" key={item.to}>
+            <Link
+              to={item.to}
+              className={`nav-link d-flex align-items-center gap-2 ${location.pathname === item.to ? "active" : ""}`}
+            >
+              <item.icon /> <span>{item.text}</span>
+            </Link>
+          </li>
+        ))}
+        <li className="nav-item mt-3">
+          <Link to="/" className="nav-link text-danger d-flex align-items-center gap-2" onClick={handleLogout}>
+            <FaLock /> <span>Cerrar Sesión</span>
           </Link>
         </li>
-
-        {/* Gestión de Usuarios */}
-        <li className="nav-section-title">Gestión de Usuarios</li>
-        <li className="nav-item" title="Usuarios">
-          <Link to="/usuarios" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/usuarios" ? "active" : ""}`}>
-            <FaUsers /> <span>Usuarios</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Roles">
-          <Link to="/roles" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/roles" ? "active" : ""}`}>
-            <FaKey /> <span>Roles</span>
-          </Link>
-        </li>
-
-        {/* Sitios Turísticos */}
-        <li className="nav-section-title">Sitios Turísticos</li>
-        <li className="nav-item" title="Categorias">
-          <Link to="/categorias" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/categorias" ? "active" : ""}`}>
-            <FaLayerGroup /> <span>Categorías</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Lugares">
-          <Link to="/lugares" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/lugares" ? "active" : ""}`}>
-            <FaCity /> <span>Lugares</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Eventos">
-          <Link to="/eventos" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/eventos" ? "active" : ""}`}>
-            <FaCalendar /> <span>Eventos</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Reservas">
-          <Link to="/reservas" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/reservas" ? "active" : ""}`}>
-            <FaCreditCard /> <span>Reservas</span>
-          </Link>
-        </li>
-
-        {/* Sitios Turísticos
-        <li className="nav-section-title">Solicitudes</li>
-        <li className="nav-item" title="Lugares">
-          <Link to="/solicitud-de-lugares" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/categorias" ? "active" : ""}`}>
-            <FaLayerGroup /> <span>Solicitudes de lugares</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Lugares">
-          <Link to="/soliciut-de-comentarios" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/lugares" ? "active" : ""}`}>
-            <FaCity /> <span>Solicitudes de comentarios</span>
-          </Link>
-        </li> */}
-
-        {/* Si querés activar lo demás más adelante, descomentá: */}
-        {/*
-        <li className="nav-item" title="Eventos">
-          <Link to="/eventos" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/eventos" ? "active" : ""}`}>
-            <FaMapMarkerAlt /> <span>Eventos</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Reservas">
-          <Link to="/reservas" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/reservas" ? "active" : ""}`}>
-            <FaMapMarkerAlt /> <span>Reservas</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Calificaciones">
-          <Link to="/calificaciones" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/calificaciones" ? "active" : ""}`}>
-            <FaCalendarAlt /> <span>Calificaciones</span>
-          </Link>
-        </li>
-        <li className="nav-item" title="Comentarios">
-          <Link to="/comentarios" className={`nav-link d-flex align-items-center gap-2 ${location.pathname === "/comentarios" ? "active" : ""}`}>
-            <FaMapMarkerAlt /> <span>Comentarios</span>
-          </Link>
-        </li>
-        */}
       </ul>
     </nav>
   );

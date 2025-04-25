@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { Row, Col, Card } from 'react-bootstrap';
 import { 
   FaUsers, 
@@ -9,8 +9,17 @@ import {
   FaCalendar, 
   FaCreditCard,
   FaChartLine,
-  FaStar 
+  FaStar,
+  FaSignOutAlt 
 } from "react-icons/fa";
+
+// Importar componentes
+import RolesListPage from "../roles/RolesListPage";
+import UsuariosListPage from "../usuarios/UsuariosListPage";
+import CategoriasListPage from "../categorias/CategoriasListPage";
+import LugaresListPage from "../lugares/LugarListPage";
+import ReservaListPage from "../reservas/ReservaListPage";
+import PerfilListPage from "../perfil/PerfilListPage";
 
 const SuperAdminPanel = () => {
   const [stats, setStats] = useState({
@@ -20,93 +29,122 @@ const SuperAdminPanel = () => {
     reservas: 0
   });
 
-  useEffect(() => {
-    // Aquí cargaríamos las estadísticas desde el backend
-    // fetchStats();
-  }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "/login";
+  };
 
-  const cards = [
-    { title: "Usuarios", icon: <FaUsers />, route: "/superadmin/usuarios" },
-    { title: "Roles", icon: <FaKey />, route: "/superadmin/roles" },
-    { title: "Categorías", icon: <FaLayerGroup />, route: "/superadmin/categorias" },
-    { title: "Lugares", icon: <FaCity />, route: "/superadmin/lugares" },
-    { title: "Eventos", icon: <FaCalendar />, route: "/superadmin/eventos" },
-    { title: "Reservas", icon: <FaCreditCard />, route: "/superadmin/reservas" },
-  ];
-
-  return (
-    <div className="superadmin-panel">
-      <h1 className="panel-title mb-4">Panel del Super Administrador</h1>
+  const SuperAdminDashboard = () => (
+    <div className="superadmin-container">
+      <div className="superadmin-header">
+        <h1 className="superadmin-title">Panel del Super Administrador</h1>
+        <button onClick={handleLogout} className="superadmin-btn superadmin-btn-logout">
+          <FaSignOutAlt /> Cerrar Sesión
+        </button>
+      </div>
       
-      <Row className="mb-4">
+      <Row className="superadmin-stats">
         <Col md={3}>
-          <Card className="stats-card">
+          <Card className="superadmin-card">
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center">
+              <div className="superadmin-card-content">
                 <div>
-                  <h6 className="text-muted mb-2">Usuarios Totales</h6>
-                  <h3 className="mb-0">{stats.usuarios}</h3>
+                  <h6 className="superadmin-card-subtitle">Usuarios Totales</h6>
+                  <h3 className="superadmin-card-value">{stats.usuarios}</h3>
                 </div>
-                <FaUsers size={24} className="stats-icon text-primary" />
+                <FaUsers className="superadmin-card-icon" />
               </div>
             </Card.Body>
           </Card>
         </Col>
         <Col md={3}>
-          <Card className="stats-card">
+          <Card className="superadmin-card">
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center">
+              <div className="superadmin-card-content">
                 <div>
-                  <h6 className="text-muted mb-2">Lugares</h6>
-                  <h3 className="mb-0">{stats.lugares}</h3>
+                  <h6 className="superadmin-card-subtitle">Lugares</h6>
+                  <h3 className="superadmin-card-value">{stats.lugares}</h3>
                 </div>
-                <FaCity size={24} className="stats-icon text-success" />
+                <FaCity className="superadmin-card-icon" />
               </div>
             </Card.Body>
           </Card>
         </Col>
         <Col md={3}>
-          <Card className="stats-card">
+          <Card className="superadmin-card">
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center">
+              <div className="superadmin-card-content">
                 <div>
-                  <h6 className="text-muted mb-2">Eventos</h6>
-                  <h3 className="mb-0">{stats.eventos}</h3>
+                  <h6 className="superadmin-card-subtitle">Eventos</h6>
+                  <h3 className="superadmin-card-value">{stats.eventos}</h3>
                 </div>
-                <FaCalendar size={24} className="stats-icon text-warning" />
+                <FaCalendar className="superadmin-card-icon" />
               </div>
             </Card.Body>
           </Card>
         </Col>
         <Col md={3}>
-          <Card className="stats-card">
+          <Card className="superadmin-card">
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center">
+              <div className="superadmin-card-content">
                 <div>
-                  <h6 className="text-muted mb-2">Reservas</h6>
-                  <h3 className="mb-0">{stats.reservas}</h3>
+                  <h6 className="superadmin-card-subtitle">Reservas</h6>
+                  <h3 className="superadmin-card-value">{stats.reservas}</h3>
                 </div>
-                <FaCreditCard size={24} className="stats-icon text-danger" />
+                <FaCreditCard className="superadmin-card-icon" />
               </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      <div className="card-container">
-        {cards.map((card, index) => (
-          <Link to={card.route} key={index} className="card-link">
-            <Card className="menu-card">
-              <Card.Body>
-                <div className="text-center">
-                  <div className="menu-card-icon">{card.icon}</div>
-                  <div className="menu-card-title">{card.title}</div>
-                </div>
-              </Card.Body>
-            </Card>
+      <Row className="superadmin-menu">
+        <Col md={2}>
+          <Link to="/superadmin/usuarios" className="superadmin-menu-item">
+            <FaUsers /> Usuarios
           </Link>
-        ))}
-      </div>
+        </Col>
+        <Col md={2}>
+          <Link to="/superadmin/roles" className="superadmin-menu-item">
+            <FaKey /> Roles
+          </Link>
+        </Col>
+        <Col md={2}>
+          <Link to="/superadmin/categorias" className="superadmin-menu-item">
+            <FaLayerGroup /> Categorías
+          </Link>
+        </Col>
+        <Col md={2}>
+          <Link to="/superadmin/lugares" className="superadmin-menu-item">
+            <FaCity /> Lugares
+          </Link>
+        </Col>
+        <Col md={2}>
+          <Link to="/superadmin/reservas" className="superadmin-menu-item">
+            <FaCreditCard /> Reservas
+          </Link>
+        </Col>
+        <Col md={2}>
+          <Link to="/superadmin/perfil" className="superadmin-menu-item">
+            <FaStar /> Perfil
+          </Link>
+        </Col>
+      </Row>
+    </div>
+  );
+
+  return (
+    <div className="superadmin-layout">
+      <Routes>
+        <Route path="/" element={<SuperAdminDashboard />} />
+        <Route path="/usuarios" element={<UsuariosListPage />} />
+        <Route path="/roles" element={<RolesListPage />} />
+        <Route path="/categorias" element={<CategoriasListPage />} />
+        <Route path="/lugares" element={<LugaresListPage />} />
+        <Route path="/reservas" element={<ReservaListPage />} />
+        <Route path="/perfil" element={<PerfilListPage />} />
+      </Routes>
     </div>
   );
 };

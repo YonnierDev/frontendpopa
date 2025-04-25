@@ -1,105 +1,140 @@
-/* Estilos comunes para todas las páginas del superadmin */
+/* Estilos específicos para el panel de SuperAdmin */
+.superadmin-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
 .superadmin-container {
   padding: 2rem;
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin: 1rem;
+}
+
+.superadmin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .superadmin-title {
   color: #343a40;
-  margin-bottom: 2rem;
+  margin: 0;
+  font-size: 1.75rem;
   font-weight: 600;
 }
 
-.filters-container {
-  background-color: #f8f9fa;
-  padding: 1rem;
+.superadmin-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.superadmin-btn-logout {
+  background-color: #dc3545;
+  color: white;
+}
+
+.superadmin-btn-logout:hover {
+  background-color: #c82333;
+}
+
+.superadmin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.superadmin-card {
+  background: white;
   border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.superadmin-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.superadmin-card-subtitle {
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.superadmin-card-value {
+  color: #343a40;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.superadmin-card-icon {
+  font-size: 2rem;
+  color: #ffc107;
+}
+
+.superadmin-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.superadmin-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  color: #343a40;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid #dee2e6;
+}
+
+.superadmin-menu-item:hover {
+  background-color: #ffc107;
+  color: #000;
+  transform: translateY(-2px);
 }
 
 /* Tablas */
 .superadmin-table {
-  margin-bottom: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-top: 1rem;
 }
 
 .superadmin-table th {
   background-color: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
+  color: #343a40;
   font-weight: 600;
+  padding: 1rem;
+  text-align: left;
 }
 
 .superadmin-table td {
-  vertical-align: middle;
+  padding: 1rem;
+  border-top: 1px solid #dee2e6;
 }
 
-/* Botones */
-.btn-primary {
-  background-color: #ffc107 !important;
-  border-color: #ffc107 !important;
-  color: #000 !important;
-}
-
-.btn-primary:hover {
-  background-color: #ffca2c !important;
-  border-color: #ffca2c !important;
-}
-
-.btn-outline-primary {
-  color: #ffc107 !important;
-  border-color: #ffc107 !important;
-  background-color: transparent !important;
-}
-
-.btn-outline-primary:hover {
-  color: #000 !important;
-  background-color: #ffc107 !important;
-  border-color: #ffc107 !important;
-}
-
-/* Badges */
-.badge {
-  font-size: 0.875rem;
-  padding: 0.5em 0.75em;
-}
-
-/* Forms */
-.form-control:focus {
-  border-color: #ffc107;
-  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
-}
-
-.form-select:focus {
-  border-color: #ffc107;
-  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
-}
-
-/* Cards */
-.stats-card {
-  background-color: white;
-  border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  transition: transform 0.2s;
-}
-
-.stats-card:hover {
-  transform: translateY(-5px);
-}
-
-.stats-icon {
-  padding: 0.5rem;
-  border-radius: 50%;
-  background-color: rgba(255, 193, 7, 0.1);
-  color: #ffc107;
-}
-
-/* Utilidades */
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-3 {
-  gap: 1rem;
+.superadmin-table tr:hover {
+  background-color: #f8f9fa;
 }

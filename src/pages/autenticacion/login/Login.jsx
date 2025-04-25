@@ -1,31 +1,80 @@
 import "./AuthForm.css";
 import { useState } from "react";
-import { api } from "../../../api/api"; 
-import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "../../../assets/logos.png";
 import { useNavigate, Link } from "react-router-dom";
-import { showSuccess, showError } from "../../../components/alert/AlertManager"; 
+import axios from "axios";
+import logo from "../../../assets/logos.png";
+import { showSuccess, showError } from "../../../components/alert/AlertManager";
 
 const Login = ({ setIsAuthenticated }) => {
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const response = await api.post("/login", { correo, contrasena });
 
-      if (response.data?.token) {
-        localStorage.setItem("token", response.data.token);
-        setIsAuthenticated(true);
-        showSuccess("¡Inicio de sesión exitoso!");
-        navigate("/panel-de-control");
-      } else {
-        throw new Error("Token no recibido");
+    if (!correo || !contrasena) {
+      setError("Por favor, completa todos los campos.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("https://popnocturna.vercel.app/api/login", {
+        correo,
+        contrasena,
+      });
+
+      console.log("Respuesta del servidor:", response.data);
+
+      const { token, usuario } = response.data;
+      const { rolid, nombre, id: usuarioId, correo: correoUsuario } = usuario;
+
+      if (!token || rolid === undefined) {
+        setError("Respuesta inválida del servidor.");
+        return;
       }
-    } catch (error) {
-      showError(error.response?.data?.message || "Error al iniciar sesión");
+
+      const rolId = parseInt(rolid);
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("usuario", JSON.stringify({
+        rolid: rolId,
+        nombre,
+        id: usuarioId,
+        correo: correoUsuario,
+        token
+      }));
+
+      setIsAuthenticated(true);
+      setError("");
+      showSuccess("¡Inicio de sesión exitoso!");
+
+      switch (rolId) {
+        case 1:
+          navigate("/superadmin", { replace: true });
+          break;
+        case 2:
+          navigate("/adminp", { replace: true });
+          break;
+        case 3:
+          navigate("/propietario", { replace: true });
+          break;
+        case 8:
+          navigate("/panel-de-control", { replace: true });
+          break;
+        default:
+          navigate("/", { replace: true });
+          break;
+      }
+
+    } catch (err) {
+      console.error("Error en login:", err);
+      if (err.response && err.response.status === 401) {
+        showError("Credenciales incorrectas.");
+      } else {
+        showError("Error al iniciar sesión. Intenta más tarde.");
+      }
     }
   };
 
@@ -35,22 +84,35 @@ const Login = ({ setIsAuthenticated }) => {
         <img src={logo} alt="Logo" className="logo-img" />
       </div>
       <div className="auth-box">
-        <h2>Iniciar Sesión</h2>
+        <div className="title">
+          <h2>LOGIN</h2>
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
+
         <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Correo"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
-            required
-          />
+          <div className="input-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Ingresa tu correo"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+              required
+            />
+          </div>
           <button type="submit">Ingresar</button>
         </form>
 

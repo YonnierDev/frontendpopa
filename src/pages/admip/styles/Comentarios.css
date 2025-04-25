@@ -1,0 +1,135 @@
+.comentarios-box {
+  width: 800px;
+  margin-top: -5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 150px;
+}
+
+/* Contenedor tipo card para la tabla, ahora incluye título y buscador */
+.card-comentarios {
+  background-color: white;
+  width: 100%;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  margin-top: 20px;
+  position: relative; /* Necesario para la decoración */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Decoración en la esquina superior izquierda */
+.card-comentarios::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, gold, transparent);
+  border-top-left-radius: 15px;
+}
+
+/* Título dentro de la card */
+.card-comentarios h2 {
+  margin-bottom: 10px;
+  width: 700px;
+}
+
+/* Buscador dentro de la card */
+.buscador-comentarios {
+  width: 400px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Tabla */
+.comentarios-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comentarios-tabla th,
+.comentarios-tabla td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: black;
+}
+
+.comentarios-tabla th {
+  background-color: #070707;
+  color: white;
+}
+
+.comentario-item:hover {
+  background-color: #f9f9f9;
+}
+
+/* Botón editar */
+.editar {
+  padding: 8px 12px;
+  background-color: #ffc107;
+  color: black;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.editar:hover {
+  background-color: #e0a800;
+}
+
+/* Switch estado */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #28a745;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
