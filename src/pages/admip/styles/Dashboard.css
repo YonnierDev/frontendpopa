@@ -73,7 +73,7 @@
 /* Botón de Cerrar Sesión en la barra lateral */
 .logout-btn {
     background-color: #ff4444;
-    color: white;
+    color: rgb(255, 255, 255);
     border: none;
     padding: 8px 12px;
     font-size: 14px;
@@ -107,3 +107,9 @@
     font-weight: bold;
     color: white;
 }
+
+.menu-btn.activo {
+    background-color: #ffcc00;
+    color: black;
+  }
+  
