@@ -4,6 +4,10 @@
   background-color: #ffffff;
 }
 
+:root {
+  --navbar-height: 80px;
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -18,21 +22,34 @@
   z-index: 100;
 }
 
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1000;
+}
+
 .main-content {
-  padding: 90px 30px 30px;
-  width: 100%;
+  position: relative;
+  padding-top: 60px !important;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 30px;
+  background: #fff;
+  min-height: 100vh;
+  z-index: 1;
 }
 
 h2 {
-  font-size: 34px;
+  margin-top: 0;
   margin-bottom: 35px;
+  font-size: 34px;
   padding: 20px;
   background-color: #000;
   border-radius: 10px;
-  border: 1px solid #ffcc00;
+  color: #fff;
   text-align: center;
-  color: #ffcc00;
-  font-weight: 600;
 }
 
 .mensaje {
@@ -178,64 +195,119 @@ h2 {
 }
 
 .item-footer {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #ddd;
   display: flex;
-  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
-.item-actions {
+.btn-editar {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 7px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.08);
+}
+
+.btn-editar:hover {
+  background: #2563eb;
+}
+
+.btn-eliminar {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 7px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.08);
+}
+
+.btn-eliminar:hover {
+  background: #b91c1c;
+}
+
+.btn-comentarios {
+  background: #f59e42;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 7px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(245,158,66,0.08);
+}
+
+.btn-comentarios:hover {
+  background: #ea580c;
+}
+
+/* Barra de filtros */
+.filtros-eventos {
   display: flex;
-  gap: 10px;
+  gap: 1rem;
+  align-items: center;
+  background: #f8f9fb;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
 
-.item-actions button {
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.item-actions button:first-child {
-  background-color: #ffcc00;
-  color: #000;
-  border: none;
-}
-
-.item-actions button:last-child {
-  background-color: transparent;
-  color: #000;
-  border: 1px solid #000;
-}
-
-.btn-activar {
-  background-color: #28a745;
-  color: white;
-  border: none;
+.filtros-eventos input[type="text"],
+.filtros-eventos select,
+.filtros-eventos input[type="date"] {
   padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  border: 1px solid #d0d4da;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
 }
 
-.btn-activar:hover {
-  background-color: #218838;
+.filtros-eventos input[type="text"]:focus,
+.filtros-eventos select:focus,
+.filtros-eventos input[type="date"]:focus {
+  border-color: #3b82f6;
 }
 
-.btn-inactivar {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+/* Resaltado de búsqueda */
+.resaltado-busqueda {
+  background: #fff3b0;
+  color: #e67e22;
+  font-weight: bold;
+  padding: 0 2px;
+  border-radius: 3px;
 }
 
-.btn-inactivar:hover {
-  background-color: #c82333;
+/* Mejora visual para mensaje de sin eventos */
+.sin-eventos {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  padding: 2rem 0;
+}
+
+/* Mejora visual para la barra de carga */
+.cargando {
+  text-align: center;
+  color: #3b82f6;
+  font-size: 1.1rem;
+  padding: 2rem 0;
+}
+
+.app-container, body, html {
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow: visible !important;
 }
 
 @media (min-width: 1400px) {

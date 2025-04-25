@@ -16,9 +16,9 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
+      {/* <div className="sidebar-header">
         <h3>PopNocturna</h3>
-      </div>
+      </div> */}
       <div className="sidebar-menu">
         <button 
           className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}

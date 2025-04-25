@@ -16,10 +16,11 @@ const Calificaciones = () => {
   const cargarCalificaciones = async () => {
     try {
       const response = await api.get("/calificaciones");
-      setCalificaciones(response.data);
+      // El backend retorna { mensaje, datos }
+      setCalificaciones(response.data.datos || []);
     } catch (error) {
       console.error("Error:", error.response || error);
-      setMensaje('Error al cargar las calificaciones: ' + (error.response?.data?.message || error.message));
+      setMensaje('Error al cargar las calificaciones: ' + (error.response?.data?.mensaje || error.message));
     }
   };
 
@@ -39,7 +40,7 @@ const Calificaciones = () => {
 
   const obtenerNombreUsuario = (usuarioid) => {
     const usuario = usuarios.find(user => user.id === usuarioid);
-    return usuario ? `${usuario.nombre} ${usuario.apellido}` : 'Desconocido';
+    return usuario ? usuario.nombre : 'Desconocido';
   };
 
   return (
@@ -59,6 +60,7 @@ const Calificaciones = () => {
             <thead>
               <tr>
                 <th>Usuario</th>
+                <th>Evento</th>
                 <th>Calificación</th>
               </tr>
             </thead>
@@ -66,6 +68,7 @@ const Calificaciones = () => {
               {calificaciones.map((calificacion) => (
                 <tr key={calificacion.id}>
                   <td>{obtenerNombreUsuario(calificacion.usuarioid)}</td>
+                  <td>{calificacion.evento?.nombre || 'Sin evento'}</td>
                   <td>⭐ {calificacion.puntuacion}/5</td>
                 </tr>
               ))}

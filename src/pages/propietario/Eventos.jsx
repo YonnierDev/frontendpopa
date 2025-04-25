@@ -1,71 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import { api } from "../../components/api/api";
-import { useNavigate } from 'react-router-dom';
-import './Eventos.css';
 import Sidebar from '../../components/Sidebar';
+import './Eventos.css';
 
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
-  const [lugares, setLugares] = useState([]);  // Estado para los lugares
-  const [usuario, setUsuario] = useState('');
+  const [comentariosEvento, setComentariosEvento] = useState({});
+  const [eventoComentariosAbierto, setEventoComentariosAbierto] = useState(null);
+  const [mensaje, setMensaje] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [lugares, setLugares] = useState([]);
   const [nuevoEvento, setNuevoEvento] = useState({
     nombre: '',
-    lugar: '',  // Ahora almacenamos el nombre del lugar en lugar de lugarid
+    lugarid: '',
     capacidad: '',
     precio: '',
     descripcion: '',
     fecha_hora: ''
   });
   const [eventoEditar, setEventoEditar] = useState(null);
-  const [mensaje, setMensaje] = useState('');
-  const navigate = useNavigate();
+  const [busqueda, setBusqueda] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState('todos');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
 
-  // Cargar eventos, lugares y usuario al montar el componente
+  useEffect(() => {
+    function updateNavbarHeight() {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        document.documentElement.style.setProperty('--navbar-height', navbar.offsetHeight + 'px');
+      }
+    }
+    updateNavbarHeight();
+    window.addEventListener('resize', updateNavbarHeight);
+    return () => window.removeEventListener('resize', updateNavbarHeight);
+  }, []);
+
   useEffect(() => {
     cargarEventos();
     cargarLugares();
-    const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'));
-    if (usuarioGuardado) {
-      setUsuario(usuarioGuardado.nombre || usuarioGuardado.username || 'Usuario');
-    }
   }, []);
 
-  // Función para cargar los eventos
   const cargarEventos = async () => {
+    setLoading(true);
     try {
       const response = await api.get("/eventos");
-      console.log('Eventos cargados:', response.data);
-      setEventos(response.data);
+      setEventos(Array.isArray(response.data.datos) ? response.data.datos : []);
+      setMensaje('');
     } catch (error) {
-      console.error("Error detallado:", error.response || error);
-      setMensaje('Error al cargar los eventos: ' + (error.response?.data?.message || error.message));
+      setMensaje('Error al cargar los eventos: ' + (error.response?.data?.mensaje || error.message));
+      setEventos([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Función para cargar los lugares
   const cargarLugares = async () => {
     try {
-      const response = await api.get("/lugares");  // Asume que tienes esta API para obtener lugares
-      setLugares(response.data);
+      const response = await api.get("/lugares");
+      setLugares(Array.isArray(response.data.datos) ? response.data.datos : response.data);
     } catch (error) {
-      console.error("Error al cargar los lugares:", error);
-      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.message || error.message));
+      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.mensaje || error.message));
+      setLugares([]);
+    }
+  };
+
+  const cargarComentariosEvento = async (eventoId) => {
+    try {
+      const response = await api.get(`/evento/${eventoId}/comentarios`);
+      setComentariosEvento(prev => ({ ...prev, [eventoId]: response.data.datos || [] }));
+      setEventoComentariosAbierto(eventoId);
+    } catch (error) {
+      setMensaje('Error al cargar los comentarios: ' + (error.response?.data?.mensaje || error.message));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const lugarSeleccionado = lugares.find(lugar => lugar.nombre === nuevoEvento.lugar); // Buscar el lugar por nombre
-      if (!lugarSeleccionado) {
-        setMensaje('El lugar seleccionado no es válido.');
+      if (!nuevoEvento.lugarid) {
+        setMensaje('Debes seleccionar un lugar.');
         return;
       }
-      const eventoData = {
-        ...nuevoEvento,
-        lugarid: lugarSeleccionado.id,  // Asignar el lugarid correspondiente
-      };
-
+      const eventoData = { ...nuevoEvento };
       if (eventoEditar) {
         await api.put(`/evento/${eventoEditar.id}`, eventoData);
         setMensaje('Evento actualizado exitosamente');
@@ -73,45 +90,51 @@ const Eventos = () => {
         await api.post("/evento", eventoData);
         setMensaje('Evento creado exitosamente');
       }
-      setNuevoEvento({
-        nombre: '',
-        lugar: '',
-        capacidad: '',
-        precio: '',
-        descripcion: '',
-        fecha_hora: ''
-      });
+      setNuevoEvento({ nombre: '', lugarid: '', capacidad: '', precio: '', descripcion: '', fecha_hora: '' });
       setEventoEditar(null);
       cargarEventos();
     } catch (error) {
-      setMensaje('Error al procesar el evento');
-      console.error("Error:", error);
+      setMensaje('Error al procesar el evento: ' + (error.response?.data?.mensaje || error.message));
     }
   };
 
   const handleEditar = (evento) => {
-    const lugar = lugares.find(lugar => lugar.id === evento.lugarid)?.nombre || ''; // Obtener el nombre del lugar
     setEventoEditar(evento);
     setNuevoEvento({
       nombre: evento.nombre,
-      lugar: lugar,
+      lugarid: evento.lugarid || (evento.lugar && evento.lugar.id) || '',
       capacidad: evento.capacidad,
       precio: evento.precio,
       descripcion: evento.descripcion,
-      fecha_hora: evento.fecha_hora
+      fecha_hora: evento.fecha_hora ? evento.fecha_hora.slice(0, 16) : ''
     });
   };
 
-  const handleCambiarEstado = async (evento) => {
+  const handleEliminar = async (eventoId) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este evento?')) return;
     try {
-      const nuevoEstado = !evento.estado;
-      await api.put(`/evento/${evento.id}`, { ...evento, estado: nuevoEstado });
-      setMensaje(`Evento ${nuevoEstado ? 'activado' : 'inactivado'} exitosamente`);
+      await api.delete(`/evento/${eventoId}`);
+      setMensaje('Evento eliminado correctamente');
       cargarEventos();
     } catch (error) {
-      setMensaje(`Error al ${evento.estado ? 'inactivar' : 'activar'} el evento`);
-      console.error("Error:", error);
+      setMensaje('Error al eliminar el evento: ' + (error.response?.data?.mensaje || error.message));
     }
+  };
+
+  // Función para resaltar coincidencias en el nombre del evento
+  const getNombreEventoResaltado = (nombre) => {
+    const partes = busqueda
+      ? nombre.split(new RegExp(`(${busqueda})`, 'gi'))
+      : [nombre];
+    return (
+      <span>
+        {partes.map((parte, idx) =>
+          busqueda && parte.toLowerCase() === busqueda.toLowerCase()
+            ? <span key={idx} className="resaltado-busqueda">{parte}</span>
+            : <span key={idx}>{parte}</span>
+        )}
+      </span>
+    );
   };
 
   return (
@@ -119,10 +142,8 @@ const Eventos = () => {
       <Sidebar />
       <div className="app-container">
         <div className="main-content">
-          <h2>Eventos de {usuario}</h2>
-
+          <h2>Mis Eventos</h2>
           {mensaje && <div className="mensaje">{mensaje}</div>}
-
           <form onSubmit={handleSubmit} className="form-container">
             <div className="form-group">
               <input
@@ -133,13 +154,13 @@ const Eventos = () => {
                 required
               />
               <select
-                value={nuevoEvento.lugar}
-                onChange={(e) => setNuevoEvento({ ...nuevoEvento, lugar: e.target.value })}
+                value={nuevoEvento.lugarid}
+                onChange={(e) => setNuevoEvento({ ...nuevoEvento, lugarid: e.target.value })}
                 required
               >
                 <option value="">Selecciona un lugar</option>
                 {lugares.map((lugar) => (
-                  <option key={lugar.id} value={lugar.nombre}>{lugar.nombre}</option>
+                  <option key={lugar.id} value={lugar.id}>{lugar.nombre}</option>
                 ))}
               </select>
             </div>
@@ -174,40 +195,108 @@ const Eventos = () => {
             <button type="submit" className="btn-crear">
               {eventoEditar ? 'Actualizar' : 'Crear'} Evento
             </button>
+            {eventoEditar && (
+              <button type="button" onClick={() => { setEventoEditar(null); setNuevoEvento({ nombre: '', lugarid: '', capacidad: '', precio: '', descripcion: '', fecha_hora: '' }); }}>
+                Cancelar
+              </button>
+            )}
           </form>
-
-          <div className="items-list">
-            {eventos.map((evento) => (
-              <div key={evento.id} className={`item-card ${!evento.estado ? 'inactivo' : ''}`}>
-                <div className="item-header">
-                  <strong>{evento.nombre}</strong>
-                  <span className={`estado-badge ${evento.estado ? 'activo' : 'inactivo'}`}>
-                    {evento.estado ? 'Activo' : 'Inactivo'}
-                  </span>
-                  <span>{new Date(evento.fecha_hora).toLocaleString()}</span>
-                </div>
-                <div className="item-content">
-                  <p>{evento.descripcion}</p>
-                  <div className="item-details">
-                    <span>💰 Precio: ${evento.precio}</span>
-                    <span>👥 Capacidad: {evento.capacidad}</span>
-                    <span>📍 Lugar: {lugares.find(lugar => lugar.id === evento.lugarid)?.nombre}</span>
-                  </div>
-                </div>
-                <div className="item-footer">
-                  <div className="item-actions">
-                    <button onClick={() => handleEditar(evento)}>Editar</button>
-                    <button 
-                      onClick={() => handleCambiarEstado(evento)}
-                      className={evento.estado ? 'btn-inactivar' : 'btn-activar'}
-                    >
-                      {evento.estado ? 'Inactivar' : 'Activar'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Filtros y búsqueda */}
+          <div className="filtros-eventos">
+            <input
+              type="text"
+              placeholder="Buscar por nombre..."
+              value={busqueda}
+              onChange={e => setBusqueda(e.target.value)}
+            />
+            <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
+              <option value="todos">Todos</option>
+              <option value="activos">Activos</option>
+              <option value="inactivos">Inactivos</option>
+            </select>
+            <input
+              type="date"
+              value={fechaInicio}
+              onChange={e => setFechaInicio(e.target.value)}
+              title="Fecha inicial"
+            />
+            <input
+              type="date"
+              value={fechaFin}
+              onChange={e => setFechaFin(e.target.value)}
+              title="Fecha final"
+            />
           </div>
+          {loading ? (
+            <div className="cargando">Cargando eventos...</div>
+          ) : (
+            <div className="items-list">
+              {eventos
+                .filter(evento => {
+                  // Filtro por nombre
+                  if (busqueda && !evento.nombre.toLowerCase().includes(busqueda.toLowerCase())) return false;
+                  // Filtro por estado
+                  if (filtroEstado === 'activos' && !evento.estado) return false;
+                  if (filtroEstado === 'inactivos' && evento.estado) return false;
+                  // Filtro por fecha
+                  if (fechaInicio && new Date(evento.fecha_hora) < new Date(fechaInicio)) return false;
+                  if (fechaFin && new Date(evento.fecha_hora) > new Date(fechaFin + 'T23:59:59')) return false;
+                  return true;
+                })
+                .length === 0 ? (
+                <div className="sin-eventos">No hay eventos que coincidan con los filtros.</div>
+              ) : (
+                eventos
+                  .filter(evento => {
+                    if (busqueda && !evento.nombre.toLowerCase().includes(busqueda.toLowerCase())) return false;
+                    if (filtroEstado === 'activos' && !evento.estado) return false;
+                    if (filtroEstado === 'inactivos' && evento.estado) return false;
+                    if (fechaInicio && new Date(evento.fecha_hora) < new Date(fechaInicio)) return false;
+                    if (fechaFin && new Date(evento.fecha_hora) > new Date(fechaFin + 'T23:59:59')) return false;
+                    return true;
+                  })
+                  .map((evento) => (
+                    <div key={evento.id} className={`item-card ${!evento.estado ? 'inactivo' : ''}`}>
+                      <div className="item-header">
+                        <strong>{getNombreEventoResaltado(evento.nombre)}</strong>
+                        <span className={`estado-badge ${evento.estado ? 'activo' : 'inactivo'}`}>{evento.estado ? 'Activo' : 'Inactivo'}</span>
+                        <span>{new Date(evento.fecha_hora).toLocaleString()}</span>
+                      </div>
+                      <div className="item-content">
+                        <p>{evento.descripcion}</p>
+                        <div className="item-details">
+                          <span>💰 Precio: ${evento.precio}</span>
+                          <span>👥 Capacidad: {evento.capacidad}</span>
+                          <span>📍 Lugar: {evento.lugar?.nombre || 'Desconocido'}</span>
+                        </div>
+                      </div>
+                      <div className="item-footer">
+                        <button onClick={() => handleEditar(evento)} className="btn-editar">Editar</button>
+                        <button onClick={() => handleEliminar(evento.id)} className="btn-eliminar">Eliminar</button>
+                        <button onClick={() => cargarComentariosEvento(evento.id)} className="btn-comentarios">
+                          {eventoComentariosAbierto === evento.id ? 'Ocultar' : 'Ver'} Comentarios
+                        </button>
+                        {eventoComentariosAbierto === evento.id && (
+                          <div className="comentarios-evento">
+                            <h4>Comentarios</h4>
+                            {comentariosEvento[evento.id]?.length === 0 && <p>No hay comentarios para este evento.</p>}
+                            <ul>
+                              {comentariosEvento[evento.id]?.map(comentario => (
+                                <li key={comentario.id} className="comentario-item">
+                                  <strong>{comentario.usuario?.nombre || 'Usuario'}</strong>:
+                                  <span> {comentario.contenido}</span>
+                                  <span className="fecha-comentario"> ({new Date(comentario.fecha_hora).toLocaleString()})</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>
