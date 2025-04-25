@@ -209,11 +209,16 @@ const Eventos = () => {
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
             />
-            <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
-              <option value="todos">Todos</option>
-              <option value="activos">Activos</option>
-              <option value="inactivos">Inactivos</option>
-            </select>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)} style={{ marginBottom: 0 }}>
+                <option value="todos">Todos</option>
+                <option value="activos">Activos</option>
+                <option value="inactivos">Inactivos</option>
+              </select>
+              <span style={{ fontSize: '0.75rem', color: '#aaa', marginTop: '2px', marginLeft: 0, display: 'block' }}>
+                Estado: todos/activos/inactivos
+              </span>
+            </div>
             <input
               type="date"
               value={fechaInicio}
@@ -273,24 +278,6 @@ const Eventos = () => {
                       <div className="item-footer">
                         <button onClick={() => handleEditar(evento)} className="btn-editar">Editar</button>
                         <button onClick={() => handleEliminar(evento.id)} className="btn-eliminar">Eliminar</button>
-                        <button onClick={() => cargarComentariosEvento(evento.id)} className="btn-comentarios">
-                          {eventoComentariosAbierto === evento.id ? 'Ocultar' : 'Ver'} Comentarios
-                        </button>
-                        {eventoComentariosAbierto === evento.id && (
-                          <div className="comentarios-evento">
-                            <h4>Comentarios</h4>
-                            {comentariosEvento[evento.id]?.length === 0 && <p>No hay comentarios para este evento.</p>}
-                            <ul>
-                              {comentariosEvento[evento.id]?.map(comentario => (
-                                <li key={comentario.id} className="comentario-item">
-                                  <strong>{comentario.usuario?.nombre || 'Usuario'}</strong>:
-                                  <span> {comentario.contenido}</span>
-                                  <span className="fecha-comentario"> ({new Date(comentario.fecha_hora).toLocaleString()})</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))
