@@ -10,19 +10,20 @@ const DashboardPropietario = () => {
   const [error, setError] = useState('');
   const API_URL = 'https://popnocturna.vercel.app/api';
   const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerLugaresDelPropietario = async () => {
       try {
-        if (!usuario || !usuario.token) {
+        if (!usuario || !token) {
           navigate('/login');
           return;
         }
 
         const response = await fetch(`${API_URL}/propietario/lugares`, {
           headers: {
-            'Authorization': `Bearer ${usuario.token}`
+            'Authorization': `Bearer ${token}`
           }
         });
 
@@ -44,7 +45,7 @@ const DashboardPropietario = () => {
     };
 
     obtenerLugaresDelPropietario();
-  }, [usuario, navigate]);
+  }, [usuario, token, navigate]);
 
   if (loading) {
     return (

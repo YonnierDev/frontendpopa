@@ -1,0 +1,20 @@
+.boton-sesion {
+  display: inline-block;
+  margin: 32px auto 0 auto;
+  padding: 18px 38px;
+  background: linear-gradient(90deg, #ff385c 0%, #ff7e5f 100%);
+  color: #fff;
+  border: none;
+  border-radius: 32px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  box-shadow: 0 4px 18px rgba(255,56,92,0.12);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.18s;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.boton-sesion:hover {
+  background: linear-gradient(90deg, #e11d48 0%, #ff385c 100%);
+  transform: translateY(-2px) scale(1.03);
+}

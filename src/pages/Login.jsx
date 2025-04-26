@@ -30,52 +30,19 @@ const Login = ({ setIsAuthenticated }) => {
         contrasena,
       });
 
-      console.log("Respuesta del servidor:", response.data);
-
-      const { token, usuario } = response.data;
-      const { rolid, nombre, id: usuarioId, correo: correoUsuario } = usuario;
-
-      if (!token || rolid === undefined) {
-        setError("Respuesta inválida del servidor.");
-        return;
-      }
-
-      const rolId = parseInt(rolid);
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("usuario", JSON.stringify({
-        rol: rolId,
-        nombre,
-        token,
-        id: usuarioId,
-        correo: correoUsuario
-      }));
-
-      setIsAuthenticated(true);
-      setError("");
-
-      switch (rolId) {
-        case 1:
-          navigate("/superadmin/dashboard");
-          break;
-        case 2:
-          navigate("/admip/dashboard");
-          break;
-        case 3:
-          navigate("/propietario/dashboard");
-          break;
-        default:
-          navigate("/login");
-          break;
-      }
-
-    } catch (err) {
-      console.error("Error en login:", err);
-      if (err.response && err.response.status === 401) {
-        setError("Credenciales incorrectas.");
-      } else {
-        setError("Error al iniciar sesión. Intenta más tarde.");
-      }
+      // Guardar usuario y token en localStorage
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
+      if (setIsAuthenticated) setIsAuthenticated(true);
+      // Redirección según el rol
+      let destino = "/"; // usuario normal o propietario
+      if (response.data.usuario.rolid === 2) destino = "/admin/dashboard";
+      if (response.data.usuario.rolid === 1) destino = "/superadmin/dashboard";
+      localStorage.setItem("redirectTo", destino);
+      window.location.reload();
+      navigate(destino); // Redirigir según el rol
+    } catch (error) {
+      setError("Correo o contraseña incorrectos.");
     }
   };
 
@@ -87,7 +54,7 @@ const Login = ({ setIsAuthenticated }) => {
 
       <div className="auth-box">
         <div className="title" style={{ justifyContent: 'center', width: '100%' }}>
-          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0 }}>ACCESO</h2>
+          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0 }}>INICIO</h2>
         </div>
 
         {error && <div className="error-message">{error}</div>}

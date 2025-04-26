@@ -39,9 +39,11 @@ const Lugares = () => {
 
         // Luego intentamos obtener los lugares
         const obtenerLugares = async () => {
+          // Obtén el token desde localStorage (no desde usuario.token)
+          const token = localStorage.getItem('token');
           const lugaresRes = await fetch('https://popnocturna.vercel.app/api/propietario/lugares', {
             headers: {
-              'Authorization': `Bearer ${usuario.token}`,
+              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           });

@@ -1,21 +1,37 @@
 import { Navigate, Outlet } from "react-router-dom";
 
-const PrivateRoute = ({ isAuthenticated, allowedRoles }) => {
-  // Validamos si hay sesión activa y datos del usuario en localStorage
+const PrivateRoute = ({ isAuthenticated, allowedRoles, rol }) => {
   const storedUser = localStorage.getItem("usuario");
+  const token = localStorage.getItem("token");
 
-  // Si no hay sesión o usuario, redirige al login
-  if (!isAuthenticated || !storedUser) {
-    return <Navigate to="/login" />;
+  let usuario;
+  let rolUsuario;
+  try {
+    usuario = storedUser ? JSON.parse(storedUser) : null;
+    rolUsuario = usuario?.rolid;
+  } catch (e) {
+    rolUsuario = undefined;
   }
 
-  // Obtenemos el rol del usuario desde el localStorage
-  const usuario = JSON.parse(storedUser);
-  const rolUsuario = usuario?.rol;
+  // LOGS DE DEPURACIÓN
+  console.log("PrivateRoute - isAuthenticated:", isAuthenticated);
+  console.log("PrivateRoute - allowedRoles:", allowedRoles);
+  console.log("PrivateRoute - rol (prop):", rol);
+  console.log("PrivateRoute - token:", token);
+  console.log("PrivateRoute - usuario (raw):", storedUser);
+  console.log("PrivateRoute - usuario (parseado):", usuario);
+  console.log("PrivateRoute - rolUsuario (localStorage):", rolUsuario);
 
-  // Si el rol no está permitido, redirige al login
-  if (!allowedRoles.includes(rolUsuario)) {
-    return <Navigate to="/login" />;
+  // Si no hay sesión o usuario, redirige al login
+  if (!isAuthenticated || !storedUser || !token) {
+    console.warn("PrivateRoute: Falta sesión o usuario/token. Redirigiendo a login.");
+    return <Navigate to="/login" replace />;
+  }
+
+  // CORRECCIÓN: Permite acceso si el rol ES IGUAL a alguno de allowedRoles, ya sea por prop o por usuario
+  if (!allowedRoles.includes(Number(rolUsuario)) && !allowedRoles.includes(Number(rol))) {
+    console.warn("PrivateRoute: Rol no permitido. Redirigiendo a login.");
+    return <Navigate to="/login" replace />;
   }
 
   // Si todo va bien, renderiza la ruta protegida
