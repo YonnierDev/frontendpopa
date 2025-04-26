@@ -32,23 +32,8 @@ const LugarDetalle = () => {
   const [tempImageSize, setTempImageSize] = useState({ width: '100%', height: 'auto' });
   const [editingSize, setEditingSize] = useState(false);
 
-  // Estado para comentarios y calificaciones (simulado por ahora)
-  const [comentarios] = useState([
-    {
-      id: 1,
-      usuario: 'Juan Pérez',
-      fecha: '2025-04-20',
-      texto: 'Excelente lugar, muy buena atención',
-      calificacion: 5
-    },
-    {
-      id: 2,
-      usuario: 'María López',
-      fecha: '2025-04-19',
-      texto: 'La música estaba muy buena, pero el servicio un poco lento',
-      calificacion: 4
-    }
-  ]);
+  // Estado para comentarios reales
+  const [comentarios, setComentarios] = useState([]);
 
   const [calificaciones] = useState({
     promedio: 4.5,
@@ -88,6 +73,32 @@ const LugarDetalle = () => {
           setEventosLugar(eventosFiltrados);
         } else {
           setEventosLugar([]);
+        }
+        // Traer comentarios reales de la API y filtrar por lugar o por evento perteneciente al lugar
+        try {
+          const usuario = JSON.parse(localStorage.getItem('usuario'));
+          const comentariosRes = await fetch('https://popnocturna.vercel.app/api/comentarios', {
+            headers: {
+              'Authorization': `Bearer ${usuario?.token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          if (comentariosRes.ok) {
+            const comentariosData = await comentariosRes.json();
+            // Filtrar comentarios asociados directamente al lugar o a un evento del lugar
+            const comentariosLugar = (comentariosData.comentarios || []).filter(com => {
+              // Si el comentario tiene lugar directo
+              if (com.lugar && Number(com.lugar.id) === Number(lugarEncontrado.id)) return true;
+              // Si el comentario tiene evento y el evento tiene lugar
+              if (com.evento && com.evento.lugar && Number(com.evento.lugar.id) === Number(lugarEncontrado.id)) return true;
+              return false;
+            });
+            setComentarios(comentariosLugar);
+          } else {
+            setComentarios([]);
+          }
+        } catch (err) {
+          setComentarios([]);
         }
         setLoading(false);
       } catch (err) {
@@ -132,6 +143,7 @@ const LugarDetalle = () => {
   if (error) return <div className="lugar-detalle">Error: {error}</div>;
   if (!lugar) return <div className="lugar-detalle">No se encontró el lugar</div>;
 
+  console.log('Comentarios traídos para este lugar:', comentarios);
   return (
     <div className="lugar-detalle">
       <Sidebar />
@@ -231,25 +243,29 @@ const LugarDetalle = () => {
             <h2>Comentarios</h2>
           </div>
           
-          {comentarios.map((comentario) => (
-            <div key={comentario.id} className="comentario">
-              <div className="comentario-header">
-                <div className="comentario-usuario">
-                  <div className="comentario-avatar">
-                    <FaUser />
+          {comentarios.length === 0 ? (
+            <p>No hay comentarios para este lugar.</p>
+          ) : (
+            comentarios.map((comentario) => (
+              <div key={comentario.id} className="comentario">
+                <div className="comentario-header">
+                  <div className="comentario-usuario">
+                    <div className="comentario-avatar">
+                      <FaUser />
+                    </div>
+                    <div className="comentario-info">
+                      <span className="comentario-nombre">{comentario.usuario?.nombre || 'Anónimo'}</span>
+                      <span className="comentario-fecha">{comentario.fecha_hora ? new Date(comentario.fecha_hora).toLocaleDateString() : ''}</span>
+                    </div>
                   </div>
-                  <div className="comentario-info">
-                    <span className="comentario-nombre">{comentario.usuario}</span>
-                    <span className="comentario-fecha">{comentario.fecha}</span>
+                  <div className="calificacion-estrellas">
+                    {renderEstrellas(comentario.calificacion || comentario.estrellas || 0)}
                   </div>
                 </div>
-                <div className="calificacion-estrellas">
-                  {renderEstrellas(comentario.calificacion)}
-                </div>
+                <p className="comentario-texto">{comentario.contenido}</p>
               </div>
-              <p className="comentario-texto">{comentario.texto}</p>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
