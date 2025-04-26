@@ -6,6 +6,7 @@ import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding } from 'react-icons/fa';
 
 const DashboardPropietario = () => {
   const [lugares, setLugares] = useState([]);
+  const [comentarios, setComentarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const API_URL = 'https://popnocturna.vercel.app/api';
@@ -44,6 +45,22 @@ const DashboardPropietario = () => {
     };
 
     obtenerLugaresDelPropietario();
+    // Cargar comentarios reales con token
+    const cargarComentarios = async () => {
+      try {
+        const response = await fetch(`${API_URL}/comentarios`, {
+          headers: {
+            'Authorization': `Bearer ${usuario.token}`
+          }
+        });
+        if (!response.ok) throw new Error('No se pudo cargar comentarios');
+        const data = await response.json();
+        setComentarios(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setComentarios([]);
+      }
+    };
+    if (usuario && usuario.token) cargarComentarios();
   }, [usuario, navigate]);
 
   if (loading) {
@@ -62,6 +79,8 @@ const DashboardPropietario = () => {
     : '0.0';
   const totalComentarios = lugares.reduce((acc, lugar) => acc + (lugar.total_comentarios || 0), 0);
 
+  console.log('comentarios:', comentarios);
+  console.log('lugares:', lugares);
   return (
     <div className="propietario-dashboard">
       <Sidebar />
@@ -144,9 +163,9 @@ const DashboardPropietario = () => {
                         <FaStar /> 
                         {lugar.calificacion_promedio?.toFixed(1) || '0.0'}
                       </span>
-                      <span>
-                        <FaComments />
-                        {lugar.total_comentarios || 0} comentarios
+                      <span style={{ color: '#111', fontWeight: 600 }}>
+                        <FaComments style={{ color: '#111', marginRight: 4 }} />
+                        {comentarios.filter(c => c.lugar === lugar.id || c.lugar_id === lugar.id).length} comentario{comentarios.filter(c => c.lugar === lugar.id || c.lugar_id === lugar.id).length !== 1 ? 's' : ''}
                       </span>
                     </div>
                   </div>

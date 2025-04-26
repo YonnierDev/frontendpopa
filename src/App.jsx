@@ -30,6 +30,7 @@ import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
+import Perfil from "./pages/propietario/Perfil";
 
 // Mostrar u ocultar Navbar
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
@@ -94,6 +95,7 @@ function App() {
             <Route path="/propietario/comentarios" element={<ComentariosProp />} />
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
+            <Route path="/propietario/perfil" element={<Perfil />} />
           </Route>
 
           {/* Ruta por defecto */}
