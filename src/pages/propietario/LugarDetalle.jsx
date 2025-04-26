@@ -62,6 +62,9 @@ const LugarDetalle = () => {
     ]
   });
 
+  // Estado para eventos del lugar
+  const [eventosLugar, setEventosLugar] = useState([]);
+
   useEffect(() => {
     const cargarDatos = async () => {
       try {
@@ -69,22 +72,29 @@ const LugarDetalle = () => {
         if (!lugaresRes.ok) {
           throw new Error(`Error al cargar los lugares: ${lugaresRes.status}`);
         }
-
         const lugaresData = await lugaresRes.json();
         const lugarEncontrado = lugaresData.find(l => l.id === parseInt(id));
-        
         if (!lugarEncontrado) {
           throw new Error('Lugar no encontrado');
         }
-
         setLugar(lugarEncontrado);
+        // Traer eventos del backend para este lugar
+        const eventosRes = await fetch('https://popnocturna.vercel.app/api/public/eventos');
+        if (eventosRes.ok) {
+          const eventosData = await eventosRes.json();
+          const eventosArray = eventosData.datos || [];
+          // Filtrar eventos por el id del lugar anidado
+          const eventosFiltrados = eventosArray.filter(ev => ev.lugar && Number(ev.lugar.id) === Number(lugarEncontrado.id));
+          setEventosLugar(eventosFiltrados);
+        } else {
+          setEventosLugar([]);
+        }
         setLoading(false);
       } catch (err) {
         setError(err.message);
         setLoading(false);
       }
     };
-
     cargarDatos();
   }, [id]);
 
@@ -175,18 +185,20 @@ const LugarDetalle = () => {
             <p>Correo: {lugar.usuario?.correo || 'No especificado'}</p>
           </div>
 
-          {lugar.eventos && lugar.eventos.length > 0 && (
-            <div className="info-card">
-              <h2>Próximos Eventos</h2>
-              {lugar.eventos.map((evento, index) => (
-                <div key={index} className="evento-item">
+          <div className="info-card">
+            <h2>Próximos Eventos</h2>
+            {eventosLugar.length === 0 ? (
+              <p>No hay próximos eventos para este lugar.</p>
+            ) : (
+              eventosLugar.map((evento, index) => (
+                <div key={evento.id || index} className="evento-item">
                   <h3>{evento.nombre}</h3>
                   <p>{evento.descripcion}</p>
-                  <p>Fecha: {new Date(evento.fecha_hora).toLocaleDateString()}</p>
+                  <p>Fecha: {evento.fecha_hora ? new Date(evento.fecha_hora).toLocaleDateString() : 'Sin fecha'}</p>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
 
         <div className="calificaciones-section">

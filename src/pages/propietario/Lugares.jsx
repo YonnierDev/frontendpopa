@@ -314,13 +314,14 @@ const Lugares = () => {
                       e.target.src = 'https://res.cloudinary.com/popaimagen/image/upload/v1744615116/default-place.jpg';
                     }}
                   />
-                  <div className={`estado-badge ${lugar.estado}`}>
-                    {lugar.estado === 'activo' ? (
-                      <><FaCheckCircle /> Activo</>
-                    ) : (
-                      <><FaTimesCircle /> Inactivo</>
-                    )}
-                  </div>
+                </div>
+                <div className={`estado-badge ${lugar.estado ? 'activo' : 'inactivo'}`}
+                  style={{position: 'absolute', top: 10, right: 10, zIndex: 2}}>
+                  {lugar.estado ? (
+                    <><FaCheckCircle /> Activo</>
+                  ) : (
+                    <><FaTimesCircle /> Inactivo</>
+                  )}
                 </div>
                 <div className="lugar-info">
                   <h3>{lugar.nombre}</h3>
@@ -333,7 +334,7 @@ const Lugares = () => {
                       className="btn-edit"
                       onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
                     >
-                      <FaEdit /> Editar
+                      <FaEdit /> Más info
                     </button>
                   </div>
                 </div>
