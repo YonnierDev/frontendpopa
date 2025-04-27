@@ -1,275 +1,445 @@
-.comentarios-super-box {
-  width: 800px;
-  margin-top: -5%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-left: 150px;
-}
-
-/* Contenedor tipo card para la tabla, ahora incluye título y buscador */
-.card-comentarios-super {
-  background-color: white;
-  width: 100%;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-  margin-top: 20px;
-  position: relative; /* Necesario para la decoración */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Decoración en la esquina superior izquierda */
-.card-comentarios-super::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, gold, transparent);
-  border-top-left-radius: 15px;
-}
-
-/* Título dentro de la card */
-.card-comentarios-super h2 {
-  margin-bottom: 10px;
-  width: 700px;
-}
-
-/* Buscador dentro de la card */
-.buscador-comentarios-super {
-  width: 400px;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Tabla */
-.comentarios-tabla-super {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.comentarios-tabla-super th,
-.comentarios-tabla-super td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-  color: black;
-}
-
-.comentarios-tabla-super th {
-  background-color: #070707;
-  color: white;
-}
-
-.comentario-item-super:hover {
-  background-color: #f9f9f9;
-}
-
-/* Botón editar */
-.editar-super {
-  padding: 8px 12px;
-  background-color: #ffc107;
-  color: black;
-  border: none;
-  cursor: pointer;
-  border-radius: 20px;
-  font-size: 14px;
-  transition: 0.3s;
-}
-
-.editar-super:hover {
-  background-color: #e0a800;
-}
-
-/* Switch estado */
-.switch-super {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-}
-
-.switch-super input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider-super {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 20px;
-}
-
-.slider-super:before {
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider-super {
-  background-color: #28a745;
-}
-
-input:checked + .slider-super:before {
-  transform: translateX(20px);
-}
-
-.superadmin-comentarios-container {
+/* Estilos generales */
+.comentarios-container {
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+  margin-left: -274px;
 }
 
-.superadmin-comentarios-header {
+/* Header */
+.comentarios-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #000000;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  width: 100%;
 }
 
-.superadmin-comentarios-title {
-  font-size: 1.75rem;
-  color: #2d2d2d;
+.comentarios-title {
+  font-size: 2.2rem;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Stats */
+.comentarios-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.comentarios-stat-card {
+  background: #ffffff;
+  padding: 1.2rem 1.8rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  min-width: 180px;
+}
+
+.comentarios-stat-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 0.5rem;
+}
+
+.comentarios-stat-label {
+  font-size: 1rem;
+  color: #666666;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.superadmin-comentarios-filters {
+/* Filtros */
+.comentarios-filters {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.superadmin-comentarios-search {
+.comentarios-search {
+  position: relative;
   flex: 1;
-  max-width: 300px;
+  max-width: 500px;
 }
 
-.superadmin-comentarios-table {
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666666;
+  font-size: 1.2rem;
+}
+
+.comentarios-form-input {
   width: 100%;
-  background: white;
+  padding: 1.2rem 1.2rem 1.2rem 3.2rem;
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.superadmin-comentarios-table th {
-  background-color: #2d2d2d;
-  color: white;
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-}
-
-.superadmin-comentarios-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
-}
-
-.superadmin-comentarios-table tr:last-child td {
-  border-bottom: none;
-}
-
-.superadmin-comentarios-table tr:hover {
-  background-color: #f8f9fa;
-}
-
-.superadmin-comentarios-content {
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.superadmin-comentarios-status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   font-weight: 500;
 }
 
-.superadmin-comentarios-status-aprobado {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+.comentarios-form-input:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 4px 12px rgba(255,204,0,0.15);
+  outline: none;
 }
 
-.superadmin-comentarios-status-pendiente {
-  background-color: #fff3e0;
-  color: #ef6c00;
+.comentarios-filter {
+  position: relative;
+  min-width: 220px;
 }
 
-.superadmin-comentarios-status-rechazado {
-  background-color: #ffebee;
-  color: #c62828;
+.filter-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666666;
+  font-size: 1.2rem;
 }
 
-.superadmin-comentarios-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.superadmin-comentarios-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: none;
+.comentarios-form-select {
+  width: 100%;
+  padding: 1.2rem 1.2rem 1.2rem 3.2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s ease;
 }
 
-.superadmin-comentarios-btn-approve {
-  background-color: #2e7d32;
-  color: white;
+.comentarios-form-select:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 4px 12px rgba(255,204,0,0.15);
+  outline: none;
 }
 
-.superadmin-comentarios-btn-reject {
-  background-color: #c62828;
-  color: white;
+/* Tabla */
+.comentarios-table-container {
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  width: 100%;
 }
 
-.superadmin-comentarios-btn:hover {
-  opacity: 0.9;
+.comentarios-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
+.comentarios-table th,
+.comentarios-table td {
+  padding: 1.4rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 1.1rem;
+  color: black;
+  
+}
+
+.comentarios-table th {
+  background: #000000;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.comentarios-table tr:hover {
+  background: #f8f9fa;
+}
+
+/* Información de usuario */
+.comentarios-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.user-icon {
+  color: #666666;
+  font-size: 1.3rem;
+}
+
+/* Contenido del comentario */
+.comentarios-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  max-width: 400px;
+}
+
+.comment-icon {
+  color: #666666;
+  font-size: 1.3rem;
+  margin-top: 0.2rem;
+}
+
+/* Información de fecha */
+.comentarios-date-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.date-icon {
+  color: #666666;
+  font-size: 1.3rem;
+}
+
+/* Estado */
+.comentarios-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.comentarios-status-badge.aceptado {
+  background: #ffcc00;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(255, 204, 0, 0.2);
+}
+
+.comentarios-status-badge.pendiente {
+  background: #ff9800;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+}
+
+.comentarios-status-badge.rechazado {
+  background: #ff0000;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.2);
+}
+
+/* Acciones */
+.comentarios-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+/* Botones */
+.comentarios-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.8rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 1.1rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.comentarios-btn-primary {
+  background-color: #ffcc00;
+  color: #000000;
+  box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2);
+}
+
+.comentarios-btn-primary:hover {
+  background-color: #e6b800;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 204, 0, 0.3);
+}
+
+.comentarios-btn-secondary {
+  background-color: #ffcc00;
+  color: #000000;
+  box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2);
+}
+
+.comentarios-btn-secondary:hover {
+  background-color: #e6b800;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 204, 0, 0.3);
+}
+
+.comentarios-btn-danger {
+  background-color: #ff0000;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.2);
+}
+
+.comentarios-btn-danger:hover {
+  background-color: #cc0000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 0, 0, 0.3);
+}
+
+/* Modal */
+.comentarios-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.comentarios-modal-content {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+.comentarios-modal-content h2 {
+  margin: 0 0 2rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #000000;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.comentarios-form-group {
+  margin-bottom: 1.8rem;
+}
+
+.comentarios-form-group label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  color: #000000;
+  font-size: 1.1rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.comentarios-form-group p {
+  margin: 0;
+  color: #666666;
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.comentarios-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+/* Loading y alertas */
+.comentarios-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #000000;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.comentarios-alert {
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.comentarios-alert-error {
+  background-color: #ff0000;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .superadmin-comentarios-header {
+  .comentarios-container {
+    padding: 1rem;
+  }
+
+  .comentarios-header {
     flex-direction: column;
     gap: 1rem;
+    padding: 1.2rem;
   }
 
-  .superadmin-comentarios-filters {
+  .comentarios-stats {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .comentarios-stat-card {
+    width: 100%;
+  }
+
+  .comentarios-filters {
     flex-direction: column;
   }
 
-  .superadmin-comentarios-search {
+  .comentarios-search,
+  .comentarios-filter {
     max-width: 100%;
   }
 
-  .superadmin-comentarios-table {
+  .comentarios-table {
     display: block;
     overflow-x: auto;
   }
 
-  .superadmin-comentarios-content {
-    max-width: 200px;
+  .comentarios-modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .comentarios-table th,
+  .comentarios-table td {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .comentarios-btn {
+    padding: 0.8rem 1.4rem;
+    font-size: 1rem;
   }
 }

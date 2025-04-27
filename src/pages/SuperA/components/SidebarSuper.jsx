@@ -15,6 +15,7 @@ import LugaresSuper from '../LugaresSuper';
 import ComentariosSuper from '../ComentariosSuper';
 import PendientesSuper from '../PendientesSuper';
 import RolesSuper from '../RolesSuper';
+import SuperAdminStats from './SuperAdminStats';
 
 const SidebarSuper = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -130,6 +131,7 @@ const SidebarSuper = () => {
                   <h2>Panel de Control</h2>
                   <p>Bienvenido, {nombreAdmin}</p>
                   <p className="superadmin-bienvenida-subtitle">Administración de Pop Nocturna</p>
+                  <SuperAdminStats />
                 </div>
               )}
               {mostrarSeccion === "categorias" && <CategoriasSuper />}

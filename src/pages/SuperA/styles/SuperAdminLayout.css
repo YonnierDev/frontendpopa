@@ -30,7 +30,7 @@
 .superadmin-dashboard-sidebar {
   width: 220px;
   min-height: 100vh;
-  background-color: #1a1a1a;
+  background-color: black;
   padding: 20px;
   position: fixed;
   left: 0;
@@ -57,7 +57,7 @@
 }
 
 .superadmin-main-wrapper {
-  width: 995px;
+  width: 992px;
   height: 982px;
   margin: 0;
   margin-left: 492px;
@@ -85,7 +85,7 @@
 
 .superadmin-bienvenida-message p {
   margin: 8px 0;
-  color: #666;
+  color: black;
   font-size: 16px;
 }
 
@@ -113,16 +113,16 @@
 
 .superadmin-menu-btn.dashboard-btn {
   margin-top: 20px;
-  border-top: 1px solid #3d3d3d;
+  border-top: 1px solid black;
   padding-top: 15px;
 }
 
 .superadmin-menu-btn:hover {
-  background-color: #2d2d2d;
+  background-color: black;
 }
 
 .superadmin-menu-btn.activo {
-  background-color: #3d3d3d;
+  background-color: black;
   font-weight: bold;
 }
 
@@ -149,7 +149,7 @@
 .superadmin-logout-container {
   margin-top: auto;
   padding-top: 20px;
-  border-top: 1px solid #3d3d3d;
+  border-top: 1px solid black;
 }
 
 .superadmin-logout-btn {
@@ -183,7 +183,7 @@
 
 .tooltip {
   position: absolute;
-  background-color: #2d2d2d;
+  background-color: black;
   color: white;
   padding: 8px 12px;
   border-radius: 6px;
@@ -303,8 +303,8 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 73px;
-  background-color: #1a1a1a;
+  height: 75px;
+  background-color: black;
   color: white;
   display: flex;
   align-items: center;
@@ -335,7 +335,7 @@
 }
 
 .superadmin-collapse-btn:hover {
-  background-color: #2d2d2d;
+  background-color: black;
 }
 
 .superadmin-collapse-btn svg {
@@ -383,7 +383,7 @@
 }
 
 .superadmin-user-btn:hover {
-  background-color: #2d2d2d;
+  background-color: black;
 }
 
 .superadmin-user-btn svg {
@@ -394,7 +394,7 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: #1a1a1a;
+  background-color: black;
   border-radius: 8px;
   padding: 8px;
   min-width: 200px;
@@ -404,7 +404,7 @@
 
 .superadmin-user-info {
   padding: 8px;
-  border-bottom: 1px solid #2d2d2d;
+  border-bottom: 1px solid black;
   margin-bottom: 8px;
 }
 
@@ -428,7 +428,7 @@
 }
 
 .superadmin-logout-btn:hover {
-  background-color: #2d2d2d;
+  background-color: black;
 }
 
 .superadmin-logout-btn svg {

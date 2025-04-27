@@ -558,3 +558,405 @@ input:checked + .slider:before {
     gap: 5px;
   }
 }
+
+/* Estilos generales */
+.lugares-container {
+  padding: 2rem;
+  background-color: #ffffff;
+  min-height: 100vh;
+  margin-left: -274px;
+}
+
+/* Header */
+.lugares-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #000000;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.lugares-title {
+  font-size: 1.8rem;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 600;
+}
+
+.lugares-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Botones */
+.lugares-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lugares-btn-primary {
+  background-color: #ffcc00;
+  color: #000000;
+}
+
+.lugares-btn-primary:hover {
+  background-color: #e6b800;
+  transform: translateY(-2px);
+}
+
+.lugares-btn-secondary {
+  background-color: #ffcc00;
+  color: #000000;
+}
+
+.lugares-btn-secondary:hover {
+  background-color: #e6b800;
+}
+
+.lugares-btn-danger {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+
+.lugares-btn-danger:hover {
+  background-color: #cc0000;
+}
+
+/* Búsqueda */
+.lugares-search-container {
+  margin-bottom: 2rem;
+}
+
+.lugares-search {
+  position: relative;
+  max-width: 500px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ffffff;
+}
+
+.lugares-form-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.lugares-form-input:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 0 0 2px rgba(255,204,0,0.2);
+  outline: none;
+}
+
+/* Tabla */
+.lugares-table-container {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  margin-left: -274px;
+}
+
+.lugares-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lugares-table th,
+.lugares-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.lugares-table th {
+  background: #000000;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.lugares-table tr:hover {
+  background: #f8f9fa;
+}
+
+/* Imagen del lugar */
+.lugar-imagen {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.lugar-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-imagen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  color: #666666;
+  font-size: 1.5rem;
+}
+
+/* Información del lugar */
+.lugar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lugar-info h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.lugar-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666666;
+}
+
+.lugar-icon {
+  color: #ffcc00;
+  margin-right: 0.5rem;
+}
+
+/* Estado y aprobación */
+.lugar-status-column {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lugar-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.lugar-status-badge.active {
+  background: #ffcc00;
+  color: #000000;
+}
+
+.lugar-status-badge.inactive {
+  background: #ff0000;
+  color: #ffffff;
+}
+
+/* Switch */
+.lugar-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.lugar-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.lugar-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cccccc;
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.lugar-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .lugar-slider {
+  background-color: #ffcc00;
+}
+
+input:focus + .lugar-slider {
+  box-shadow: 0 0 1px #ffcc00;
+}
+
+input:checked + .lugar-slider:before {
+  transform: translateX(20px);
+}
+
+/* Acciones */
+.lugares-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Modal */
+.lugares-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lugares-modal-content {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.lugares-modal-content h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.lugares-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.lugares-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #000000;
+}
+
+.lugares-form-group input,
+.lugares-form-group select,
+.lugares-form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.lugares-form-group input:focus,
+.lugares-form-group select:focus,
+.lugares-form-group textarea:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 0 0 2px rgba(255,204,0,0.2);
+  outline: none;
+}
+
+.lugares-form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.lugares-image-preview {
+  margin-top: 1rem;
+  max-width: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.lugares-image-preview img {
+  width: 100%;
+  height: auto;
+}
+
+.lugares-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Loading y alertas */
+.lugares-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #000000;
+}
+
+.lugares-alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.lugares-alert-error {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lugares-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .lugares-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .lugares-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .lugares-modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}
