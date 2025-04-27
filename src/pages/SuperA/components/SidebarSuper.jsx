@@ -24,31 +24,7 @@ const SidebarSuper = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAdminNombre = async () => {
-      try {
-        const response = await axios.get("https://popnocturna.vercel.app/api/usuario/2");
-        setNombreAdmin(response.data.nombre || "Administrador");
-      } catch (error) {
-        console.error("Error al obtener el administrador:", error);
-        setNombreAdmin("Administrador");
-      }
-    };
-
-    const fetchCantidadSolicitudes = async () => {
-      try {
-        const res = await axios.get("https://popnocturna.vercel.app/api/propietario/aprobar");
-        const pendientes = res.data.filter(s => s.estado === "pendiente").length;
-        setCantidadSolicitudes(pendientes);
-      } catch (err) {
-        console.error("Error al contar solicitudes:", err);
-        setCantidadSolicitudes(0);
-      }
-    };
-
-    fetchAdminNombre();
-    fetchCantidadSolicitudes();
-  }, []);
+  
 
   const handleLogout = () => {
     localStorage.removeItem('token');

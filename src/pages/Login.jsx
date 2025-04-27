@@ -44,7 +44,7 @@ const Login = ({ setIsAuthenticated }) => {
       let destino = "/"; // Usuario normal por defecto
       switch (response.data.usuario.rolid) {
         case 1:
-          destino = "/superadmin"; // Superadmin
+          destino = "/superadmin/dashboard"; // Superadmin
           break;
         case 2:
           destino = "/admip/dashboard"; // Admin

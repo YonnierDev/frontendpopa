@@ -1,10 +1,24 @@
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AppRoutes from "./AppRoutes";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Navbar from "./components/Navbar";
+import PrivateRoute from "./components/PrivateRoute";
 
 // Páginas públicas
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
+// Super Admin
+import SuperAdminPanel from "./pages/SuperA/SuperAdminPanel";
+import UsuariosSuper from "./pages/SuperA/UsuariosSuper";
+import ComentariosSuper from "./pages/SuperA/ComentariosSuper";
+import LugaresSuper from "./pages/SuperA/LugaresSuper";
+import EventosSuper from "./pages/SuperA/EventosSuper";
+import ReservasSuper from "./pages/SuperA/ReservasSuper";
+import CalificacionesSuper from "./pages/SuperA/CalificacionesSuper";
+import CategoriasSuper from "./pages/SuperA/CategoriasSuper";
 
 // Admin
 import DashboardAdmip from "./pages/admip/Dashboard";
@@ -32,6 +46,29 @@ const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const publicPaths = ["/login", "/register"];
   if (publicPaths.includes(location.pathname)) return null;
   return isAuthenticated ? <Navbar rol={rol} /> : null;
+};
+
+// Función para obtener el estado inicial de autenticación
+const getInitialAuth = () => {
+  const token = localStorage.getItem("token");
+  const usuario = localStorage.getItem("usuario");
+  let rol = null;
+  
+  if (token && usuario) {
+    try {
+      const userObj = JSON.parse(usuario);
+      rol = userObj?.rolid;
+    } catch (error) {
+      console.error("Error al parsear usuario:", error);
+    }
+  }
+
+  return {
+    isAuthenticated: Boolean(token && usuario),
+    token,
+    usuario,
+    rol
+  };
 };
 
 function App() {
@@ -101,6 +138,18 @@ function App() {
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRol={setRol} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
+
+          {/* Rutas protegidas - SUPER ADMIN (rol: 1) */}
+          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}>
+            <Route path="/superadmin/dashboard" element={<SuperAdminPanel />} />
+            <Route path="/superadmin/usuarios" element={<UsuariosSuper />} />
+            <Route path="/superadmin/comentarios" element={<ComentariosSuper />} />
+            <Route path="/superadmin/lugares" element={<LugaresSuper />} />
+            <Route path="/superadmin/eventos" element={<EventosSuper />} />
+            <Route path="/superadmin/reservas" element={<ReservasSuper />} />
+            <Route path="/superadmin/calificaciones" element={<CalificacionesSuper />} />
+            <Route path="/superadmin/categorias" element={<CategoriasSuper />} />
+          </Route>
 
           {/* Rutas protegidas - ADMIN (rol: 2) */}
           <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} />}>
