@@ -4,10 +4,13 @@
   background-color: #ffffff;
 }
 
+<<<<<<< HEAD
+=======
 :root {
   --navbar-height: 80px;
 }
 
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 .header {
   position: fixed;
   top: 0;
@@ -22,6 +25,23 @@
   z-index: 100;
 }
 
+<<<<<<< HEAD
+.main-content {
+  padding: 90px 30px 30px;
+  width: 100%;
+}
+
+h2 {
+  font-size: 34px;
+  margin-bottom: 35px;
+  padding: 20px;
+  background-color: #000;
+  border-radius: 10px;
+  border: 1px solid #ffcc00;
+  text-align: center;
+  color: #ffcc00;
+  font-weight: 600;
+=======
 .navbar {
   position: fixed;
   top: 0;
@@ -50,6 +70,7 @@ h2 {
   border-radius: 10px;
   color: #fff;
   text-align: center;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .mensaje {
@@ -195,6 +216,66 @@ h2 {
 }
 
 .item-footer {
+<<<<<<< HEAD
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.item-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.item-actions button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.item-actions button:first-child {
+  background-color: #ffcc00;
+  color: #000;
+  border: none;
+}
+
+.item-actions button:last-child {
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
+}
+
+.btn-activar {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-activar:hover {
+  background-color: #218838;
+}
+
+.btn-inactivar {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-inactivar:hover {
+  background-color: #c82333;
+=======
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
@@ -308,6 +389,7 @@ h2 {
   min-height: 100vh !important;
   height: auto !important;
   overflow: visible !important;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 @media (min-width: 1400px) {

@@ -14,6 +14,13 @@ const Sidebar = () => {
     navigate('/login');
   };
 
+<<<<<<< HEAD
+  return (
+    <div className="sidebar">
+      <div className="sidebar-header">
+        <h3>PopNocturna</h3>
+      </div>
+=======
   // Mostrar botón solo en LugarDetalle (ruta real: /propietario/lugar/:id)
   const showVolverLugares = /\/propietario\/lugar\//i.test(location.pathname);
 
@@ -22,6 +29,7 @@ const Sidebar = () => {
       {/* <div className="sidebar-header">
         <h3>PopNocturna</h3>
       </div> */}
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
       <div className="sidebar-menu">
         <button 
           className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}
@@ -59,6 +67,8 @@ const Sidebar = () => {
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>
+<<<<<<< HEAD
+=======
         {showVolverLugares && (
           <button
             className="sidebar-button sidebar-volver-lugares"
@@ -84,6 +94,7 @@ const Sidebar = () => {
             Volver a lugares
           </button>
         )}
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
       </div>
       <div className="logout-container">
         <button className="logout-btn" onClick={handleLogout}>

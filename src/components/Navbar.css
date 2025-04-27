@@ -13,7 +13,13 @@ body {
 
 /* Navbar estilizado */
 .navbar {
+    background-color: #000;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
+<<<<<<< HEAD
+    position: fixed;
+=======
     height: 70px;
     min-height: 70px;
     max-height: 90px;
@@ -25,6 +31,7 @@ body {
     box-shadow: 0 2px 20px 0 rgba(20,22,30,0.10);
     z-index: 100;
     position: sticky;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
     top: 0;
     transition: height 0.2s;
 }
@@ -38,6 +45,23 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+<<<<<<< HEAD
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    color: white;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    margin-left: 150px; /* Agregar margen a la izquierda */
+=======
     position: relative;
 }
 
@@ -77,18 +101,33 @@ body {
     margin: auto;
     height: fit-content;
     width: fit-content;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .nav-right {
     display: flex;
     align-items: center;
+<<<<<<< HEAD
+    gap: 15px;
+}
+
+/* Estilos para la información del usuario */
+=======
     gap: 10px;
 }
 
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 .user-info {
     display: flex;
     align-items: center;
     gap: 10px;
+<<<<<<< HEAD
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s;
+=======
     padding: 2px 8px;
     border-radius: 16px;
     background-color: rgba(255, 255, 255, 0.1);
@@ -96,6 +135,7 @@ body {
     transition: background-color 0.3s;
     font-size: 12px;
     position: relative;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .user-info:hover {
@@ -103,15 +143,23 @@ body {
 }
 
 .user-icon {
+<<<<<<< HEAD
+    font-size: 18px;
+=======
     font-size: 15px;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
     color: white;
 }
 
 .user-name {
     color: white;
     font-weight: bold;
+<<<<<<< HEAD
+    font-size: 14px;
+=======
     font-size: 12px;
     margin-left: 8px;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .logout-btn-small {
@@ -270,6 +318,17 @@ body {
 /* Ajustes responsivos */
 @media (max-width: 768px) {
     .navbar {
+<<<<<<< HEAD
+        padding: 0.8rem 1rem;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .user-name {
+        font-size: 12px;
+=======
         padding: 0.1rem 0.5rem;
         min-height: 32px;
         height: 32px;
@@ -280,5 +339,6 @@ body {
     }
     .user-name {
         font-size: 10px;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
     }
 }

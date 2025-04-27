@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+<<<<<<< HEAD
+import ChangePasswordModal from './ChangePasswordModal';
+=======
 import PerfilPopover from './PerfilPopover';
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 
 const Navbar = ({ rol }) => {
   const navigate = useNavigate();
@@ -23,7 +27,15 @@ const Navbar = ({ rol }) => {
           </div>
         </div>
       </div>      
+<<<<<<< HEAD
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        userEmail={usuario?.correo}
+      />
+=======
 
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
     </nav>
   );
 };

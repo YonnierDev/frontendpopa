@@ -1,3 +1,174 @@
+<<<<<<< HEAD
+/* Estilos específicos para el panel de Adminp */
+.adminp-root {
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.adminp-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.adminp-navbar {
+  background-color: #000;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 64px;
+}
+
+.adminp-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.adminp-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.adminp-btn-logout {
+  background-color: #ffcc00;
+  color: #000;
+}
+
+.adminp-btn-logout:hover {
+  background-color: #e6b800;
+}
+
+.adminp-layout {
+  display: flex;
+  margin-top: 64px;
+  min-height: calc(100vh - 64px);
+}
+
+.adminp-sidebar {
+  width: 250px;
+  background-color: #000;
+  padding-top: 1rem;
+  position: fixed;
+  left: 0;
+  top: 64px;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.adminp-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.adminp-menu-item:hover,
+.adminp-menu-item.activo {
+  background-color: #ffcc00;
+  color: #000;
+}
+
+.adminp-main {
+  flex: 1;
+  margin-left: 250px;
+  padding: 2rem;
+  background-color: #f4f4f4;
+}
+
+.adminp-welcome {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adminp-welcome h1 {
+  margin: 0;
+  color: #333;
+  font-size: 2rem;
+}
+
+.adminp-welcome p {
+  margin: 1rem 0 0;
+  color: #666;
+}
+
+.adminp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Tablas */
+.adminp-table {
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adminp-table th {
+  background-color: #000;
+  color: white;
+  padding: 1rem;
+  text-align: left;
+}
+
+.adminp-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.adminp-table tr:hover {
+  background-color: #f8f8f8;
+}
+
+/* Formularios */
+.adminp-form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adminp-form-group {
+  margin-bottom: 1rem;
+}
+
+.adminp-form-control {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  transition: border-color 0.2s;
+}
+
+.adminp-form-control:focus {
+  border-color: #ffcc00;
+  outline: none;
+}
+=======
 .navbar {
     background-color: #000; /* Negro */
     color: white;
@@ -113,3 +284,4 @@
     color: black;
   }
   
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571

@@ -103,7 +103,11 @@ const Eventos = () => {
     });
     setModoEdicion(true);
     setIdEventoEditar(evento.id);
+<<<<<<< HEAD
+    window.scrollTo({ top: 0, behavior: "smooth" });
+=======
     // window.scrollTo({ top: 0, behavior: "smooth" }); // Desactivado para evitar scroll global no deseado
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
   };
 
   const mostrarDetalles = async (evento) => {

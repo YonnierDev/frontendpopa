@@ -41,6 +41,10 @@ body {
     align-items: center;
     justify-content: center;
     color: #000000;
+<<<<<<< HEAD
+}
+
+=======
     width: 100%;
     text-align: center;
     margin-bottom: 18px;
@@ -56,6 +60,7 @@ body {
     font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
 }
 
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 /* --- Caja del formulario de autenticación --- */
 .auth-box {
     background-color: #ffffff;
@@ -113,6 +118,8 @@ body {
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
     box-shadow: 0 0 0px 1000px #3a3838 inset !important;
+<<<<<<< HEAD
+=======
 }
 
 /* --- Mejor diseño para el select de género --- */
@@ -138,6 +145,7 @@ select option {
     color: #222;
     background: #fff;
     font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 /* --- Botón de inicio de sesión --- */
@@ -250,6 +258,8 @@ select option {
     margin-bottom: 15px;
     text-align: center;
 }
+<<<<<<< HEAD
+=======
 
 .input-group label {
     color: #000;
@@ -259,3 +269,4 @@ select option {
     font-size: 1.05rem;
     font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
 }
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571

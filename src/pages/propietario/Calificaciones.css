@@ -1,18 +1,28 @@
+<<<<<<< HEAD
+=======
 /* CONTENEDOR GENERAL */
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 .app-container {
   margin-left: 250px;
   min-height: 100vh;
   background-color: #ffffff;
 }
 
+<<<<<<< HEAD
+=======
 /* HEADER FIJO */
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 .header {
   position: fixed;
   top: 0;
   right: 0;
   left: 250px;
   height: 70px;
+<<<<<<< HEAD
+  background-color: #000;
+=======
   background-color: #000000;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
   padding: 0 30px;
   display: flex;
   justify-content: flex-end;
@@ -20,6 +30,13 @@
   z-index: 100;
 }
 
+<<<<<<< HEAD
+.main-content {
+  padding: 90px 30px 30px;
+  width: 100%;
+}
+
+=======
 /* CONTENT PRINCIPAL */
 .main-content {
   padding: 120px 30px 60px;
@@ -27,10 +44,24 @@
 }
 
 /* TÍTULO */
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 h2 {
   font-size: 34px;
   margin-bottom: 35px;
   padding: 20px;
+<<<<<<< HEAD
+  background-color: #000;
+  border-radius: 10px;
+  border: 1px solid #ffcc00;
+  text-align: center;
+  color: #ffcc00;
+  font-weight: 600;
+}
+
+.promedio-texto {
+  font-size: 20px;
+  color: #000;
+=======
   background-color: #000000;
   border-radius: 10px;
   text-align: center;
@@ -42,10 +73,14 @@ h2 {
 .promedio-texto {
   font-size: 20px;
   color: #000000;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
   font-weight: bold;
   margin-bottom: 20px;
 }
 
+<<<<<<< HEAD
+/* Tabla de calificaciones */
+=======
 /* MENSAJES */
 .mensaje {
   background-color: #000000;
@@ -58,6 +93,7 @@ h2 {
 }
 
 /* TABLA DE CALIFICACIONES */
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 .tabla-calificaciones {
   width: 100%;
   border-collapse: collapse;
@@ -66,6 +102,33 @@ h2 {
 
 .tabla-calificaciones th,
 .tabla-calificaciones td {
+<<<<<<< HEAD
+  border: 1px solid #000;
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  color: #000;
+}
+
+.tabla-calificaciones th {
+  background-color: #ffcc00;
+}
+
+.tabla-calificaciones td {
+  background-color: #f5f5f5;
+}
+
+.mensaje {
+  background-color: #ffcc00;
+  color: #000;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 500;
+}
+
+=======
   border: 1px solid #000000;
   padding: 12px;
   font-weight: bold;
@@ -182,10 +245,26 @@ h2 {
 }
 
 /* RESPONSIVE */
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 @media (max-width: 768px) {
   .app-container {
     margin-left: 0;
   }
+<<<<<<< HEAD
+
+  .header {
+    left: 0;
+  }
+
+  .tabla-calificaciones {
+    font-size: 14px;
+  }
+
+  .main-content {
+    padding: 80px 15px 30px;
+  }
+}
+=======
   .header {
     left: 0;
   }
@@ -209,3 +288,4 @@ h2 {
     font-size: 14px;
   }
 }
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
