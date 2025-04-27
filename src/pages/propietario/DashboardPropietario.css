@@ -247,6 +247,7 @@ html, body {
   font-size: 0.875em;
 }
 
+<<<<<<< HEAD
 /* Estilos específicos para el panel de Propietario */
 .propietario-layout {
   display: flex;
@@ -367,6 +368,8 @@ html, body {
   border: 1px solid #f5c6cb;
 }
 
+=======
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 /* Responsive */
 @media (max-width: 768px) {
   .propietario-content {

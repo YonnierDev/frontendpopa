@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { FaMapMarkedAlt } from 'react-icons/fa';
 import { Container, Alert, Button } from 'react-bootstrap';
@@ -217,3 +218,7 @@ const Home = () => {
 };
 
 export default Home;
+=======
+// Archivo movido para organización
+export { default } from '../Home.jsx';
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571

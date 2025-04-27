@@ -4,6 +4,13 @@
   background-color: #ffffff;
 }
 
+<<<<<<< HEAD
+=======
+:root {
+  --navbar-height: 80px;
+}
+
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 .header {
   position: fixed;
   top: 0;
@@ -18,6 +25,7 @@
   z-index: 100;
 }
 
+<<<<<<< HEAD
 .main-content {
   padding: 90px 30px 30px;
   width: 100%;
@@ -33,6 +41,36 @@ h2 {
   text-align: center;
   color: #ffcc00;
   font-weight: 600;
+=======
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1000;
+}
+
+.main-content {
+  position: relative;
+  padding-top: 60px !important;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 30px;
+  background: #fff;
+  min-height: 100vh;
+  z-index: 1;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 35px;
+  font-size: 34px;
+  padding: 20px;
+  background-color: #000;
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .mensaje {
@@ -178,6 +216,7 @@ h2 {
 }
 
 .item-footer {
+<<<<<<< HEAD
   margin-top: 15px;
   padding-top: 15px;
   border-top: 1px solid #ddd;
@@ -236,6 +275,121 @@ h2 {
 
 .btn-inactivar:hover {
   background-color: #c82333;
+=======
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-editar {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 7px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.08);
+}
+
+.btn-editar:hover {
+  background: #2563eb;
+}
+
+.btn-eliminar {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 7px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.08);
+}
+
+.btn-eliminar:hover {
+  background: #b91c1c;
+}
+
+.btn-comentarios {
+  background: #f59e42;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  border-radius: 7px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(245,158,66,0.08);
+}
+
+.btn-comentarios:hover {
+  background: #ea580c;
+}
+
+/* Barra de filtros */
+.filtros-eventos {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: #f8f9fb;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.filtros-eventos input[type="text"],
+.filtros-eventos select,
+.filtros-eventos input[type="date"] {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d0d4da;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.filtros-eventos input[type="text"]:focus,
+.filtros-eventos select:focus,
+.filtros-eventos input[type="date"]:focus {
+  border-color: #3b82f6;
+}
+
+/* Resaltado de búsqueda */
+.resaltado-busqueda {
+  background: #fff3b0;
+  color: #e67e22;
+  font-weight: bold;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+/* Mejora visual para mensaje de sin eventos */
+.sin-eventos {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  padding: 2rem 0;
+}
+
+/* Mejora visual para la barra de carga */
+.cargando {
+  text-align: center;
+  color: #3b82f6;
+  font-size: 1.1rem;
+  padding: 2rem 0;
+}
+
+.app-container, body, html {
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow: visible !important;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 @media (min-width: 1400px) {

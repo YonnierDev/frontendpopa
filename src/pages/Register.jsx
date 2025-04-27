@@ -55,8 +55,8 @@ const Register = () => {
         <img src={logo} alt="Photobella Logo" />
       </div>
       <div className="auth-box">
-        <div className="title">
-          <h2>Registro</h2>
+        <div className="title" style={{ justifyContent: 'center', width: '100%' }}>
+          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0, fontFamily: 'Montserrat, Segoe UI, Arial, sans-serif' }}>Registro</h2>
         </div>
         <form onSubmit={handleRegister}>
           <input

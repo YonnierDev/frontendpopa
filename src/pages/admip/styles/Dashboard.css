@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Estilos específicos para el panel de Adminp */
 .adminp-root {
   min-height: 100vh;
@@ -167,3 +168,120 @@
   border-color: #ffcc00;
   outline: none;
 }
+=======
+.navbar {
+    background-color: #000; /* Negro */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 39PX 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo del correo en la barra de navegación */
+.admin-email {
+    font-size: 16px;
+    color: white;
+    margin-right: 20px;
+    font-weight: bold;
+}
+  
+
+/* Enlace de Cerrar Sesión en la barra superior */
+.navbar .logout-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.navbar .logout-link:hover {
+    color: #ffcc00;
+}
+
+/*Barra de navegación lateral*/
+.sidebar {
+    background-color: #000; /* Negro oscuro */
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    margin-top: 115px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Botones del menú lateral */
+.menu-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 15px;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.menu-btn:hover {
+    background-color: #f0c505;
+}
+
+/* Contenedor del botón de Cerrar Sesión en la barra lateral */
+.logout-container {
+    margin-top: auto; /* Envía el botón al fondo */
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px; /* Margen inferior para separarlo del borde de la pantalla */
+}
+
+/* Botón de Cerrar Sesión en la barra lateral */
+.logout-btn {
+    background-color: #ff4444;
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    width: 90%;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold; /* Texto en negrita para mayor visibilidad */
+    margin-block-end: 90px;
+}
+
+.logout-btn:hover {
+    background-color: rgb(250, 216, 21);
+}
+
+.dashboard-container {
+    display: flex;
+}
+
+.content {
+    margin-left: 100px; /* Ajuste para que no se solape con la barra lateral */
+    margin-top: 200px;
+    flex-grow: 1;
+}
+  
+.bienvenida-message {
+    margin: 20px 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.menu-btn.activo {
+    background-color: #ffcc00;
+    color: black;
+  }
+  
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571

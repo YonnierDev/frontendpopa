@@ -1,0 +1,560 @@
+.lugares-box {
+  padding: 20px;
+  color: black; /* Letras negras */
+  margin-top: 400px;
+  margin-left: 150px;
+}
+
+.buscador-lugares {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  color: black; /* Letras negras en input */
+}
+
+.lugares-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  color: black; /* Letras negras en tabla */
+}
+
+.lugares-tabla th,
+.lugares-tabla td {
+  padding: 10px;
+  border: 1px solid gray;
+  background-color: white;
+}
+
+.lugares-tabla th {
+  background-color: black;
+  color: white;
+}
+
+.lugar-item {
+  text-align: center;
+}
+
+.editar {
+  background-color: #ffc107; /* Amarillo */
+  color: black; /* Letras negras */
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.mensaje-exito {
+  color: green;
+  text-align: center;
+}
+
+.card-lugares {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-contenido {
+  background: white;
+  padding: 20px;
+  width: 300px;
+  border-radius: 5px;
+  text-align: center;
+  color: black; /* Letras negras en modal */
+}
+
+.modal-contenido input,
+.modal-contenido textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  color: black; /* Letras negras */
+}
+
+.modal-contenido button {
+  margin: 5px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.modal-contenido button:first-of-type {
+  background-color: #ffc107; /* Botón "Guardar" amarillo */
+  color: black;
+}
+
+.cerrar-modal {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+input:checked + .slider {
+  background-color: #4caf50;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
+.card-formulario {
+  position: relative;
+}
+
+.card-formulario::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, gold, transparent);
+  border-top-left-radius: 15px;
+}
+
+.superadmin-lugares-container {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.superadmin-lugares-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.superadmin-lugares-title {
+  font-size: 1.75rem;
+  color: #2d2d2d;
+  font-weight: 600;
+}
+
+.superadmin-lugares-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.superadmin-lugares-search {
+  flex: 1;
+  max-width: 300px;
+}
+
+.superadmin-lugares-table {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.superadmin-lugares-table th {
+  background-color: #2d2d2d;
+  color: white;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.superadmin-lugares-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.superadmin-lugares-table tr:last-child td {
+  border-bottom: none;
+}
+
+.superadmin-lugares-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.superadmin-lugares-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.superadmin-lugares-location-icon {
+  color: #666;
+}
+
+.superadmin-lugares-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.superadmin-lugares-status-activo {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.superadmin-lugares-status-inactivo {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.superadmin-lugares-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.superadmin-lugares-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.superadmin-lugares-btn-edit {
+  background-color: #2d2d2d;
+  color: white;
+}
+
+.superadmin-lugares-btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.superadmin-lugares-btn:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .superadmin-lugares-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .superadmin-lugares-filters {
+    flex-direction: column;
+  }
+
+  .superadmin-lugares-search {
+    max-width: 100%;
+  }
+
+  .superadmin-lugares-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.superadmin-lugares-contenedor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 40px;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.superadmin-lugares-formulario {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+.superadmin-lugares-titulo {
+  background-color: #2d2d2d;
+  color: white;
+  padding: 30px 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 35px;
+  text-align: center;
+}
+
+.superadmin-lugares-formulario-titulo h3 {
+  color: #2d2d2d;
+  margin-bottom: 20px;
+}
+
+.superadmin-lugares-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.superadmin-lugares-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.superadmin-lugares-submit {
+  background-color: #2d2d2d;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.superadmin-lugares-submit:hover {
+  background-color: #1a1a1a;
+}
+
+.superadmin-lugares-buscador {
+  width: 100%;
+  max-width: 700px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.superadmin-lugares-tabla-container {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.superadmin-lugares-mensaje {
+  color: #28a745;
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.superadmin-lugares-subtitulo {
+  color: #2d2d2d;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.superadmin-lugares-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.superadmin-lugares-tabla th {
+  background: #2d2d2d;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+.superadmin-lugares-tabla td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.superadmin-lugares-fila:hover {
+  background-color: #f8f9fa;
+}
+
+.superadmin-lugares-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.superadmin-lugares-editar,
+.superadmin-lugares-eliminar {
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+
+.superadmin-lugares-editar {
+  background-color: #ffc107;
+  color: black;
+}
+
+.superadmin-lugares-eliminar {
+  background-color: #dc3545;
+  color: white;
+}
+
+.superadmin-lugares-editar:hover,
+.superadmin-lugares-eliminar:hover {
+  opacity: 0.9;
+}
+
+.superadmin-lugares-switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.superadmin-lugares-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.superadmin-lugares-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.superadmin-lugares-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.superadmin-lugares-switch input:checked + .superadmin-lugares-slider {
+  background-color: #28a745;
+}
+
+.superadmin-lugares-switch input:checked + .superadmin-lugares-slider:before {
+  transform: translateX(14px);
+}
+
+.superadmin-lugares-estado {
+  text-align: center;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.superadmin-lugares-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.superadmin-lugares-modal-contenido {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.superadmin-lugares-cerrar-modal {
+  background-color: #2d2d2d;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+.superadmin-lugares-cerrar-modal:hover {
+  background-color: #1a1a1a;
+}
+
+@media (max-width: 768px) {
+  .superadmin-lugares-contenedor {
+    padding: 10px;
+  }
+
+  .superadmin-lugares-formulario,
+  .superadmin-lugares-tabla-container {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .superadmin-lugares-tabla {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .superadmin-lugares-acciones {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

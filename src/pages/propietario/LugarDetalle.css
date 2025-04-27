@@ -354,7 +354,11 @@
 
 .comentarios-header h2 {
   font-size: 1.5rem;
+<<<<<<< HEAD
   color: #2c3e50;
+=======
+  color: #fff;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
   margin: 0;
 }
 

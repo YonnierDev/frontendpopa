@@ -41,8 +41,26 @@ body {
     align-items: center;
     justify-content: center;
     color: #000000;
+<<<<<<< HEAD
 }
 
+=======
+    width: 100%;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+/* Centrar el texto del h2 dentro del .title */
+.title h2 {
+    width: 100%;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+}
+
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 /* --- Caja del formulario de autenticación --- */
 .auth-box {
     background-color: #ffffff;
@@ -100,6 +118,34 @@ body {
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
     box-shadow: 0 0 0px 1000px #3a3838 inset !important;
+<<<<<<< HEAD
+=======
+}
+
+/* --- Mejor diseño para el select de género --- */
+select, .auth-box select {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    border: none;
+    background-color: #373535;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    margin-bottom: 20px;
+    outline: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s, background 0.2s;
+}
+select:focus, .auth-box select:focus {
+    background-color: #222;
+    box-shadow: 0 0 0 2px #FFD60044;
+}
+select option {
+    color: #222;
+    background: #fff;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 /* --- Botón de inicio de sesión --- */
@@ -212,3 +258,15 @@ body {
     margin-bottom: 15px;
     text-align: center;
 }
+<<<<<<< HEAD
+=======
+
+.input-group label {
+    color: #000;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    font-size: 1.05rem;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+}
+>>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
