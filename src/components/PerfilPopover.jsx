@@ -35,7 +35,7 @@ const PerfilPopover = () => {
           <div className="perfil-info">
             <p><strong>Nombre:</strong> {usuario.nombre}</p>
             <p><strong>Correo:</strong> {usuario.correo}</p>
-            <p><strong>Rol:</strong> {usuario.rol || 'Propietario'}</p>
+            <p><strong>Rol:</strong> {usuario.rol === 3 || usuario.rol === '3' ? 'Propietario' : usuario.rol}</p>
           </div>
           <button className="cambiar-contrasena-btn" onClick={() => setShowChangePassword(true)}>
             Cambiar Contraseña
