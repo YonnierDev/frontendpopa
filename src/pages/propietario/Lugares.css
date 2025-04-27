@@ -187,6 +187,7 @@
   transition: all 0.3s ease;
   border: 1px solid #eee;
   min-width: 450px;
+  position: relative;
 }
 
 .lugar-card:hover {
@@ -204,26 +205,26 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: bold;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  z-index: 2;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .estado-badge.activo {
-  background-color: rgba(46, 213, 115, 0.9);
-  color: white;
+  background: #e6f9e6;
+  color: #219a00;
+  border: 1px solid #b6eab6;
 }
 
 .estado-badge.inactivo {
-  background-color: rgba(255, 71, 87, 0.9);
-  color: white;
+  background: #f9e6e6;
+  color: #a10000;
+  border: 1px solid #eab6b6;
 }
 
 .estado-badge svg {

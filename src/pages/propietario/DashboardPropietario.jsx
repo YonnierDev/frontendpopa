@@ -6,6 +6,7 @@ import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding } from 'react-icons/fa';
 
 const DashboardPropietario = () => {
   const [lugares, setLugares] = useState([]);
+  const [comentarios, setComentarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const API_URL = 'https://popnocturna.vercel.app/api';
@@ -45,7 +46,7 @@ const DashboardPropietario = () => {
     };
 
     obtenerLugaresDelPropietario();
-  }, [usuario, token, navigate]);
+  }, [usuario, navigate]);
 
   if (loading) {
     return (
@@ -63,6 +64,8 @@ const DashboardPropietario = () => {
     : '0.0';
   const totalComentarios = lugares.reduce((acc, lugar) => acc + (lugar.total_comentarios || 0), 0);
 
+  console.log('comentarios:', comentarios);
+  console.log('lugares:', lugares);
   return (
     <div className="propietario-dashboard">
       <Sidebar />
@@ -145,9 +148,9 @@ const DashboardPropietario = () => {
                         <FaStar /> 
                         {lugar.calificacion_promedio?.toFixed(1) || '0.0'}
                       </span>
-                      <span>
-                        <FaComments />
-                        {lugar.total_comentarios || 0} comentarios
+                      <span style={{ color: '#111', fontWeight: 600 }}>
+                        <FaComments style={{ color: '#111', marginRight: 4 }} />
+                        {comentarios.filter(c => c.lugar === lugar.id || c.lugar_id === lugar.id).length} comentario{comentarios.filter(c => c.lugar === lugar.id || c.lugar_id === lugar.id).length !== 1 ? 's' : ''}
                       </span>
                     </div>
                   </div>

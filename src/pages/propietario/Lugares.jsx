@@ -7,6 +7,7 @@ import Sidebar from '../../components/Sidebar';
 const Lugares = () => {
   const navigate = useNavigate();
   const [lugares, setLugares] = useState([]);
+  const [comentarios, setComentarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -62,6 +63,25 @@ const Lugares = () => {
 
         // Cargar lugares inicialmente
         await obtenerLugares();
+
+        // Ahora cargamos los comentarios
+        try {
+          const usuario = JSON.parse(localStorage.getItem('usuario'));
+          const comentariosRes = await fetch('https://popnocturna.vercel.app/api/comentarios', {
+            headers: {
+              'Authorization': `Bearer ${usuario?.token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          if (comentariosRes.ok) {
+            const comentariosData = await comentariosRes.json();
+            setComentarios(comentariosData.comentarios || []);
+          } else {
+            setComentarios([]);
+          }
+        } catch (err) {
+          setComentarios([]);
+        }
 
         // Configurar intervalo para actualizar lugares cada 30 segundos
         const intervalo = setInterval(obtenerLugares, 30000);
@@ -303,44 +323,59 @@ const Lugares = () => {
               </div>
             </div>
           )}
-
           <div className="lugares-grid">
-            {lugares.map((lugar) => (
-              <div key={lugar.id} className="lugar-card">
-                <div className="lugar-imagen">
-                  <img 
-                    src={lugar.imagen} 
-                    alt={lugar.nombre}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://res.cloudinary.com/popaimagen/image/upload/v1744615116/default-place.jpg';
-                    }}
-                  />
-                  <div className={`estado-badge ${lugar.estado}`}>
-                    {lugar.estado === 'activo' ? (
+            {lugares.map((lugar) => {
+              // Filtrar comentarios para este lugar
+              const comentariosLugar = comentarios.filter((comentario) => {
+                // Comentario asociado directamente al lugar
+                if (comentario.lugar && Number(comentario.lugar.id) === Number(lugar.id)) return true;
+                // Comentario asociado a un evento cuyo lugar es este lugar
+                if (comentario.evento && comentario.evento.lugar && Number(comentario.evento.lugar.id) === Number(lugar.id)) return true;
+                return false;
+              });
+              return (
+                <div key={lugar.id} className="lugar-card">
+                  <div className="lugar-imagen">
+                    <img 
+                      src={lugar.imagen} 
+                      alt={lugar.nombre}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://res.cloudinary.com/popaimagen/image/upload/v1744615116/default-place.jpg';
+                      }}
+                    />
+                  </div>
+                  <div className={`estado-badge ${lugar.estado ? 'activo' : 'inactivo'}`}
+                    style={{position: 'absolute', top: 10, right: 10, zIndex: 2}}>
+                    {lugar.estado ? (
                       <><FaCheckCircle /> Activo</>
                     ) : (
                       <><FaTimesCircle /> Inactivo</>
                     )}
                   </div>
-                </div>
-                <div className="lugar-info">
-                  <h3>{lugar.nombre}</h3>
-                  <p>{lugar.descripcion}</p>
-                  <div className="lugar-ubicacion">
-                    <FaMapMarkerAlt /> {lugar.ubicacion}
+                  <div className="lugar-info">
+                    <h3>{lugar.nombre}</h3>
+                    <p>{lugar.descripcion}</p>
+                    <div className="lugar-ubicacion">
+                      <FaMapMarkerAlt /> {lugar.ubicacion}
+                    </div>
+                    <div className="lugar-extra">
+                      <span><FaCheckCircle /> {lugar.calificacion_promedio || '0.0'}</span>
+                      <span style={{ color: '#111', fontWeight: 600 }}>{comentariosLugar.length} comentario{comentariosLugar.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="lugar-actions">
+                      <button 
+                        className="btn-edit"
+                        onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
+                      >
+                        <FaEdit /> Más info
+                      </button>
+                    </div>
+
                   </div>
-                  <div className="lugar-actions">
-                    <button 
-                      className="btn-edit"
-                      onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
-                    >
-                      <FaEdit /> Editar
-                    </button>
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

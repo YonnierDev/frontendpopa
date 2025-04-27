@@ -14,6 +14,9 @@ const Sidebar = () => {
     navigate('/login');
   };
 
+  // Mostrar botón solo en LugarDetalle (ruta real: /propietario/lugar/:id)
+  const showVolverLugares = /\/propietario\/lugar\//i.test(location.pathname);
+
   return (
     <div className="sidebar">
       {/* <div className="sidebar-header">
@@ -56,6 +59,31 @@ const Sidebar = () => {
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>
+        {showVolverLugares && (
+          <button
+            className="sidebar-button sidebar-volver-lugares"
+            style={{
+              background: 'linear-gradient(90deg, #ff512f 0%, #dd2476 100%)', // degradado naranja-rosado
+              color: '#fff',
+              borderRadius: '30px',
+              fontWeight: 'bold',
+              marginTop: '15px',
+              marginBottom: '5px',
+              boxShadow: '0 4px 16px rgba(221,36,118,0.18)',
+              border: '2px solid #fff',
+              letterSpacing: '1px',
+              fontSize: '1.08rem',
+              transition: 'background 0.2s, transform 0.15s',
+              outline: 'none',
+              textShadow: '0 2px 8px rgba(0,0,0,0.10)',
+            }}
+            onClick={() => navigate('/propietario/lugares')}
+            onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #ff512f 0%, #f09819 100%)'}
+            onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #ff512f 0%, #dd2476 100%)'}
+          >
+            Volver a lugares
+          </button>
+        )}
       </div>
       <div className="logout-container">
         <button className="logout-btn" onClick={handleLogout}>
