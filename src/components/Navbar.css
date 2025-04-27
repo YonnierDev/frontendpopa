@@ -14,26 +14,18 @@ body {
 /* Navbar estilizado */
 .navbar {
     background-color: #000;
-    padding: 0.8rem 2rem;
+    padding: 0.1rem 0.8rem;
+    min-height: 36px;
+    height: 36px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
-<<<<<<< HEAD
     position: fixed;
-=======
-    height: 70px;
-    min-height: 70px;
-    max-height: 90px;
-    background: #1a1c23;
+    top: 0;
+    left: 0;
+    z-index: 1000;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 2.4rem 0 2.4rem;
-    box-shadow: 0 2px 20px 0 rgba(20,22,30,0.10);
-    z-index: 100;
-    position: sticky;
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
-    top: 0;
-    transition: height 0.2s;
+    justify-content: center;
 }
 
 .nav-container {
@@ -45,23 +37,6 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
-<<<<<<< HEAD
-}
-
-.nav-left {
-    display: flex;
-    align-items: center;
-}
-
-.logo {
-    color: white;
-    margin: 0;
-    font-size: 1.4rem;
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
-    margin-left: 150px; /* Agregar margen a la izquierda */
-=======
     position: relative;
 }
 
@@ -101,41 +76,24 @@ body {
     margin: auto;
     height: fit-content;
     width: fit-content;
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .nav-right {
     display: flex;
     align-items: center;
-<<<<<<< HEAD
-    gap: 15px;
-}
-
-/* Estilos para la información del usuario */
-=======
     gap: 10px;
 }
 
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 .user-info {
     display: flex;
     align-items: center;
     gap: 10px;
-<<<<<<< HEAD
-    padding: 5px 10px;
-    border-radius: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-    transition: background-color 0.3s;
-=======
     padding: 2px 8px;
     border-radius: 16px;
     background-color: rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: background-color 0.3s;
     font-size: 12px;
-    position: relative;
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .user-info:hover {
@@ -143,23 +101,14 @@ body {
 }
 
 .user-icon {
-<<<<<<< HEAD
-    font-size: 18px;
-=======
     font-size: 15px;
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
     color: white;
 }
 
 .user-name {
     color: white;
     font-weight: bold;
-<<<<<<< HEAD
-    font-size: 14px;
-=======
     font-size: 12px;
-    margin-left: 8px;
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 }
 
 .logout-btn-small {
@@ -211,103 +160,6 @@ body {
     border-radius: 5px;
 }
 
-.user-dropdown {
-  display: none;
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background: #fff;
-  color: #111;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
-  min-width: 170px;
-  z-index: 1000;
-  padding: 10px 0;
-}
-
-.user-dropdown .dropdown-item {
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
-  padding: 12px 20px;
-  font-size: 1rem;
-  color: #111;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.user-dropdown .dropdown-item:hover {
-  background: #f0f0f0;
-  color: #111;
-}
-
-.user-info:hover .user-dropdown,
-.user-info:focus-within .user-dropdown {
-  display: flex;
-}
-
-/* Botón destacado para panel/home */
-.panel-btn-navbar {
-  background: linear-gradient(90deg, #222b45 0%, #384063 100%);
-  color: #f2f6fc;
-  border: none;
-  border-radius: 1.3rem;
-  padding: 0.28rem 0.95rem;
-  margin-right: 0.7rem;
-  font-size: 0.97rem;
-  font-weight: 500;
-  box-shadow: 0 2px 10px 0 rgba(34,43,69,0.13);
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  cursor: pointer;
-  letter-spacing: 0.01em;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 2rem;
-  height: 2.1rem;
-  line-height: 1.1;
-}
-.panel-btn-navbar:hover, .panel-btn-navbar:focus {
-  background: linear-gradient(90deg, #384063 0%, #222b45 100%);
-  color: #fff;
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 4px 18px 0 rgba(56,64,99,0.18);
-  outline: none;
-}
-
-.panel-btn-navbar .home-icon {
-  font-size: 1.13em;
-  margin-right: 0.22em;
-}
-
-.login-btn-navbar {
-  background: linear-gradient(90deg, #23272f 0%, #353b48 100%);
-  color: #f2f6fc;
-  border: none;
-  border-radius: 1.3rem;
-  padding: 0.28rem 0.95rem;
-  margin-right: 0.7rem;
-  font-size: 0.97rem;
-  font-weight: 500;
-  box-shadow: 0 2px 10px 0 rgba(34,39,47,0.12);
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  cursor: pointer;
-  letter-spacing: 0.01em;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 2rem;
-  height: 2.1rem;
-  line-height: 1.1;
-}
-.login-btn-navbar:hover, .login-btn-navbar:focus {
-  background: linear-gradient(90deg, #353b48 0%, #23272f 100%);
-  color: #fff;
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 4px 18px 0 rgba(53,59,72,0.16);
-  outline: none;
-}
-
 /* Contenedor principal centrado */
 .main-container {
     width: 100%;
@@ -318,17 +170,6 @@ body {
 /* Ajustes responsivos */
 @media (max-width: 768px) {
     .navbar {
-<<<<<<< HEAD
-        padding: 0.8rem 1rem;
-    }
-    
-    .logo {
-        font-size: 1.2rem;
-    }
-    
-    .user-name {
-        font-size: 12px;
-=======
         padding: 0.1rem 0.5rem;
         min-height: 32px;
         height: 32px;
@@ -339,6 +180,5 @@ body {
     }
     .user-name {
         font-size: 10px;
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
     }
 }

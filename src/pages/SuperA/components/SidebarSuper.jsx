@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaComment, FaStar, FaClipboardList, 
          FaBell, FaBars, FaSignOutAlt, FaHome, FaTags, FaUserShield, FaUser, FaChevronDown } from 'react-icons/fa';
 import axios from 'axios';
@@ -14,6 +14,7 @@ import UsuariosSuper from '../UsuariosSuper';
 import LugaresSuper from '../LugaresSuper';
 import ComentariosSuper from '../ComentariosSuper';
 import PendientesSuper from '../PendientesSuper';
+import RolesSuper from '../RolesSuper';
 
 const SidebarSuper = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -23,11 +24,36 @@ const SidebarSuper = () => {
   const [cantidadSolicitudes, setCantidadSolicitudes] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  
+  useEffect(() => {
+    // Obtener el nombre del administrador
+    const fetchAdminInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        const response = await axios.get('https://popnocturna.vercel.app/api/usuario/2', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setNombreAdmin(response.data.nombre || "Administrador");
+      } catch (error) {
+        console.error("Error al obtener información del administrador:", error);
+        setNombreAdmin("Administrador");
+      }
+    };
+
+    fetchAdminInfo();
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
     navigate('/login');
   };
 
@@ -108,6 +134,7 @@ const SidebarSuper = () => {
               )}
               {mostrarSeccion === "categorias" && <CategoriasSuper />}
               {mostrarSeccion === "usuarios" && <UsuariosSuper />}
+              {mostrarSeccion === "roles" && <RolesSuper />}
               {mostrarSeccion === "lugares" && <LugaresSuper />}
               {mostrarSeccion === "comentarios" && <ComentariosSuper />}
               {mostrarSeccion === "eventos" && <EventosSuper />}

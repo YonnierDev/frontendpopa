@@ -1,47 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar';
-import './DashboardPropietario.css';
-import Dashboard from './Dashboard';
-import Lugares from './Lugares';
-import Eventos from './Eventos';
-import Reservas from './Reservas';
-import Comentarios from './Comentarios';
-import Calificaciones from './Calificaciones';
-
-const DashboardPropietario = () => {
-  const navigate = useNavigate();
-  const usuario = JSON.parse(localStorage.getItem('usuario'));
-
-  if (!usuario || !usuario.token) {
-    navigate('/login');
-    return null;
-  }
-
-  const menuItems = [
-    { path: '/propietario/dashboard', icon: '🏠', text: 'Inicio' },
-    { path: '/propietario/lugares', icon: '📍', text: 'Lugares' },
-    { path: '/propietario/eventos', icon: '🎉', text: 'Eventos' },
-    { path: '/propietario/reservas', icon: '📅', text: 'Reservas' },
-    { path: '/propietario/comentarios', icon: '💬', text: 'Comentarios' },
-    { path: '/propietario/calificaciones', icon: '⭐', text: 'Calificaciones' }
-  ];
-
-  return (
-    <div className="dashboard-container">
-      <Sidebar menuItems={menuItems} />
-      <div className="content-area">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/lugares" element={<Lugares />} />
-          <Route path="/eventos" element={<Eventos />} />
-          <Route path="/reservas" element={<Reservas />} />
-          <Route path="/comentarios" element={<Comentarios />} />
-          <Route path="/calificaciones" element={<Calificaciones />} />
-        </Routes>
-=======
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import './DashboardPropietario.css';
@@ -55,20 +11,19 @@ const DashboardPropietario = () => {
   const [error, setError] = useState('');
   const API_URL = 'https://popnocturna.vercel.app/api';
   const usuario = JSON.parse(localStorage.getItem('usuario'));
-  const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerLugaresDelPropietario = async () => {
       try {
-        if (!usuario || !token) {
+        if (!usuario || !usuario.token) {
           navigate('/login');
           return;
         }
 
         const response = await fetch(`${API_URL}/propietario/lugares`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${usuario.token}`
           }
         });
 
@@ -90,6 +45,22 @@ const DashboardPropietario = () => {
     };
 
     obtenerLugaresDelPropietario();
+    // Cargar comentarios reales con token
+    const cargarComentarios = async () => {
+      try {
+        const response = await fetch(`${API_URL}/comentarios`, {
+          headers: {
+            'Authorization': `Bearer ${usuario.token}`
+          }
+        });
+        if (!response.ok) throw new Error('No se pudo cargar comentarios');
+        const data = await response.json();
+        setComentarios(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setComentarios([]);
+      }
+    };
+    if (usuario && usuario.token) cargarComentarios();
   }, [usuario, navigate]);
 
   if (loading) {
@@ -203,7 +174,6 @@ const DashboardPropietario = () => {
             )}
           </div>
         </div>
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
       </div>
     </div>
   );

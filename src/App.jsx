@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -9,16 +11,17 @@ import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Super Admin
+// Super
 import SuperAdminPanel from "./pages/SuperA/SuperAdminPanel";
 import UsuariosSuper from "./pages/SuperA/UsuariosSuper";
+import RolesSuper from "./pages/SuperA/RolesSuper";
+import CategoriasSuper from "./pages/SuperA/CategoriasSuper";
+import PendientesSuper from "./pages/SuperA/PendientesSuper";
+import CalificacionesSuper from "./pages/SuperA/CalificacionesSuper";
 import ComentariosSuper from "./pages/SuperA/ComentariosSuper";
-import LugaresSuper from "./pages/SuperA/LugaresSuper";
 import EventosSuper from "./pages/SuperA/EventosSuper";
 import ReservasSuper from "./pages/SuperA/ReservasSuper";
-import CalificacionesSuper from "./pages/SuperA/CalificacionesSuper";
-import CategoriasSuper from "./pages/SuperA/CategoriasSuper";
-import RolesSuper from "./pages/SuperA/RolesSuper";
+import LugaresSuper from "./pages/SuperA/LugaresSuper";
 
 // Admin
 import DashboardAdmip from "./pages/admip/Dashboard";
@@ -39,6 +42,7 @@ import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
+import Perfil from "./pages/propietario/Perfil";
 
 // Mostrar u ocultar Navbar
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
@@ -48,86 +52,28 @@ const NavbarWrapper = ({ isAuthenticated, rol }) => {
   return isAuthenticated ? <Navbar rol={rol} /> : null;
 };
 
-// Función para obtener el estado inicial de autenticación
-const getInitialAuth = () => {
-  const token = localStorage.getItem("token");
-  const usuario = localStorage.getItem("usuario");
-  let rol = null;
-  
-  if (token && usuario) {
-    try {
-      const userObj = JSON.parse(usuario);
-      rol = userObj?.rolid;
-    } catch (error) {
-      console.error("Error al parsear usuario:", error);
-    }
-  }
-
-  return {
-    isAuthenticated: Boolean(token && usuario),
-    token,
-    usuario,
-    rol
-  };
-};
-
 function App() {
-  const initial = getInitialAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState(initial.isAuthenticated);
-  const [rol, setRol] = useState(initial.rol);
-  const [guestModalOpen, setGuestModalOpen] = useState(false);
-  const [token, setToken] = useState(initial.token);
-  const [usuario, setUsuario] = useState(initial.usuario);
-  const userIsAuthenticated = Boolean(token && usuario);
-
-  // Redirige si hay un redirect pendiente tras login
-  useEffect(() => {
-    const redirectTo = localStorage.getItem("redirectTo");
-    if (redirectTo) {
-      localStorage.removeItem("redirectTo");
-      window.location.replace(redirectTo);
-    }
-  }, []);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [rol, setRol] = useState(null);
 
   useEffect(() => {
-    const syncAuth = () => {
-      const t = localStorage.getItem("token");
-      const u = localStorage.getItem("usuario");
-      setToken(t);
-      setUsuario(u);
-      if (!t || !u) {
-        setGuestModalOpen(false);
-      }
-      setIsAuthenticated(Boolean(t && u));
-      if (t && u) {
-        try {
-          const userObj = JSON.parse(u);
-          setRol(userObj?.rolid);
-        } catch {
-          setRol(null);
-        }
-      } else {
-        setRol(null);
-      }
-    };
-    window.addEventListener("storage", syncAuth);
-    return () => window.removeEventListener("storage", syncAuth);
-  }, []);
+    const token = localStorage.getItem("token");
+    const storedUsuario = localStorage.getItem("usuario");
 
-  useEffect(() => {
-    setIsAuthenticated(Boolean(token && usuario));
-    if (token && usuario) {
+    if (token && storedUsuario) {
+      setIsAuthenticated(true);
       try {
-        const userObj = JSON.parse(usuario);
-        setRol(userObj?.rolid);
-      } catch {
+        const usuario = JSON.parse(storedUsuario);
+        setRol(usuario?.rol);
+      } catch (err) {
+        console.error("Error al parsear el usuario:", err);
         setRol(null);
       }
     } else {
+      setIsAuthenticated(false);
       setRol(null);
-      setGuestModalOpen(false);
     }
-  }, [token, usuario]);
+  }, []);
 
   return (
     <Router>
@@ -139,17 +85,18 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* Rutas protegidas - SUPER ADMIN (rol: 1) */}
+          {/* Rutas protegidas - SUPER (rol: 1) */}
           <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[1]} />}>
             <Route path="/superadmin/dashboard" element={<SuperAdminPanel />} />
             <Route path="/superadmin/usuarios" element={<UsuariosSuper />} />
+            <Route path="/superadmin/roles" element={<RolesSuper />} />
+            <Route path="/superadmin/categorias" element={<CategoriasSuper />} />
+            <Route path="/superadmin/pendientes" element={<PendientesSuper />} />
+            <Route path="/superadmin/calificaciones" element={<CalificacionesSuper />} />
             <Route path="/superadmin/comentarios" element={<ComentariosSuper />} />
-            <Route path="/superadmin/lugares" element={<LugaresSuper />} />
             <Route path="/superadmin/eventos" element={<EventosSuper />} />
             <Route path="/superadmin/reservas" element={<ReservasSuper />} />
-            <Route path="/superadmin/calificaciones" element={<CalificacionesSuper />} />
-            <Route path="/superadmin/categorias" element={<CategoriasSuper />} />
-            <Route path="/superadmin/roles" element={<RolesSuper />} />
+            <Route path="/superadmin/lugares" element={<LugaresSuper />} />
           </Route>
 
           {/* Rutas protegidas - ADMIN (rol: 2) */}
@@ -174,6 +121,7 @@ function App() {
             <Route path="/propietario/comentarios" element={<ComentariosProp />} />
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
+            <Route path="/propietario/perfil" element={<Perfil />} />
           </Route>
 
           {/* Ruta por defecto */}

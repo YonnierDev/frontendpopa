@@ -3,7 +3,11 @@ import SidebarSuper from './components/SidebarSuper';
 import './styles/SuperAdminLayout.css';
 
 const SuperAdminPanel = () => {
-  return <SidebarSuper />;
+  return (
+    <div className="superadmin-container">
+      <SidebarSuper />
+    </div>
+  );
 };
 
 export default SuperAdminPanel; 

@@ -30,39 +30,51 @@ const Login = ({ setIsAuthenticated }) => {
         contrasena,
       });
 
-      if (!response.data || !response.data.token || !response.data.usuario) {
-        setError("Error en la respuesta del servidor. Por favor, intenta nuevamente.");
+      console.log("Respuesta del servidor:", response.data);
+
+      const { token, usuario } = response.data;
+      const { rolid, nombre, id: usuarioId, correo: correoUsuario } = usuario;
+
+      if (!token || rolid === undefined) {
+        setError("Respuesta inválida del servidor.");
         return;
       }
 
-      // Guardar usuario y token en localStorage
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
-      if (setIsAuthenticated) setIsAuthenticated(true);
+      const rolId = parseInt(rolid);
 
-      // Redirección según el rolid
-      let destino = "/"; // Usuario normal por defecto
-      switch (response.data.usuario.rolid) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("usuario", JSON.stringify({
+        rol: rolId,
+        nombre,
+        token,
+        id: usuarioId,
+        correo: correoUsuario
+      }));
+
+      setIsAuthenticated(true);
+      setError("");
+
+      switch (rolId) {
         case 1:
-          destino = "/superadmin/dashboard"; // Superadmin
+          navigate("/superadmin/dashboard");
           break;
         case 2:
-          destino = "/admip/dashboard"; // Admin
+          navigate("/admip/dashboard");
           break;
         case 3:
-          destino = "/propietario/dashboard"; // Propietario
+          navigate("/propietario/dashboard");
           break;
         default:
-          destino = "/"; // Usuario normal
+          navigate("/login");
+          break;
       }
 
-      navigate(destino);
-
-    } catch (error) {
-      if (error.response) {
-        setError(error.response.data.message || "Correo o contraseña incorrectos.");
+    } catch (err) {
+      console.error("Error en login:", err);
+      if (err.response && err.response.status === 401) {
+        setError("Credenciales incorrectas.");
       } else {
-        setError("Error de conexión. Por favor, intenta nuevamente.");
+        setError("Error al iniciar sesión. Intenta más tarde.");
       }
     }
   };
@@ -75,7 +87,7 @@ const Login = ({ setIsAuthenticated }) => {
 
       <div className="auth-box">
         <div className="title" style={{ justifyContent: 'center', width: '100%' }}>
-          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0 }}>INICIO</h2>
+          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0 }}>ACCESO</h2>
         </div>
 
         {error && <div className="error-message">{error}</div>}

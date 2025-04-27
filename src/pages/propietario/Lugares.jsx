@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
-<<<<<<< HEAD
-import { FaPlus, FaEdit, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle, FaTrash } from 'react-icons/fa';
-=======
 import { FaPlus, FaEdit, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 import Sidebar from '../../components/Sidebar';
 
 const Lugares = () => {
   const navigate = useNavigate();
   const [lugares, setLugares] = useState([]);
-<<<<<<< HEAD
-=======
   const [comentarios, setComentarios] = useState([]);
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -27,19 +20,11 @@ const Lugares = () => {
     estado: 'inactivo'
   });
   const [categorias, setCategorias] = useState([]);
-<<<<<<< HEAD
-  const usuario = JSON.parse(localStorage.getItem('usuario'));
-  const API_URL = 'https://popnocturna.vercel.app/api';
-=======
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-<<<<<<< HEAD
-=======
         const usuario = JSON.parse(localStorage.getItem('usuario'));
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
         if (!usuario) {
           navigate('/login');
           return;
@@ -55,18 +40,10 @@ const Lugares = () => {
 
         // Luego intentamos obtener los lugares
         const obtenerLugares = async () => {
-<<<<<<< HEAD
-          const lugaresRes = await fetch(`${API_URL}/propietario/lugares`, {
-            headers: {
-              'Authorization': `Bearer ${usuario.token}`
-=======
-          // Obtén el token desde localStorage (no desde usuario.token)
-          const token = localStorage.getItem('token');
           const lugaresRes = await fetch('https://popnocturna.vercel.app/api/propietario/lugares', {
             headers: {
-              'Authorization': `Bearer ${token}`,
+              'Authorization': `Bearer ${usuario.token}`,
               'Content-Type': 'application/json'
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
             }
           });
 
@@ -85,8 +62,6 @@ const Lugares = () => {
         // Cargar lugares inicialmente
         await obtenerLugares();
 
-<<<<<<< HEAD
-=======
         // Ahora cargamos los comentarios
         try {
           const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -106,7 +81,6 @@ const Lugares = () => {
           setComentarios([]);
         }
 
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
         // Configurar intervalo para actualizar lugares cada 30 segundos
         const intervalo = setInterval(obtenerLugares, 30000);
 
@@ -122,40 +96,7 @@ const Lugares = () => {
     };
 
     cargarDatos();
-<<<<<<< HEAD
-  }, [navigate, usuario.token]);
-
-  const handleCrearLugar = () => {
-    setShowModal(true);
-  };
-
-  const handleEditarLugar = (id) => {
-    navigate(`/propietario/lugar/${id}`);
-  };
-
-  const handleEliminarLugar = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar este lugar?')) return;
-
-    try {
-      const response = await fetch(`${API_URL}/propietario/lugares/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${usuario.token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al eliminar el lugar');
-      }
-
-      setLugares(lugares.filter(lugar => lugar.id !== id));
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-=======
   }, [navigate]);
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -178,10 +119,7 @@ const Lugares = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-=======
       const usuario = JSON.parse(localStorage.getItem('usuario'));
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
       if (!usuario || !usuario.token) {
         console.log('No hay token disponible, redirigiendo a login');
         navigate('/login');
@@ -202,11 +140,7 @@ const Lugares = () => {
       console.log('ID del usuario:', usuario.id);  
       console.log('Enviando datos a la API...');
 
-<<<<<<< HEAD
-      const response = await fetch(`${API_URL}/propietario/lugar`, {
-=======
       const response = await fetch('https://popnocturna.vercel.app/api/propietario/lugar', {
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${usuario.token}`
@@ -268,10 +202,6 @@ const Lugares = () => {
   };
 
   if (loading) return <div className="loading">Cargando...</div>;
-<<<<<<< HEAD
-  if (error) return <div className="error-message">{error}</div>;
-=======
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
 
   return (
     <div className="dashboard-container">
@@ -282,11 +212,7 @@ const Lugares = () => {
             <h2>Mis Lugares</h2>
             <button 
               className="btn-crear"
-<<<<<<< HEAD
-              onClick={handleCrearLugar}
-=======
               onClick={() => setShowModal(true)}
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
             >
               <FaPlus /> Crear Nuevo Lugar
             </button>
@@ -395,23 +321,6 @@ const Lugares = () => {
               </div>
             </div>
           )}
-<<<<<<< HEAD
-
-          <div className="lugares-grid">
-            {lugares.map((lugar) => (
-              <div key={lugar.id} className="lugar-card">
-                <div className="lugar-imagen">
-                  <img 
-                    src={lugar.imagen} 
-                    alt={lugar.nombre}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://res.cloudinary.com/popaimagen/image/upload/v1744615116/default-place.jpg';
-                    }}
-                  />
-                  <div className={`estado-badge ${lugar.estado}`}>
-                    {lugar.estado === 'activo' ? (
-=======
           <div className="lugares-grid">
             {lugares.map((lugar) => {
               // Filtrar comentarios para este lugar
@@ -437,38 +346,11 @@ const Lugares = () => {
                   <div className={`estado-badge ${lugar.estado ? 'activo' : 'inactivo'}`}
                     style={{position: 'absolute', top: 10, right: 10, zIndex: 2}}>
                     {lugar.estado ? (
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
                       <><FaCheckCircle /> Activo</>
                     ) : (
                       <><FaTimesCircle /> Inactivo</>
                     )}
                   </div>
-<<<<<<< HEAD
-                </div>
-                <div className="lugar-info">
-                  <h3>{lugar.nombre}</h3>
-                  <p>{lugar.descripcion}</p>
-                  <div className="lugar-ubicacion">
-                    <FaMapMarkerAlt /> {lugar.ubicacion}
-                  </div>
-                  <div className="lugar-actions">
-                    <button 
-                      className="btn-edit"
-                      onClick={() => handleEditarLugar(lugar.id)}
-                    >
-                      <FaEdit /> Editar
-                    </button>
-                    <button 
-                      className="btn-eliminar"
-                      onClick={() => handleEliminarLugar(lugar.id)}
-                    >
-                      <FaTrash /> Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-=======
                   <div className="lugar-info">
                     <h3>{lugar.nombre}</h3>
                     <p>{lugar.descripcion}</p>
@@ -492,7 +374,6 @@ const Lugares = () => {
                 </div>
               );
             })}
->>>>>>> 4c6738033daad045332ce1cc617753bbd4797571
           </div>
         </div>
       </div>
