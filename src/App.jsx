@@ -19,6 +19,7 @@ import EventosSuper from "./pages/SuperA/EventosSuper";
 import ReservasSuper from "./pages/SuperA/ReservasSuper";
 import CalificacionesSuper from "./pages/SuperA/CalificacionesSuper";
 import CategoriasSuper from "./pages/SuperA/CategoriasSuper";
+import RolesSuper from "./pages/SuperA/RolesSuper";
 
 // Admin
 import DashboardAdmip from "./pages/admip/Dashboard";
@@ -149,6 +150,7 @@ function App() {
             <Route path="/superadmin/reservas" element={<ReservasSuper />} />
             <Route path="/superadmin/calificaciones" element={<CalificacionesSuper />} />
             <Route path="/superadmin/categorias" element={<CategoriasSuper />} />
+            <Route path="/superadmin/roles" element={<RolesSuper />} />
           </Route>
 
           {/* Rutas protegidas - ADMIN (rol: 2) */}
