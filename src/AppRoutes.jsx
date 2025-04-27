@@ -29,6 +29,9 @@ import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 // Categoría personalizada
 import CategoriaContenido from "./pages/CategoriaContenido";
+// SuperAdmin
+import SuperAdminPanel from "./pages/SuperA/SuperAdminPanel";
+import UsuariosSuper from "./pages/SuperA/UsuariosSuper"; 
 
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
   const location = useLocation();
@@ -46,12 +49,9 @@ const AppRoutes = ({
 }) => {
   const location = useLocation();
 
-  // Solo en HOME: bloquea clicks si NO está autenticado (excepto login/register)
   useEffect(() => {
-    // Si el usuario está autenticado, NO agregues ningún event listener ni muestres el modal
     if (userIsAuthenticated) {
       setGuestModalOpen(false);
-      // Elimina cualquier listener residual
       document.body.onclick = null;
       document.body.onpointerdown = null;
       return;
@@ -73,7 +73,6 @@ const AppRoutes = ({
     }
   }, [userIsAuthenticated, location.pathname, setGuestModalOpen]);
 
-  // Si el usuario está autenticado, fuerza el cierre del modal en cada render
   if (userIsAuthenticated && guestModalOpen) {
     setGuestModalOpen(false);
   }
@@ -94,12 +93,16 @@ const AppRoutes = ({
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          {/* Página de inicio pública */}
           <Route path="/lugar/:id" element={<LugarDetalleHome />} />
-          {/* Página de detalle de categoría personalizada */}
           <Route path="/categoria/:categoria" element={<CategoriaContenido />} />
+          
+          {/* Rutas protegidas - SUPERADMIN (rol: 1) */}
+          <Route element={<PrivateRoute allowedRoles={[1]} rol={rol} />}>
+            <Route path="/superadmin/*" element={<SuperAdminPanel />} />
+          </Route>
+
           {/* Rutas protegidas - ADMIN (rol: 2) */}
-          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[2]} rol={rol} />}>
+          <Route element={<PrivateRoute allowedRoles={[2]} rol={rol} />}>
             <Route path="/admip/dashboard" element={<DashboardAdmip />} />
             <Route path="/admip/comentarios" element={<ComentariosAdmip />} />
             <Route path="/admip/lugares" element={<LugaresAdmip />} />
@@ -109,8 +112,9 @@ const AppRoutes = ({
             <Route path="/admip/categorias" element={<CategoriasAdmip />} />
             <Route path="/admip/usuarios" element={<UsuariosAdmip />} />
           </Route>
+
           {/* Rutas protegidas - PROPIETARIO (rol: 3) */}
-          <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} rol={rol} />}>
+          <Route element={<PrivateRoute allowedRoles={[3]} rol={rol} />}>
             <Route path="/propietario/dashboard" element={<DashboardPropietario />} />
             <Route path="/propietario/lugar/:id" element={<LugarDetalle />} />
             <Route path="/propietario/lugares" element={<LugaresProp />} />
@@ -120,6 +124,7 @@ const AppRoutes = ({
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
           </Route>
+
           {/* Ruta por defecto */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

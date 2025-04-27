@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 
-const PrivateRoute = ({ isAuthenticated, allowedRoles, rol }) => {
+const PrivateRoute = ({ allowedRoles, rol }) => {
   const storedUser = localStorage.getItem("usuario");
   const token = localStorage.getItem("token");
 
@@ -14,7 +14,6 @@ const PrivateRoute = ({ isAuthenticated, allowedRoles, rol }) => {
   }
 
   // LOGS DE DEPURACIÓN
-  console.log("PrivateRoute - isAuthenticated:", isAuthenticated);
   console.log("PrivateRoute - allowedRoles:", allowedRoles);
   console.log("PrivateRoute - rol (prop):", rol);
   console.log("PrivateRoute - token:", token);
@@ -23,13 +22,15 @@ const PrivateRoute = ({ isAuthenticated, allowedRoles, rol }) => {
   console.log("PrivateRoute - rolUsuario (localStorage):", rolUsuario);
 
   // Si no hay sesión o usuario, redirige al login
-  if (!isAuthenticated || !storedUser || !token) {
+  if (!storedUser || !token) {
     console.warn("PrivateRoute: Falta sesión o usuario/token. Redirigiendo a login.");
     return <Navigate to="/login" replace />;
   }
 
-  // CORRECCIÓN: Permite acceso si el rol ES IGUAL a alguno de allowedRoles, ya sea por prop o por usuario
-  if (!allowedRoles.includes(Number(rolUsuario)) && !allowedRoles.includes(Number(rol))) {
+  // Verifica si el rol del usuario está permitido
+  const isRoleAllowed = allowedRoles.includes(Number(rolUsuario)) || allowedRoles.includes(Number(rol));
+  
+  if (!isRoleAllowed) {
     console.warn("PrivateRoute: Rol no permitido. Redirigiendo a login.");
     return <Navigate to="/login" replace />;
   }

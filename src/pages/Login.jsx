@@ -30,19 +30,40 @@ const Login = ({ setIsAuthenticated }) => {
         contrasena,
       });
 
+      if (!response.data || !response.data.token || !response.data.usuario) {
+        setError("Error en la respuesta del servidor. Por favor, intenta nuevamente.");
+        return;
+      }
+
       // Guardar usuario y token en localStorage
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
       if (setIsAuthenticated) setIsAuthenticated(true);
-      // Redirección según el rol
-      let destino = "/"; // usuario normal o propietario
-      if (response.data.usuario.rolid === 2) destino = "/admin/dashboard";
-      if (response.data.usuario.rolid === 1) destino = "/superadmin/dashboard";
-      localStorage.setItem("redirectTo", destino);
-      window.location.reload();
-      navigate(destino); // Redirigir según el rol
+
+      // Redirección según el rolid
+      let destino = "/"; // Usuario normal por defecto
+      switch (response.data.usuario.rolid) {
+        case 1:
+          destino = "/superadmin"; // Superadmin
+          break;
+        case 2:
+          destino = "/admip/dashboard"; // Admin
+          break;
+        case 3:
+          destino = "/propietario/dashboard"; // Propietario
+          break;
+        default:
+          destino = "/"; // Usuario normal
+      }
+
+      navigate(destino);
+
     } catch (error) {
-      setError("Correo o contraseña incorrectos.");
+      if (error.response) {
+        setError(error.response.data.message || "Correo o contraseña incorrectos.");
+      } else {
+        setError("Error de conexión. Por favor, intenta nuevamente.");
+      }
     }
   };
 
