@@ -5,6 +5,8 @@ import "../admip/styles/Comentarios.css";
 const Comentarios = () => {
   const [comentarios, setComentarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const [comentarioSeleccionado, setComentarioSeleccionado] = useState(null);
+  const [mensajesEstado, setMensajesEstado] = useState({});
 
   useEffect(() => {
     fetchComentarios();
@@ -12,39 +14,48 @@ const Comentarios = () => {
 
   const fetchComentarios = async () => {
     try {
-      const response = await axios.get("https://popnocturna.vercel.app/api/comentarios");
-      console.log("Comentarios recibidos:", response.data);
-      setComentarios(response.data);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
+      }
+
+      const response = await axios.get("https://popnocturna.vercel.app/api/comentarios", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setComentarios(response.data.comentarios);
     } catch (error) {
       console.error("Error al obtener comentarios:", error);
-    }
-  };
-
-  const handleEditar = async (comentario) => {
-    const nuevoContenido = prompt("Editar contenido del comentario:", comentario.contenido);
-    if (nuevoContenido !== null && nuevoContenido.trim() !== "") {
-      try {
-        await axios.put(`https://popnocturna.vercel.app/api/comentario/${comentario.id}`, {
-          contenido: nuevoContenido,
-        });
-        setComentarios(comentarios.map(c =>
-          c.id === comentario.id ? { ...c, contenido: nuevoContenido } : c
-        ));
-      } catch (error) {
-        console.error("Error al editar comentario:", error);
-      }
     }
   };
 
   const toggleEstado = async (id, estadoActual) => {
     const nuevoEstado = !estadoActual;
     try {
-      await axios.put(`https://popnocturna.vercel.app/api/comentario/${id}/estado`, {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
+      }
+
+      await axios.patch(`https://popnocturna.vercel.app/api/comentario/estado/${id}`, {
         activo: nuevoEstado,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       setComentarios(comentarios.map(c =>
-        c.id === id ? { ...c, activo: nuevoEstado } : c
+        c.id === id ? { ...c, estado: nuevoEstado } : c
       ));
+
+      setMensajesEstado(prev => ({
+        ...prev,
+        [id]: nuevoEstado ? "Activo" : "Inactivo"
+      }));
     } catch (error) {
       console.error("Error al cambiar estado del comentario:", error);
     }
@@ -55,7 +66,7 @@ const Comentarios = () => {
   };
 
   const comentariosFiltrados = comentarios.filter(c =>
-    c.nombre?.toLowerCase().includes(busqueda.toLowerCase())
+    c.usuario?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
@@ -88,21 +99,27 @@ const Comentarios = () => {
             ) : (
               comentariosFiltrados.map((c) => (
                 <tr key={c.id} className="comentario-item">
-                  <td>{c.nombre}</td>
+                  <td>{c.usuario?.nombre}</td>
                   <td>{c.contenido}</td>
                   <td>{new Date(c.fecha_hora).toLocaleString()}</td>
                   <td>
-                    <button className="editar" onClick={() => handleEditar(c)}>Editar</button>
+                    <button
+                      className="ver-detalles"
+                      onClick={() => setComentarioSeleccionado(c)}
+                    >
+                      Detalles
+                    </button>
                   </td>
                   <td>
                     <label className="switch">
                       <input
                         type="checkbox"
-                        checked={c.activo}
-                        onChange={() => toggleEstado(c.id, c.activo)}
+                        checked={c.estado}
+                        onChange={() => toggleEstado(c.id, c.estado)}
                       />
                       <span className="slider"></span>
                     </label>
+                    {mensajesEstado[c.id] && <span>{mensajesEstado[c.id]}</span>}
                   </td>
                 </tr>
               ))
@@ -110,6 +127,23 @@ const Comentarios = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal para mostrar detalles del comentario */}
+      {comentarioSeleccionado && (
+        <div className="modal">
+          <div className="modal-contenido">
+            <h3>Detalles del Comentario</h3>
+            <p><strong>Contenido:</strong> {comentarioSeleccionado.contenido}</p>
+            <p><strong>Usuario:</strong> {comentarioSeleccionado.usuario?.nombre}</p>
+            <p><strong>Evento:</strong> {comentarioSeleccionado.eventoid}</p>
+            <p><strong>Fecha:</strong> {new Date(comentarioSeleccionado.fecha_hora).toLocaleString()}</p>
+            <p><strong>Estado:</strong> {comentarioSeleccionado.estado ? "Activo" : "Inactivo"}</p>
+            <p><strong>Aprobación:</strong> {comentarioSeleccionado.aprobacion ? "Aprobado" : "No Aprobado"}</p>
+            <p><strong>Motivo de Reporte:</strong> {comentarioSeleccionado.motivo_reporte || "N/A"}</p>
+            <button onClick={() => setComentarioSeleccionado(null)}>Cerrar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
