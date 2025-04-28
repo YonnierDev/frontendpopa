@@ -30,6 +30,7 @@ const ReservasSuper = () => {
   const fetchReservas = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem('token');
       const response = await axios.get(
         `https://popnocturna.vercel.app/api/reservas`,
@@ -40,15 +41,17 @@ const ReservasSuper = () => {
           }
         }
       );
-      console.log('API Response:', response.data);
+      console.log('API Response (reservas):', response.data);
       if (Array.isArray(response.data)) {
         setReservas(response.data);
+      } else if (response.data && Array.isArray(response.data.datos?.rows)) {
+        setReservas(response.data.datos.rows);
       } else {
         setReservas([]);
-        setError('No hay reservas disponibles');
+        setError('No hay reservas disponibles o formato inesperado.');
       }
     } catch (error) {
-      console.error('Error al cargar reservas:', error);
+      console.error('Error al cargar reservas:', error, error.response);
       setReservas([]);
       setError(error.response?.data?.mensaje || 'Error al cargar las reservas');
     } finally {
@@ -123,9 +126,6 @@ const ReservasSuper = () => {
         return matchesStatus && matchesSearch && matchesDate;
       })
     : [];
-
-  if (loading) return <div className="reservas-loading">Cargando reservas...</div>;
-  if (error) return <div className="reservas-alert reservas-alert-error">{error}</div>;
 
   return (
     <div className="reservas-container">
@@ -202,7 +202,11 @@ const ReservasSuper = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredReservas.length === 0 ? (
+            {loading ? (
+              <tr><td colSpan="6" className="reservas-no-data">Cargando reservas...</td></tr>
+            ) : error ? (
+              <tr><td colSpan="6" className="reservas-no-data">{error}</td></tr>
+            ) : filteredReservas.length === 0 ? (
               <tr>
                 <td colSpan="6" className="reservas-no-data">
                   No hay reservas disponibles

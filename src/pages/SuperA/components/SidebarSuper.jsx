@@ -28,7 +28,7 @@ const SidebarSuper = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Obtener el nombre del administrador
+    // Obtener el nombre del SuperAdministrador
     const fetchAdminInfo = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -42,10 +42,10 @@ const SidebarSuper = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        setNombreAdmin(response.data.nombre || "Administrador");
+        setNombreAdmin(response.data.nombre || "SuperAdministrador");
       } catch (error) {
-        console.error("Error al obtener información del administrador:", error);
-        setNombreAdmin("Administrador");
+        console.error("Error al obtener información del SuperAdministrador:", error);
+        setNombreAdmin("SuperAdministrador");
       }
     };
 

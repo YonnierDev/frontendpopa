@@ -365,8 +365,8 @@ const EventosSuper = () => {
                 <button type="submit" className="super-btn super-btn-primary">
                   Aplicar Filtros
                 </button>
-              </form>
-            </div>
+        </form>
+      </div>
           )}
 
           <div className="super-search-container">
@@ -384,18 +384,18 @@ const EventosSuper = () => {
 
           <div className="super-table-container">
             <table className="super-table">
-              <thead>
-                <tr>
+          <thead>
+            <tr>
                   <th>Nombre</th>
                   <th>Fecha</th>
                   <th>Lugar</th>
-                  <th>Capacidad</th>
-                  <th>Precio</th>
+              <th>Capacidad</th>
+              <th>Precio</th>
                   <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
                 {filteredEventos.length === 0 ? (
                   <tr>
                     <td colSpan="7" className="super-no-data">
@@ -428,20 +428,20 @@ const EventosSuper = () => {
                           <FaMoneyBill className="evento-icon" />
                           ${evento.precio || '0'}
                         </div>
-                      </td>
-                      <td>
+                  </td>
+                  <td>
                         <div className="status-column">
                           <span className={`status-badge ${evento.estado ? 'active' : 'inactive'}`}>
                             {evento.estado ? 'Activo' : 'Inactivo'}
                           </span>
                           <label className="switch">
-                            <input
-                              type="checkbox"
-                              checked={evento.estado}
+                      <input
+                        type="checkbox"
+                        checked={evento.estado}
                               onChange={() => handleToggleEstado(evento.id, evento.estado)}
-                            />
+                      />
                             <span className="slider"></span>
-                          </label>
+                    </label>
                         </div>
                       </td>
                       <td>
@@ -460,14 +460,14 @@ const EventosSuper = () => {
                           >
                             <FaTrash />
                           </button>
-                        </div>
-                      </td>
-                    </tr>
+                    </div>
+                  </td>
+                </tr>
                   ))
                 )}
-              </tbody>
-            </table>
-          </div>
+          </tbody>
+        </table>
+      </div>
 
           {totalPages > 1 && (
             <div className="super-pagination">
@@ -606,8 +606,8 @@ const EventosSuper = () => {
                     </button>
                   </div>
                 </form>
-              </div>
-            </div>
+          </div>
+        </div>
           )}
         </>
       )}

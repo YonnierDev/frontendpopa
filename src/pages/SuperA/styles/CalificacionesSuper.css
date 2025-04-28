@@ -5,6 +5,7 @@
   min-height: 100vh;
   width: 100%;
   box-sizing: border-box;
+  margin-left: -274px;
 }
 
 /* Header */
@@ -84,6 +85,7 @@
 
 .calificaciones-table th,
 .calificaciones-table td {
+  color: #000000;
   padding: 1.2rem;
   text-align: left;
   border-bottom: 1px solid #f0f0f0;
