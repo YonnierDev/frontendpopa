@@ -2,70 +2,96 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../admip/styles/Solicitudes.css";
 
-const Solicitudes = () => {
-    const [solicitudes, setSolicitudes] = useState([]);
-    const [loading, setLoading] = useState(true);
+const Solicitudes = ({ actualizarContador }) => {
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        axios.get("https://popnocturna.vercel.app/api/aprobar")
-            .then(res => {
-                setSolicitudes(res.data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error("Error al obtener solicitudes:", err);
-                setLoading(false);
-            });
-    }, []);
+  const token = localStorage.getItem('token'); // <--- AQUÍ tomamos el token guardado
 
-    const actualizarEstado = (id, nuevoEstado) => {
-        axios.patch(`https://popnocturna.vercel.app/api/aprobar/${id}`, { estado: nuevoEstado })
-            .then(() => {
-                setSolicitudes(prev =>
-                    prev.map(s => s.id === id ? { ...s, estado: nuevoEstado } : s)
-                );
-            })
-            .catch(err => console.error("Error al actualizar estado:", err));
-    };
+  useEffect(() => {
+    axios.get("https://popnocturna.vercel.app/api/lugares/pendientes", {
+      headers: {
+        Authorization: `Bearer ${token}` // <--- AQUÍ lo enviamos
+      }
+    })
+      .then(res => {
+        setSolicitudes(res.data.lugares);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error al obtener solicitudes:", err);
+        setLoading(false);
+      });
+  }, [token]);
 
-    return (
-        <div className="solicitudes-box">
-            <h2>Solicitudes de Creación de Lugar</h2>
-            {loading ? (
-                <p className="loading-text">Cargando...</p>
-            ) : solicitudes.length === 0 ? (
-                <p className="no-solicitudes">No hay solicitudes pendientes</p>
-            ) : (
-                <ul className="solicitudes-ul">
-                    {solicitudes.map(solicitud => (
-                        <li key={solicitud.id} className="solicitud-item">
-                            <p><strong>Propietario:</strong> {solicitud.usuarioid}</p>
-                            <p><strong>Nombre del Lugar:</strong> {solicitud.nombre}</p>
-                            <p><strong>Descripción:</strong> {solicitud.descripcion}</p>
-                            <p><strong>Ubicación:</strong> {solicitud.ubicacion}</p>
-                            <p><strong>Estado:</strong> {solicitud.estado ? "activo" : "inactivo"}</p>
-                            <div className="botones-container">
-                                <button
-                                    className="aceptar"
-                                    onClick={() => actualizarEstado(solicitud.id, "aceptado")}
-                                    disabled={solicitud.estado !== false}
-                                >
-                                    Aceptar
-                                </button>
-                                <button
-                                    className="rechazar"
-                                    onClick={() => actualizarEstado(solicitud.id, "rechazado")}
-                                    disabled={solicitud.estado !== false}
-                                >
-                                    Rechazar
-                                </button>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
+  const actualizarEstado = (id, nuevoEstado) => {
+    axios.put(`https://popnocturna.vercel.app/api/lugar/${id}/estado`, 
+      { estado: nuevoEstado },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    .then(() => {
+      // Filtrar la solicitud que fue procesada y eliminarla de la lista
+      setSolicitudes(prev => {
+        const nuevasSolicitudes = prev.filter(s => s.id !== id); // Elimina la solicitud con el id correspondiente
+        actualizarContador(nuevasSolicitudes.length); // Actualiza el contador en el Dashboard
+        return nuevasSolicitudes;
+      });
+    })
+    .catch(err => console.error("Error al actualizar estado:", err));
+  };
+
+  return (
+    <div className="solicitudes-box">
+      <h2>Solicitudes de Creación de Lugar</h2>
+      {loading ? (
+        <p className="loading-text">Cargando...</p>
+      ) : solicitudes.length === 0 ? (
+        <p className="no-solicitudes">No hay solicitudes pendientes</p>
+      ) : (
+        <table className="solicitudes-table">
+          <thead>
+            <tr>
+              <th>Propietario</th>
+              <th>Nombre del Lugar</th>
+              <th>Descripción</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {solicitudes.map(solicitud => (
+              <tr key={solicitud.id}>
+                <td>{solicitud.usuarioid}</td>
+                <td>{solicitud.nombre}</td>
+                <td>{solicitud.descripcion}</td>
+                <td>{solicitud.ubicacion}</td>
+                <td>{solicitud.aprobacion ? "Activo" : "Inactivo"}</td>
+                <td>
+                  <button
+                    className="aceptar"
+                    onClick={() => actualizarEstado(solicitud.id, true)}
+                  >
+                    Aceptar
+                  </button>
+                  <button
+                    className="rechazar"
+                    onClick={() => actualizarEstado(solicitud.id, false)}
+                  >
+                    Rechazar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
 };
 
 export default Solicitudes;

@@ -22,26 +22,52 @@ const Categorias = () => {
   };
 
   const editarCategoria = async (id) => {
-    if (!nombreEditado.trim()) return;
+    // Encontrar la categoría que estamos editando
+    const categoriaAEditar = categorias.find(cat => cat.id === id);
+    
+    // Asegurarnos de que la propiedad tipo existe y validamos que el nombre no esté vacío ni sea el mismo
+    if (!nombreEditado.trim() || nombreEditado === categoriaAEditar?.tipo) return;
+
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
+      }
+
       await axios.put(`https://popnocturna.vercel.app/api/categoria/${id}`, {
         tipo: nombreEditado,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       setEditarId(null);
-      obtenerCategorias();
+      obtenerCategorias(); // Actualizamos las categorías después de editar
     } catch (error) {
       console.error("Error al editar categoría:", error);
     }
   };
 
-  const cambiarEstado = async (id, estadoActual, tipo) => {
+  const cambiarEstado = async (id, estadoActual) => {
     try {
       const nuevoEstado = !estadoActual;
-      // Realizamos el PATCH para cambiar solo el estado
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
+      }
+
       await axios.patch(`https://popnocturna.vercel.app/api/categoria/estado/${id}`, {
         estado: nuevoEstado,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      obtenerCategorias();  // Actualizamos las categorías
+
+      obtenerCategorias(); // Actualizamos las categorías
     } catch (error) {
       console.error("Error al cambiar estado:", error);
     }
@@ -110,7 +136,7 @@ const Categorias = () => {
                     <input
                       type="checkbox"
                       checked={cat.estado}
-                      onChange={() => cambiarEstado(cat.id, cat.estado, cat.tipo)}
+                      onChange={() => cambiarEstado(cat.id, cat.estado)}
                     />
                     <span className="slider"></span>
                   </label>
