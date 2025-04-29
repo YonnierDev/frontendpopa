@@ -32,7 +32,7 @@ const Comentarios = () => {
   };
 
   const toggleEstado = async (id, estadoActual) => {
-    const nuevoEstado = !estadoActual;
+    const decision = estadoActual ? "ocultar" : "mantener";
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -40,21 +40,23 @@ const Comentarios = () => {
         return;
       }
 
-      await axios.patch(`https://popnocturna.vercel.app/api/comentario/estado/${id}`, {
-        activo: nuevoEstado,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.put(
+        `https://popnocturna.vercel.app/api/administracion/procesar/${id}`,
+        { decision },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setComentarios(comentarios.map(c =>
-        c.id === id ? { ...c, estado: nuevoEstado } : c
+        c.id === id ? { ...c, estado: decision === "mantener" } : c
       ));
 
       setMensajesEstado(prev => ({
         ...prev,
-        [id]: nuevoEstado ? "Activo" : "Inactivo"
+        [id]: decision === "mantener" ? "Activo" : "Inactivo"
       }));
     } catch (error) {
       console.error("Error al cambiar estado del comentario:", error);
@@ -128,7 +130,6 @@ const Comentarios = () => {
         </table>
       </div>
 
-      {/* Modal para mostrar detalles del comentario */}
       {comentarioSeleccionado && (
         <div className="modal">
           <div className="modal-contenido">
