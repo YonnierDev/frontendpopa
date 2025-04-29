@@ -5,8 +5,7 @@ import "../admip/styles/Lugares.css";
 const Lugares = () => {
   const [lugares, setLugares] = useState([]);
   const [busqueda, setBusqueda] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [lugarSeleccionado, setLugarSeleccionado] = useState(null);
+  //const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
     fetchLugares();
@@ -18,25 +17,6 @@ const Lugares = () => {
       setLugares(response.data);
     } catch (error) {
       console.error("Error al cargar lugares", error);
-    }
-  };
-
-  const handleEditar = (lugar) => {
-    setLugarSeleccionado(lugar);
-  };
-
-  const handleGuardarEdicion = async () => {
-    try {
-      await axios.put(
-        `https://popnocturna.vercel.app/api/lugar/${lugarSeleccionado.id}`,
-        lugarSeleccionado
-      );
-      setMensaje("Lugar actualizado correctamente");
-      fetchLugares();
-      setLugarSeleccionado(null);
-      setTimeout(() => setMensaje(""), 3000);
-    } catch (error) {
-      console.error("Error al actualizar el lugar", error);
     }
   };
 
@@ -62,7 +42,7 @@ const Lugares = () => {
 
   return (
     <div className="lugares-box">
-      {mensaje && <p className="mensaje-exito">{mensaje}</p>}
+      {/*{mensaje && <p className="mensaje-exito">{mensaje}</p>}*/}
 
       <div className="card-lugares card-formulario">
         <h2>Lugares</h2>
@@ -81,7 +61,6 @@ const Lugares = () => {
               <th>Nombre</th>
               <th>Ubicación</th>
               <th>Descripción</th>
-              <th>Acciones</th>
               <th>Estado</th>
             </tr>
           </thead>
@@ -91,9 +70,6 @@ const Lugares = () => {
                 <td>{l.nombre}</td>
                 <td>{l.ubicacion}</td>
                 <td>{l.descripcion || "Sin descripción"}</td>
-                <td>
-                  <button className="editar" onClick={() => handleEditar(l)}>Editar</button>
-                </td>
                 <td>
                   <label className="switch">
                     <input
@@ -110,36 +86,6 @@ const Lugares = () => {
           </tbody>
         </table>
       </div>
-
-      {lugarSeleccionado && (
-        <div className="modal">
-          <div className="modal-contenido">
-            <h3>Editar Lugar</h3>
-            <input
-              type="text"
-              value={lugarSeleccionado.nombre || ""}
-              onChange={(e) =>
-                setLugarSeleccionado({ ...lugarSeleccionado, nombre: e.target.value })
-              }
-            />
-            <input
-              type="text"
-              value={lugarSeleccionado.ubicacion || ""}
-              onChange={(e) =>
-                setLugarSeleccionado({ ...lugarSeleccionado, ubicacion: e.target.value })
-              }
-            />
-            <textarea
-              value={lugarSeleccionado.descripcion || ""}
-              onChange={(e) =>
-                setLugarSeleccionado({ ...lugarSeleccionado, descripcion: e.target.value })
-              }
-            />
-            <button onClick={handleGuardarEdicion}>Guardar</button>
-            <button className="cerrar-modal" onClick={() => setLugarSeleccionado(null)}>Cancelar</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

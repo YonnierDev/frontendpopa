@@ -15,39 +15,45 @@ import "../admip/styles/Dashboard.css";
 
 const Dashboard = () => {
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
-  const [nombreAdmin, setNombreAdmin] = useState("");
   const [cantidadSolicitudes, setCantidadSolicitudes] = useState(0);
 
   useEffect(() => {
     setMostrarSeccion("bienvenida");
 
-    const fetchAdminNombre = async () => {
-      try {
-        const response = await axios.get("https://popnocturna.vercel.app/api/usuario/2");
-        setNombreAdmin(response.data.nombre || "Administrador");
-      } catch (error) {
-        console.error("Error al obtener el administrador:", error);
-        setNombreAdmin("Administrador");
-      }
-    };
-
     const fetchCantidadSolicitudes = async () => {
       try {
-        const res = await axios.get("https://popnocturna.vercel.app/api/propietario/aprobar");
-        const pendientes = res.data.filter(s => s.estado === "pendiente").length;
-        setCantidadSolicitudes(pendientes);
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("Token no encontrado");
+          setCantidadSolicitudes(0);
+          return;
+        }
+
+        const res = await axios.get("https://popnocturna.vercel.app/api/lugares/pendientes", {  // <- aquí corregí la URL
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const lugaresPendientes = res.data.lugares.filter(lugar => lugar.aprobacion === false);
+        setCantidadSolicitudes(lugaresPendientes.length);
+
       } catch (err) {
         console.error("Error al contar solicitudes:", err);
         setCantidadSolicitudes(0);
       }
     };
 
-    fetchAdminNombre();
     fetchCantidadSolicitudes();
   }, []);
 
   const handleMostrarSeccion = (seccion) => {
     setMostrarSeccion(seccion);
+  };
+
+  // Función para actualizar el contador de solicitudes
+  const actualizarContador = (nuevoContador) => {
+    setCantidadSolicitudes(nuevoContador);
   };
 
   return (
@@ -111,7 +117,7 @@ const Dashboard = () => {
         <div className="content">
           {mostrarSeccion === "bienvenida" && (
             <div className="bienvenida-message">
-              <h2>Bienvenido {nombreAdmin}</h2>
+              <h2>Bienvenido Administrador</h2>
             </div>
           )}
           {mostrarSeccion === "categorias" && <Categorias />}
@@ -121,7 +127,7 @@ const Dashboard = () => {
           {mostrarSeccion === "eventos" && <Eventos />}
           {mostrarSeccion === "reservas" && <Reservas />}
           {mostrarSeccion === "calificaciones" && <Calificaciones />}
-          {mostrarSeccion === "solicitudes" && <Solicitudes />}
+          {mostrarSeccion === "solicitudes" && <Solicitudes actualizarContador={actualizarContador} />}
         </div>
       </div>
     </div>
