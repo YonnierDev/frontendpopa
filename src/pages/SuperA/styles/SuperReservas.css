@@ -1,0 +1,144 @@
+.super-reservas-layout {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.super-reservas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #000;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  padding: 32px 32px 32px 48px;
+  margin-bottom: 32px;
+  gap: 32px;
+}
+
+.super-reservas-title {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.super-reservas-filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.super-reservas-input {
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 1.1rem;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-width: 260px;
+}
+
+.super-reservas-table-container {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  padding: 0;
+  margin: 0 auto 32px auto;
+  overflow: hidden;
+}
+
+.super-reservas-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 900px;
+}
+
+.super-reservas-table thead tr {
+  background: #000;
+}
+
+.super-reservas-table th {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 18px 12px;
+  text-align: left;
+  border: none;
+}
+
+.super-reservas-table tbody tr {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.super-reservas-table td {
+  color: #222;
+  font-size: 1.05rem;
+  padding: 16px 12px;
+  vertical-align: middle;
+  border: none;
+}
+
+.super-reservas-table tr:last-child td {
+  border-bottom: none;
+}
+
+.super-reservas-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.super-reservas-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.super-reservas-btn.view {
+  background: #ffd600;
+  color: #222;
+}
+
+.super-reservas-btn.delete {
+  background: #ff1744;
+  color: #fff;
+}
+
+.super-reservas-btn.view:hover {
+  background: #ffe066;
+}
+
+.super-reservas-btn.delete:hover {
+  background: #d50000;
+}
+
+.super-reservas-no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .super-reservas-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 24px 12px;
+    gap: 18px;
+  }
+  .super-reservas-table {
+    min-width: 600px;
+  }
+} 

@@ -254,8 +254,12 @@ const ComentariosSuper = () => {
               <p>{selectedComment.usuario?.nombre || 'No disponible'}</p>
             </div>
             <div className="comentarios-form-group">
+              <label>Evento</label>
+              <p>{selectedComment.evento?.nombre || 'No disponible'}</p>
+            </div>
+            <div className="comentarios-form-group">
               <label>Contenido</label>
-              <p>{selectedComment.contenido}</p>
+              <p className="comentarios-content-text">{selectedComment.contenido}</p>
             </div>
             <div className="comentarios-form-group">
               <label>Fecha</label>
@@ -263,15 +267,35 @@ const ComentariosSuper = () => {
             </div>
             <div className="comentarios-form-group">
               <label>Estado</label>
-              <p>{selectedComment.aprobacion}</p>
+              <p className={`comentarios-status-badge ${selectedComment.aprobacion}`}>
+                {selectedComment.aprobacion}
+              </p>
             </div>
-            {selectedComment.motivo_reporte && (
-              <div className="comentarios-form-group">
-                <label>Motivo del Reporte</label>
-                <p>{selectedComment.motivo_reporte}</p>
-              </div>
-            )}
             <div className="comentarios-modal-actions">
+              <button
+                className="comentarios-btn comentarios-btn-primary"
+                onClick={() => handleStatusChange(selectedComment.id, 'aceptado')}
+                title="Aprobar comentario"
+              >
+                <FaThumbsUp /> Aprobar
+              </button>
+              <button
+                className="comentarios-btn comentarios-btn-danger"
+                onClick={() => handleStatusChange(selectedComment.id, 'rechazado')}
+                title="Rechazar comentario"
+              >
+                <FaThumbsDown /> Rechazar
+              </button>
+              <button
+                className="comentarios-btn comentarios-btn-danger"
+                onClick={() => {
+                  handleDelete(selectedComment.id);
+                  setShowModal(false);
+                }}
+                title="Eliminar comentario"
+              >
+                <FaTrash /> Eliminar
+              </button>
               <button
                 className="comentarios-btn comentarios-btn-secondary"
                 onClick={() => setShowModal(false)}

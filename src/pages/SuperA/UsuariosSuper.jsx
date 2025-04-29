@@ -23,8 +23,10 @@ const UsuariosSuper = () => {
     contrasena: '',
     genero: '',
     rolid: '',
-    estado: true
+    estado: true,
+    imagen: null
   });
+  const [previewImg, setPreviewImg] = useState(null);
 
   useEffect(() => {
     fetchUsuarios();
@@ -99,24 +101,62 @@ const UsuariosSuper = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    const { name, value, type, checked, files } = e.target;
+    if (name === 'imagen') {
+      setFormData(prev => ({ ...prev, imagen: files && files[0] ? files[0] : null }));
+      setPreviewImg(files && files[0] ? URL.createObjectURL(files[0]) : null);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedUser && !formData.imagen) {
+      toast.error('La imagen es obligatoria');
+      return;
+    }
+    if (!['Masculino', 'Femenino', 'Otro'].includes(formData.genero)) {
+      toast.error('El género debe ser Masculino, Femenino u Otro');
+      return;
+    }
+    if (!formData.rolid || isNaN(formData.rolid) || Number(formData.rolid) < 1) {
+      toast.error('ID de rol inválido');
+      return;
+    }
+    if (!selectedUser) {
+      const erroresContrasena = validarContrasena(formData.contrasena);
+      if (erroresContrasena.length > 0) {
+        toast.error('Contraseña inválida: ' + erroresContrasena.join(' | '));
+        return;
+      }
+    }
     try {
       if (selectedUser) {
-        await axios.put(`https://popnocturna.vercel.app/api/usuario/${selectedUser.id}`, formData);
+        const data = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+          if (key === 'imagen' && !value) return;
+          data.append(key, value);
+        });
+        await axios.put(`https://popnocturna.vercel.app/api/usuario/${selectedUser.id}`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('Usuario actualizado correctamente');
       } else {
-        await axios.post('https://popnocturna.vercel.app/api/usuario', formData);
+        const data = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+          data.append(key, value);
+        });
+        await axios.post('https://popnocturna.vercel.app/api/usuario', data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('Usuario creado correctamente');
       }
       setShowModal(false);
+      setPreviewImg(null);
       fetchUsuarios();
     } catch (err) {
       toast.error('Error al guardar el usuario');
@@ -133,6 +173,23 @@ const UsuariosSuper = () => {
     } catch (err) {
       toast.error('Error al cambiar el estado del usuario');
     }
+  };
+
+  const validarContrasena = (value) => {
+    const errores = [];
+    if (value.length < 8 || value.length > 20) {
+      errores.push('Debe tener entre 8 y 20 caracteres');
+    }
+    if (!/[A-Z]/.test(value)) {
+      errores.push('Debe incluir al menos una letra mayúscula');
+    }
+    if (!/\d/.test(value)) {
+      errores.push('Debe incluir al menos un número');
+    }
+    if (!/[^A-Za-z\d]/.test(value)) {
+      errores.push('Debe incluir al menos un símbolo (como !@#$%^&*)');
+    }
+    return errores;
   };
 
   if (loading) return <div className="super-loading">Cargando...</div>;
@@ -156,7 +213,8 @@ const UsuariosSuper = () => {
               contrasena: '',
               genero: '',
               rolid: '',
-              estado: true
+              estado: true,
+              imagen: null
             });
             setShowModal(true);
           }}
@@ -254,12 +312,11 @@ const UsuariosSuper = () => {
         </table>
       </div>
 
-      {/* Modal de Edición/Creación */}
       {showModal && (
         <div className="super-modal">
           <div className="super-modal-content">
             <h2>{selectedUser ? 'Editar Usuario' : 'Nuevo Usuario'}</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
               <div className="form-group">
                 <label>Nombre</label>
                 <input
@@ -308,7 +365,7 @@ const UsuariosSuper = () => {
                     name="contrasena"
                     value={formData.contrasena}
                     onChange={handleChange}
-                    required={!selectedUser}
+                    required
                   />
                 </div>
               )}
@@ -323,7 +380,7 @@ const UsuariosSuper = () => {
                   <option value="">Seleccione...</option>
                   <option value="Masculino">Masculino</option>
                   <option value="Femenino">Femenino</option>
-                  <option value="Otros">Otro</option>
+                  <option value="Otro">Otro</option>
                 </select>
               </div>
               <div className="form-group">
@@ -341,6 +398,24 @@ const UsuariosSuper = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="form-group">
+                <label>Foto de perfil {selectedUser ? <span>(opcional)</span> : <span style={{color:'red'}}>*</span>}</label>
+                <input
+                  type="file"
+                  name="imagen"
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="super-form-input"
+                  {...(!selectedUser ? { required: true } : {})}
+                />
+                {previewImg && (
+                  <img
+                    src={previewImg}
+                    alt="Preview"
+                    style={{maxWidth: 120, marginTop: 8, borderRadius: 8}}
+                  />
+                )}
               </div>
               <div className="form-group">
                 <label>Estado</label>
@@ -361,7 +436,7 @@ const UsuariosSuper = () => {
                 <button 
                   type="button"
                   className="super-btn super-btn-secondary"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => { setShowModal(false); setPreviewImg(null); }}
                 >
                   Cancelar
                 </button>
@@ -371,7 +446,6 @@ const UsuariosSuper = () => {
         </div>
       )}
 
-      {/* Modal de Confirmación de Eliminación */}
       {showDeleteModal && (
         <div className="super-modal">
           <div className="super-modal-content">
