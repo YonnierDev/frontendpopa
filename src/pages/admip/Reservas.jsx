@@ -7,6 +7,7 @@ const Reservas = () => {
   const [busqueda, setBusqueda] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     fetchReservas();
@@ -14,29 +15,23 @@ const Reservas = () => {
 
   const fetchReservas = async () => {
     try {
-      const response = await axios.get("https://popnocturna.vercel.app/api/reservas");
-      setReservas(response.data);
+      setCargando(true);
+      const response = await axios.get("https://popnocturna.vercel.app/api/reservas?con_relaciones=true");
+      console.log("Respuesta del backend:", response.data);
+      
+      const data = response.data?.datos?.rows || [];
+      setReservas(data);
+      setCargando(false);
     } catch (error) {
       console.error("Error al cargar reservas", error);
+      setMensaje("Error al cargar las reservas. Por favor, inténtalo de nuevo.");
+      setTimeout(() => setMensaje(""), 3000);
+      setCargando(false);
     }
   };
 
-  const handleEditar = (reserva) => {
+  const mostrarDetalles = (reserva) => {
     setReservaSeleccionada({ ...reserva });
-  };
-
-  const handleGuardarEdicion = async () => {
-    try {
-      await axios.patch(`https://popnocturna.vercel.app/api/reserva/${reservaSeleccionada.id}`, reservaSeleccionada);
-      setMensaje("Reserva actualizada correctamente");
-      fetchReservas();
-      setReservaSeleccionada(null);
-      setTimeout(() => setMensaje(""), 3000);
-    } catch (error) {
-      console.error("Error al editar reserva", error);
-      setMensaje("No se pudo editar la reserva");
-      setTimeout(() => setMensaje(""), 3000);
-    }
   };
 
   const handleBusqueda = (e) => {
@@ -58,7 +53,7 @@ const Reservas = () => {
   };
 
   const reservasFiltradas = reservas.filter(reserva =>
-    reserva.aprobacion.toLowerCase().includes(busqueda.toLowerCase())
+    (reserva.aprobacion || '').toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
@@ -68,22 +63,29 @@ const Reservas = () => {
       <div className="card-reservas">
         <h2>Reservas</h2>
 
-        <input
-          type="text"
-          placeholder="Buscar reserva..."
-          value={busqueda}
-          onChange={handleBusqueda}
-          className="buscador-reservas"
-        />
+        <div className="buscador-container">
+          <input
+            type="text"
+            placeholder="Buscar por aprobación..."
+            value={busqueda}
+            onChange={handleBusqueda}
+            className="buscador-reservas"
+          />
+        </div>
 
-        {reservas.length === 0 ? (
-          <p className="loading-text">Cargando...</p>
+        {cargando ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Cargando reservas...</p>
+          </div>
+        ) : reservas.length === 0 ? (
+          <p className="loading-text">No hay reservas disponibles</p>
         ) : (
           <table className="reservas-tabla">
             <thead>
               <tr>
-                <th>ID Usuario</th>
-                <th>ID Evento</th>
+                <th>Nombre del usuario</th>
+                <th>Nombre del evento</th>
                 <th>Fecha</th>
                 <th>Aprobación</th>
                 <th>Acciones</th>
@@ -93,12 +95,12 @@ const Reservas = () => {
             <tbody>
               {reservasFiltradas.map(reserva => (
                 <tr key={reserva.id} className="reserva-item">
-                  <td>{reserva.usuarioid}</td>
-                  <td>{reserva.eventoid}</td>
-                  <td>{new Date(reserva.fecha_hora).toLocaleString()}</td>
-                  <td>{reserva.aprobacion}</td>
+                  <td>{reserva.usuario?.nombre || "No disponible"}</td>
+                  <td>{reserva.evento?.nombre || "No disponible"}</td>
+                  <td>{reserva.fecha_hora ? new Date(reserva.fecha_hora).toLocaleString() : "No disponible"}</td>
+                  <td>{reserva.aprobacion || "No disponible"}</td>
                   <td className="acciones">
-                    <button className="editar" onClick={() => handleEditar(reserva)}>Editar</button>
+                    <button className="detalles" onClick={() => mostrarDetalles(reserva)}>Detalles</button>
                   </td>
                   <td>
                     <label className="switch">
@@ -123,32 +125,15 @@ const Reservas = () => {
       {reservaSeleccionada && (
         <div className="modal">
           <div className="modal-contenido">
-            <h3>Editar Reserva</h3>
-            <input
-              type="number"
-              value={reservaSeleccionada.usuarioid}
-              onChange={(e) => setReservaSeleccionada({ ...reservaSeleccionada, usuarioid: e.target.value })}
-              placeholder="ID Usuario"
-            />
-            <input
-              type="number"
-              value={reservaSeleccionada.eventoid}
-              onChange={(e) => setReservaSeleccionada({ ...reservaSeleccionada, eventoid: e.target.value })}
-              placeholder="ID Evento"
-            />
-            <input
-              type="datetime-local"
-              value={new Date(reservaSeleccionada.fecha_hora).toISOString().slice(0, 16)}
-              onChange={(e) => setReservaSeleccionada({ ...reservaSeleccionada, fecha_hora: e.target.value })}
-            />
-            <input
-              type="text"
-              value={reservaSeleccionada.aprobacion}
-              onChange={(e) => setReservaSeleccionada({ ...reservaSeleccionada, aprobacion: e.target.value })}
-              placeholder="Aprobación"
-            />
-            <button onClick={handleGuardarEdicion}>Guardar</button>
-            <button className="cerrar-modal" onClick={() => setReservaSeleccionada(null)}>Cancelar</button>
+            <h3>Detalles de la Reserva</h3>
+            <p><strong>ID:</strong> {reservaSeleccionada.id}</p>
+            <p><strong>Usuario:</strong> {reservaSeleccionada.usuario?.nombre || reservaSeleccionada.usuario?.correo || "No disponible"}</p>
+            <p><strong>Correo Usuario:</strong> {reservaSeleccionada.usuario?.correo || "No disponible"}</p>
+            <p><strong>Evento:</strong> {reservaSeleccionada.evento?.nombre || reservaSeleccionada.evento?.descripcion || "No disponible"}</p>
+            <p><strong>Fecha:</strong> {new Date(reservaSeleccionada.fecha_hora).toLocaleString()}</p>
+            <p><strong>Aprobación:</strong> {reservaSeleccionada.aprobacion}</p>
+            <p><strong>Estado:</strong> {reservaSeleccionada.estado ? "Activo" : "Inactivo"}</p>
+            <button className="cerrar-modal" onClick={() => setReservaSeleccionada(null)}>Cerrar</button>
           </div>
         </div>
       )}
