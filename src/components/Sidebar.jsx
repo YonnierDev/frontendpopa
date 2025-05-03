@@ -49,14 +49,12 @@ const Sidebar = () => {
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>
-        {showVolverLugares && (
-          <button
-            className="sidebar-button sidebar-volver-lugares"
-            onClick={() => navigate('/propietario/dashboard')}
-          >
-            <span style={{display:'inline-flex',alignItems:'center'}}><FaArrowLeft style={{marginRight:'8px'}}/>Volver a lugares</span>
-          </button>
-        )}
+        <button
+          className="sidebar-button sidebar-volver-lugares"
+          onClick={() => navigate('/propietario/dashboard')}
+        >
+          <span style={{display:'inline-flex',alignItems:'center'}}><FaArrowLeft style={{marginRight:'8px'}}/>Volver a lugares</span>
+        </button>
       </div>
       <div className="logout-container">
         <button className="logout-btn" onClick={handleLogout}>
