@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { api } from '../../components/api/api';
 import './Calificaciones.css';
 import Sidebar from '../../components/Sidebar';
 
 const Calificaciones = () => {
+  const { lugarid } = useParams();
   const [calificaciones, setCalificaciones] = useState([]);
   const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
   const [mensaje, setMensaje] = useState('');
@@ -14,12 +16,14 @@ const Calificaciones = () => {
 
   const cargarCalificaciones = async () => {
     try {
-      const response = await api.get('/calificaciones');
-      const datos = response.data?.datos || [];
+      // Usa el lugarid de los parámetros de la URL
+      const response = await api.get(`/propietario/lugar/${lugarid}/comentarios-calificaciones`);
+      const datos = response.data?.calificaciones?.data || [];
       setCalificaciones(datos);
       setMensaje('');
     } catch (error) {
       console.error('Error al cargar calificaciones:', error.response || error);
+      setCalificaciones([]); // Asegura que siempre sea un array
       setMensaje(
         'Error al cargar las calificaciones: ' +
         (error.response?.data?.mensaje || error.message)
@@ -72,7 +76,7 @@ const Calificaciones = () => {
               </tr>
             </thead>
             <tbody>
-              {calificaciones.map((cal) => (
+              {(Array.isArray(calificaciones) ? calificaciones : []).map((cal) => (
                 <tr key={cal.id}>
                   <td>{cal.usuario?.nombre || 'Desconocido'}</td>
                   <td>{cal.evento?.nombre || 'Evento eliminado'}</td>

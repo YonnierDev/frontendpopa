@@ -6,20 +6,21 @@ html, body {
 }
 
 .propietario-dashboard {
-  display: flex;
+  display: block;
   min-height: 100vh;
   background-color: #f5f6fa;
   overflow-x: hidden;
 }
 
 .propietario-content {
-  flex: 1;
-  padding: 1rem;
-  margin-left: 250px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem 1.5rem 1rem;
   overflow-y: auto;
-  height: 100vh;
-  margin-top: 6rem;
-  padding-top: 3rem;
+  min-height: 100vh;
+  margin-top: 1.5rem;
+  box-sizing: border-box;
 }
 
 /* Sección de bienvenida */
@@ -46,12 +47,16 @@ html, body {
 }
 
 /* Sección de estadísticas */
-.propietario-stats {
+.propietario-kpis-row {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  flex-direction: row;
+  gap: 2rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  justify-content: center;
 }
+
+/* Eliminar la clase propietario-stats porque ya no se usa */
 
 .propietario-stat-box {
   background: white;
@@ -126,9 +131,10 @@ html, body {
 }
 
 .propietario-places-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
 }
 
 .propietario-place-card {
@@ -251,32 +257,35 @@ html, body {
 @media (max-width: 768px) {
   .propietario-content {
     margin-left: 0;
-    padding: 1rem;
+    padding: 0.5rem;
   }
-
+  .propietario-kpis-row {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  .propietario-places-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
   .propietario-place-card {
     flex-direction: column;
   }
-
   .propietario-place-image {
     width: 100%;
     height: 12rem;
   }
-
   .propietario-place-info {
     padding: 1.25rem;
   }
-
   .propietario-stat-box {
     padding: 1rem;
   }
-
   .propietario-stat-icon {
     width: 3rem;
     height: 3rem;
     font-size: 1.25em;
   }
-
   .propietario-welcome,
   .propietario-places {
     padding: 1.25rem;
