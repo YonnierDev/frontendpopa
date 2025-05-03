@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -23,18 +24,7 @@ const Sidebar = () => {
         <h3>PopNocturna</h3>
       </div> */}
       <div className="sidebar-menu">
-        <button 
-          className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/dashboard')}
-        >
-          <span className="emoji">🏠</span> Inicio
-        </button>
-        <button 
-          className={`sidebar-button ${isActive('/propietario/lugares') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/lugares')}
-        >
-          <span className="emoji">📍</span> Lugares
-        </button>
+        
         <button 
           className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
           onClick={() => navigate('/propietario/eventos')}
@@ -62,26 +52,9 @@ const Sidebar = () => {
         {showVolverLugares && (
           <button
             className="sidebar-button sidebar-volver-lugares"
-            style={{
-              background: 'linear-gradient(90deg, #ff512f 0%, #dd2476 100%)', // degradado naranja-rosado
-              color: '#fff',
-              borderRadius: '30px',
-              fontWeight: 'bold',
-              marginTop: '15px',
-              marginBottom: '5px',
-              boxShadow: '0 4px 16px rgba(221,36,118,0.18)',
-              border: '2px solid #fff',
-              letterSpacing: '1px',
-              fontSize: '1.08rem',
-              transition: 'background 0.2s, transform 0.15s',
-              outline: 'none',
-              textShadow: '0 2px 8px rgba(0,0,0,0.10)',
-            }}
-            onClick={() => navigate('/propietario/lugares')}
-            onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #ff512f 0%, #f09819 100%)'}
-            onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #ff512f 0%, #dd2476 100%)'}
+            onClick={() => navigate('/propietario/dashboard')}
           >
-            Volver a lugares
+            <span style={{display:'inline-flex',alignItems:'center'}}><FaArrowLeft style={{marginRight:'8px'}}/>Volver a lugares</span>
           </button>
         )}
       </div>

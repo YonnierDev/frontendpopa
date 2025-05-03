@@ -54,6 +54,24 @@
   border-radius: 0;
 }
 
+.sidebar-volver-lugares svg {
+  font-size: 1.1em;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.sidebar-volver-lugares:hover {
+  background: rgba(255, 81, 47, 0.18);
+  color: #fff;
+  border-left: 4px solid #f09819;
+}
+
+.sidebar-volver-lugares svg {
+  font-size: 1.1em;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
 .sidebar-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
