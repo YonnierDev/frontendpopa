@@ -117,10 +117,7 @@ const RolesSuper = () => {
           className="super-btn super-btn-primary"
           onClick={() => {
             setSelectedRole(null);
-            setFormData({
-              nombre: '',
-              estado: true
-            });
+            setFormData({ nombre: '', estado: true });
             setShowModal(true);
           }}
         >

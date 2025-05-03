@@ -41,7 +41,7 @@ const ReservasSuper = () => {
       const usuario = JSON.parse(localStorage.getItem('usuario'));
 
       if (!token || !usuario || ![1, 2, 3, 8].includes(usuario.rol)) {
-        setError('No tienes permisos para acceder a esta página. Solo SuperAdmin, Administrador, Propietario y Usuario pueden acceder.');
+        setError('No tienes permisos para acceder a esta página.');
         setLoading(false);
         return;
       }
@@ -80,67 +80,31 @@ const ReservasSuper = () => {
       console.error('Error al cargar reservas:', error);
       setReservas([]);
       setError(error.response?.data?.mensaje || 'Error al cargar las reservas');
+      toast.error(error.response?.data?.mensaje || 'Error al cargar las reservas');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleFilter = (e) => {
-    setFilterStatus(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return <FaSort />;
-    return sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />;
-  };
-
-  const sortedReservas = Array.isArray(reservas) ? [...reservas].sort((a, b) => {
-    if (sortConfig.key === 'fecha_hora') {
-      return sortConfig.direction === 'asc'
-        ? new Date(a.fecha_hora) - new Date(b.fecha_hora)
-        : new Date(b.fecha_hora) - new Date(a.fecha_hora);
-    }
-    if (sortConfig.key.includes('.')) {
-      const [parent, child] = sortConfig.key.split('.');
-      if (a[parent] && b[parent]) {
-        return sortConfig.direction === 'asc'
-          ? (a[parent][child] || '').localeCompare(b[parent][child] || '')
-          : (b[parent][child] || '').localeCompare(a[parent][child] || '');
-      }
-    }
-    if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === 'asc' ? -1 : 1;
-    }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === 'asc' ? 1 : -1;
-    }
-    return 0;
-  }) : [];
-
   const handleAprobarReserva = async (numero_reserva, aprobacion) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`/api/reserva/aprobar/${numero_reserva}`, { aprobacion }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      // Actualiza la lista
+      const response = await axios.patch(
+        `https://popnocturna.vercel.app/api/reserva/aprobar/${numero_reserva}`,
+        { aprobacion },
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      toast.success('Estado de reserva actualizado correctamente');
       fetchReservas();
     } catch (error) {
-      alert('Error al actualizar el estado de la reserva');
+      console.error('Error al actualizar estado:', error);
+      toast.error(error.response?.data?.mensaje || 'Error al actualizar el estado de la reserva');
     }
   };
 
@@ -148,13 +112,63 @@ const ReservasSuper = () => {
     if (window.confirm('¿Estás seguro de eliminar esta reserva?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`/api/reserva/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        
+        if (!token || !usuario) {
+          toast.error('No hay sesión activa');
+          return;
+        }
+
+        // Verificar si el usuario tiene permisos (rol 1 o 2)
+        if (![1, 2].includes(usuario.rol)) {
+          toast.error('No tienes permisos para eliminar reservas');
+          return;
+        }
+
+        // Primero verificar si la reserva existe
+        const checkResponse = await axios.get(
+          `https://popnocturna.vercel.app/api/reserva/${id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!checkResponse.data) {
+          toast.error('La reserva no existe');
+          return;
+        }
+
+        // Si la reserva existe, proceder con la eliminación
+        const response = await axios({
+          method: 'delete',
+          url: `https://popnocturna.vercel.app/api/reserva/${id}`,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         });
-        // Actualiza la lista
-        setReservas(prev => prev.filter(r => r.id !== id));
+
+        if (response.data && response.data.mensaje) {
+          toast.success(response.data.mensaje);
+          // Actualizar la lista de reservas
+          fetchReservas();
+        }
       } catch (error) {
-        alert('Error al eliminar la reserva');
+        console.error('Error al eliminar:', error);
+        if (error.response) {
+          // El servidor respondió con un código de error
+          const errorMessage = error.response.data?.mensaje || 'Error al eliminar la reserva';
+          toast.error(errorMessage);
+        } else if (error.request) {
+          // La petición fue hecha pero no se recibió respuesta
+          toast.error('No se recibió respuesta del servidor');
+        } else {
+          // Error al configurar la petición
+          toast.error('Error al procesar la solicitud');
+        }
       }
     }
   };
@@ -162,13 +176,20 @@ const ReservasSuper = () => {
   const handleView = async (numero_reserva) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/reserva/${numero_reserva}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setSelectedReserva(res.data);
+      const response = await axios.get(
+        `https://popnocturna.vercel.app/api/reserva/${numero_reserva}`,
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      setSelectedReserva(response.data);
       setShowModal(true);
     } catch (error) {
-      alert('Error al cargar los detalles de la reserva');
+      console.error('Error al cargar detalles:', error);
+      toast.error(error.response?.data?.mensaje || 'Error al cargar los detalles de la reserva');
     }
   };
 
@@ -183,6 +204,9 @@ const ReservasSuper = () => {
     });
   };
 
+  if (loading) return <div className="super-loading">Cargando...</div>;
+  if (error) return <div className="super-alert super-alert-error">{error}</div>;
+
   return (
     <div className="super-reservas-layout">
       <div className="super-reservas-header">
@@ -192,43 +216,160 @@ const ReservasSuper = () => {
             type="text"
             placeholder="Buscar reservas..."
             value={searchTerm}
-            onChange={handleSearch}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="super-reservas-input"
           />
-          {/* Puedes agregar más filtros aquí si lo deseas */}
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="super-reservas-select"
+          >
+            <option value="all">Todos los estados</option>
+            <option value="true">Activas</option>
+            <option value="false">Inactivas</option>
+          </select>
+          <input
+            type="date"
+            value={fechaDesde}
+            onChange={(e) => setFechaDesde(e.target.value)}
+            className="super-reservas-date"
+            placeholder="Fecha desde"
+          />
+          <input
+            type="date"
+            value={fechaHasta}
+            onChange={(e) => setFechaHasta(e.target.value)}
+            className="super-reservas-date"
+            placeholder="Fecha hasta"
+          />
         </div>
       </div>
-      <div className="super-reservas-table-container">
-        <table className="super-reservas-table">
+
+      <div className="super-reservas-table-container" style={{
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        marginTop: '20px',
+        overflow: 'auto'
+      }}>
+        <table className="super-reservas-table" style={{
+          width: '100%',
+          borderCollapse: 'collapse'
+        }}>
           <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Evento</th>
-              <th>Fecha</th>
-              <th>Estado</th>
-              <th>Acciones</th>
+            <tr style={{ backgroundColor: '#f5f5f5' }}>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#333' }}>Número Reserva</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#333' }}>Usuario</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#333' }}>Evento</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#333' }}>Fecha</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#333' }}>Estado</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#333' }}>Aprobación</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#333' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {reservas.length === 0 ? (
               <tr>
-                <td colSpan="5" className="super-reservas-no-data">
+                <td colSpan="7" style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
                   No hay reservas disponibles
                 </td>
               </tr>
             ) : (
               reservas.map(reserva => (
-                <tr key={reserva.id} className="super-reservas-row">
-                  <td>{reserva.usuario?.nombre || 'Usuario no disponible'}</td>
-                  <td>{reserva.evento?.nombre || 'Evento no disponible'}</td>
-                  <td>{formatDate(reserva.fecha_hora)}</td>
-                  <td>{reserva.aprobacion}</td>
-                  <td>
-                    <div className="super-reservas-actions">
-                      <button className="super-reservas-btn view" onClick={() => handleView(reserva.numero_reserva)}>Ver</button>
-                      <button className="super-reservas-btn delete" onClick={() => handleDelete(reserva.id)}>Eliminar</button>
-                      <button className="super-reservas-btn view" onClick={() => handleAprobarReserva(reserva.numero_reserva, 'aceptado')}>Aprobar</button>
-                      <button className="super-reservas-btn delete" onClick={() => handleAprobarReserva(reserva.numero_reserva, 'rechazado')}>Rechazar</button>
+                <tr key={reserva.id} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '12px', color: '#333' }}>{reserva.numero_reserva}</td>
+                  <td style={{ padding: '12px', color: '#333' }}>{reserva.usuario?.nombre || 'Usuario no disponible'}</td>
+                  <td style={{ padding: '12px', color: '#333' }}>{reserva.evento?.nombre || 'Evento no disponible'}</td>
+                  <td style={{ padding: '12px', color: '#333' }}>{formatDate(reserva.fecha_hora)}</td>
+                  <td style={{ padding: '12px' }}>
+                    <span style={{ 
+                      padding: '4px 8px', 
+                      borderRadius: '4px',
+                      backgroundColor: reserva.estado ? '#4CAF50' : '#f44336',
+                      color: 'white'
+                    }}>
+                      {reserva.estado ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '12px' }}>
+                    <span style={{ 
+                      padding: '4px 8px', 
+                      borderRadius: '4px',
+                      backgroundColor: reserva.aprobacion === 'aceptado' ? '#4CAF50' : 
+                                     reserva.aprobacion === 'rechazado' ? '#f44336' : '#FFA500',
+                      color: 'white'
+                    }}>
+                      {reserva.aprobacion || 'Pendiente'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '12px' }}>
+                    <div className="super-reservas-actions" style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        className="super-reservas-btn view" 
+                        onClick={() => handleView(reserva.numero_reserva)}
+                        title="Ver detalles"
+                        style={{
+                          padding: '6px',
+                          backgroundColor: '#2196F3',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <FaEye />
+                      </button>
+                      {[1, 2].includes(JSON.parse(localStorage.getItem('usuario'))?.rol) && (
+                        <button 
+                          className="super-reservas-btn delete" 
+                          onClick={() => handleDelete(reserva.id)}
+                          title="Eliminar reserva"
+                          style={{
+                            padding: '6px',
+                            backgroundColor: '#f44336',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
+                      {[1, 2, 3].includes(JSON.parse(localStorage.getItem('usuario'))?.rol) && (
+                        <>
+                          <button 
+                            className="super-reservas-btn approve" 
+                            onClick={() => handleAprobarReserva(reserva.numero_reserva, 'aceptado')}
+                            title="Aprobar reserva"
+                            style={{
+                              padding: '6px',
+                              backgroundColor: '#4CAF50',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <FaCheck />
+                          </button>
+                          <button 
+                            className="super-reservas-btn reject" 
+                            onClick={() => handleAprobarReserva(reserva.numero_reserva, 'rechazado')}
+                            title="Rechazar reserva"
+                            style={{
+                              padding: '6px',
+                              backgroundColor: '#f44336',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <FaTimes />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -237,6 +378,88 @@ const ReservasSuper = () => {
           </tbody>
         </table>
       </div>
+
+      {showModal && selectedReserva && (
+        <div className="super-modal" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div className="super-modal-content" style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            width: '80%',
+            maxWidth: '600px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h2 style={{ color: '#333', marginBottom: '20px', fontSize: '24px' }}>Detalles de la Reserva</h2>
+            <div className="reserva-details" style={{ marginBottom: '20px' }}>
+              <p style={{ margin: '10px 0', color: '#333' }}>
+                <strong style={{ color: '#666' }}>Número de Reserva:</strong> {selectedReserva.numero_reserva}
+              </p>
+              <p style={{ margin: '10px 0', color: '#333' }}>
+                <strong style={{ color: '#666' }}>Usuario:</strong> {selectedReserva.usuario?.nombre}
+              </p>
+              <p style={{ margin: '10px 0', color: '#333' }}>
+                <strong style={{ color: '#666' }}>Correo:</strong> {selectedReserva.usuario?.correo}
+              </p>
+              <p style={{ margin: '10px 0', color: '#333' }}>
+                <strong style={{ color: '#666' }}>Evento:</strong> {selectedReserva.evento?.nombre}
+              </p>
+              <p style={{ margin: '10px 0', color: '#333' }}>
+                <strong style={{ color: '#666' }}>Fecha del Evento:</strong> {formatDate(selectedReserva.evento?.fecha_hora)}
+              </p>
+              <p style={{ margin: '10px 0', color: '#333' }}>
+                <strong style={{ color: '#666' }}>Estado:</strong> 
+                <span style={{ 
+                  padding: '4px 8px', 
+                  borderRadius: '4px',
+                  backgroundColor: selectedReserva.estado ? '#4CAF50' : '#f44336',
+                  color: 'white',
+                  marginLeft: '8px'
+                }}>
+                  {selectedReserva.estado ? 'Activo' : 'Inactivo'}
+                </span>
+              </p>
+              <p style={{ margin: '10px 0', color: '#333' }}>
+                <strong style={{ color: '#666' }}>Aprobación:</strong>
+                <span style={{ 
+                  padding: '4px 8px', 
+                  borderRadius: '4px',
+                  backgroundColor: selectedReserva.aprobacion === 'aceptado' ? '#4CAF50' : 
+                                 selectedReserva.aprobacion === 'rechazado' ? '#f44336' : '#FFA500',
+                  color: 'white',
+                  marginLeft: '8px'
+                }}>
+                  {selectedReserva.aprobacion || 'Pendiente'}
+                </span>
+              </p>
+            </div>
+            <button 
+              className="super-btn super-btn-secondary"
+              onClick={() => setShowModal(false)}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#666',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
