@@ -22,13 +22,15 @@ const SidebarSuper = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [mostrarSeccion, setMostrarSeccion] = useState("bienvenida");
   const [nombreAdmin, setNombreAdmin] = useState("");
+  const [apellidoAdmin, setApellidoAdmin] = useState("");
+  const [rolAdmin, setRolAdmin] = useState("");
   const [cantidadSolicitudes, setCantidadSolicitudes] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Obtener el nombre del administrador
+    // Obtener el nombre del SuperAdministrador
     const fetchAdminInfo = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -37,15 +39,19 @@ const SidebarSuper = () => {
           return;
         }
 
-        const response = await axios.get('https://popnocturna.vercel.app/api/usuario/2', {
+        const response = await axios.get('https://popnocturna.vercel.app/api/usuario/1', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        setNombreAdmin(response.data.nombre || "Administrador");
+        setNombreAdmin(response.data.nombre || "");
+        setApellidoAdmin(response.data.apellido || "");
+        
       } catch (error) {
-        console.error("Error al obtener información del administrador:", error);
-        setNombreAdmin("Administrador");
+        console.error("Error al obtener información del SuperAdministrador:", error);
+        setNombreAdmin("");
+        setApellidoAdmin("");
+        
       }
     };
 
@@ -93,7 +99,8 @@ const SidebarSuper = () => {
           {showUserMenu && (
             <div className="superadmin-user-dropdown">
               <div className="superadmin-user-info">
-                <div className="superadmin-user-name">{nombreAdmin}</div>
+                <div className="superadmin-user-name">{`${nombreAdmin} ${apellidoAdmin}`}</div>
+                <div className="superadmin-user-role">{rolAdmin}</div>
               </div>
               <button className="superadmin-logout-btn" onClick={handleLogout}>
                 <FaSignOutAlt />
@@ -129,8 +136,8 @@ const SidebarSuper = () => {
               {mostrarSeccion === "bienvenida" && (
                 <div className="superadmin-bienvenida-message">
                   <h2>Panel de Control</h2>
-                  <p>Bienvenido, {nombreAdmin}</p>
-                  <p className="superadmin-bienvenida-subtitle">Administración de Pop Nocturna</p>
+                  <p>Bienvenido, {`${nombreAdmin} ${apellidoAdmin}`}</p>
+                  <p className="superadmin-bienvenida-subtitle">{rolAdmin}</p>
                   <SuperAdminStats />
                 </div>
               )}

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FaCalendar, FaEdit, FaTrash, FaSearch, FaFilter, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaCalendar, FaEdit, FaTrash, FaSearch, FaFilter, FaCheck, FaTimes, FaSort, FaSortUp, FaSortDown, FaUser, FaEye } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import './styles/ReservasSuper.css';
+import './styles/SuperReservas.css';
 
 const ReservasSuper = () => {
   const [reservas, setReservas] = useState([]);
@@ -14,25 +15,48 @@ const ReservasSuper = () => {
   const [fechaHasta, setFechaHasta] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedReserva, setSelectedReserva] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [sortConfig, setSortConfig] = useState({ key: 'fecha_hora', direction: 'desc' });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-    if (!token || !usuario || (usuario.rol !== 1 && usuario.rol !== 2)) {
-      setError('No tienes permisos para acceder a esta página');
+    if (!token || !usuario || ![1, 2, 3, 8].includes(usuario.rol)) {
+      setError('No tienes permisos para acceder a esta página. Solo SuperAdmin, Administrador, Propietario y Usuario pueden acceder.');
+      setLoading(false);
       return;
     }
 
     fetchReservas();
-  }, [filterStatus, fechaDesde, fechaHasta]);
+  }, [filterStatus, fechaDesde, fechaHasta, currentPage, searchTerm]);
 
   const fetchReservas = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem('token');
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+      if (!token || !usuario || ![1, 2, 3, 8].includes(usuario.rol)) {
+        setError('No tienes permisos para acceder a esta página. Solo SuperAdmin, Administrador, Propietario y Usuario pueden acceder.');
+        setLoading(false);
+        return;
+      }
+
+      const params = new URLSearchParams({
+        page: currentPage,
+        limit: itemsPerPage,
+        ...(searchTerm && { search: searchTerm }),
+        ...(filterStatus !== 'all' && { estado: filterStatus }),
+        ...(fechaDesde && { fechaDesde }),
+        ...(fechaHasta && { fechaHasta })
+      });
+
       const response = await axios.get(
-        `https://popnocturna.vercel.app/api/reservas`,
+        `https://popnocturna.vercel.app/api/reservas?${params.toString()}`,
         {
           headers: { 
             Authorization: `Bearer ${token}`,
@@ -40,9 +64,14 @@ const ReservasSuper = () => {
           }
         }
       );
-      console.log('API Response:', response.data);
-      if (Array.isArray(response.data)) {
-        setReservas(response.data);
+
+      if (response.data && response.data.datos) {
+        const reservasData = Array.isArray(response.data.datos) 
+          ? response.data.datos 
+          : response.data.datos.rows || [];
+        
+        setReservas(reservasData);
+        setTotalPages(Math.ceil((response.data.datos.count || reservasData.length) / itemsPerPage));
       } else {
         setReservas([]);
         setError('No hay reservas disponibles');
@@ -58,30 +87,60 @@ const ReservasSuper = () => {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleFilter = (e) => {
     setFilterStatus(e.target.value);
+    setCurrentPage(1);
   };
 
-  const handleAprobarReserva = async (numeroReserva, aprobacion) => {
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return <FaSort />;
+    return sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />;
+  };
+
+  const sortedReservas = Array.isArray(reservas) ? [...reservas].sort((a, b) => {
+    if (sortConfig.key === 'fecha_hora') {
+      return sortConfig.direction === 'asc'
+        ? new Date(a.fecha_hora) - new Date(b.fecha_hora)
+        : new Date(b.fecha_hora) - new Date(a.fecha_hora);
+    }
+    if (sortConfig.key.includes('.')) {
+      const [parent, child] = sortConfig.key.split('.');
+      if (a[parent] && b[parent]) {
+        return sortConfig.direction === 'asc'
+          ? (a[parent][child] || '').localeCompare(b[parent][child] || '')
+          : (b[parent][child] || '').localeCompare(a[parent][child] || '');
+      }
+    }
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  }) : [];
+
+  const handleAprobarReserva = async (numero_reserva, aprobacion) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(
-        `https://popnocturna.vercel.app/api/reserva/aprobar/${numeroReserva}`,
-        { aprobacion },
-        {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      toast.success('Estado de la reserva actualizado correctamente');
+      await axios.patch(`/api/reserva/aprobar/${numero_reserva}`, { aprobacion }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Actualiza la lista
       fetchReservas();
     } catch (error) {
-      console.error('Error al actualizar estado:', error);
-      toast.error(error.response?.data?.mensaje || 'Error al actualizar el estado de la reserva');
+      alert('Error al actualizar el estado de la reserva');
     }
   };
 
@@ -89,111 +148,60 @@ const ReservasSuper = () => {
     if (window.confirm('¿Estás seguro de eliminar esta reserva?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`https://popnocturna.vercel.app/api/reserva/${id}`, {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        await axios.delete(`/api/reserva/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        toast.success('Reserva eliminada correctamente');
-        fetchReservas();
+        // Actualiza la lista
+        setReservas(prev => prev.filter(r => r.id !== id));
       } catch (error) {
-        console.error('Error al eliminar:', error);
-        toast.error(error.response?.data?.mensaje || 'Error al eliminar la reserva');
+        alert('Error al eliminar la reserva');
       }
     }
   };
 
-  const handleView = (reserva) => {
-    setSelectedReserva(reserva);
-    setShowModal(true);
+  const handleView = async (numero_reserva) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`/api/reserva/${numero_reserva}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSelectedReserva(res.data);
+      setShowModal(true);
+    } catch (error) {
+      alert('Error al cargar los detalles de la reserva');
+    }
   };
 
-  // Filtro local por estado y búsqueda
-  const filteredReservas = Array.isArray(reservas)
-    ? reservas.filter(reserva => {
-        const matchesStatus = filterStatus === 'all' || (reserva.aprobacion && reserva.aprobacion.toLowerCase() === filterStatus);
-        const matchesSearch =
-          reserva.numero_reserva?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reserva.usuario?.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reserva.evento?.nombre?.toLowerCase().includes(searchTerm.toLowerCase());
-        let matchesDate = true;
-        if (fechaDesde) matchesDate = matchesDate && new Date(reserva.fecha_hora) >= new Date(fechaDesde);
-        if (fechaHasta) matchesDate = matchesDate && new Date(reserva.fecha_hora) <= new Date(fechaHasta);
-        return matchesStatus && matchesSearch && matchesDate;
-      })
-    : [];
-
-  if (loading) return <div className="reservas-loading">Cargando reservas...</div>;
-  if (error) return <div className="reservas-alert reservas-alert-error">{error}</div>;
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
-    <div className="reservas-container">
-      <div className="reservas-header">
-        <h1 className="reservas-title">Gestión de Reservas</h1>
-        <div className="reservas-stats">
-          <div className="reservas-stat-card">
-            <div className="reservas-stat-value">{Array.isArray(reservas) ? reservas.length : 0}</div>
-            <div className="reservas-stat-label">Total Reservas</div>
-          </div>
-          <div className="reservas-stat-card">
-            <div className="reservas-stat-value">
-              {Array.isArray(reservas) ? reservas.filter(r => r.aprobacion === 'aceptado').length : 0}
-            </div>
-            <div className="reservas-stat-label">Aprobadas</div>
-          </div>
-          <div className="reservas-stat-card">
-            <div className="reservas-stat-value">
-              {Array.isArray(reservas) ? reservas.filter(r => r.aprobacion === 'pendiente' || r.aprobacion === 'Pendiente').length : 0}
-            </div>
-            <div className="reservas-stat-label">Pendientes</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="reservas-filters">
-        <div className="reservas-search">
-          <FaSearch className="search-icon" />
+    <div className="super-reservas-layout">
+      <div className="super-reservas-header">
+        <h1 className="super-reservas-title">Gestión de Reservas</h1>
+        <div className="super-reservas-filters">
           <input
             type="text"
             placeholder="Buscar reservas..."
             value={searchTerm}
             onChange={handleSearch}
-            className="reservas-form-input"
+            className="super-reservas-input"
           />
-        </div>
-        <div className="reservas-filter">
-          <FaFilter className="filter-icon" />
-          <select value={filterStatus} onChange={handleFilter} className="reservas-form-select">
-            <option value="all">Todos los estados</option>
-            <option value="aceptado">Aprobadas</option>
-            <option value="pendiente">Pendientes</option>
-            <option value="rechazado">Rechazadas</option>
-          </select>
-        </div>
-        <div className="reservas-date-filters">
-          <input
-            type="date"
-            value={fechaDesde}
-            onChange={(e) => setFechaDesde(e.target.value)}
-            className="reservas-form-input"
-            placeholder="Fecha desde"
-          />
-          <input
-            type="date"
-            value={fechaHasta}
-            onChange={(e) => setFechaHasta(e.target.value)}
-            className="reservas-form-input"
-            placeholder="Fecha hasta"
-          />
+          {/* Puedes agregar más filtros aquí si lo deseas */}
         </div>
       </div>
-
-      <div className="reservas-table-container">
-        <table className="reservas-table">
+      <div className="super-reservas-table-container">
+        <table className="super-reservas-table">
           <thead>
             <tr>
-              <th>Número</th>
               <th>Usuario</th>
               <th>Evento</th>
               <th>Fecha</th>
@@ -202,67 +210,25 @@ const ReservasSuper = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredReservas.length === 0 ? (
+            {reservas.length === 0 ? (
               <tr>
-                <td colSpan="6" className="reservas-no-data">
+                <td colSpan="5" className="super-reservas-no-data">
                   No hay reservas disponibles
                 </td>
               </tr>
             ) : (
-              filteredReservas.map(reserva => (
-                <tr key={reserva.id}>
-                  <td>{reserva.numero_reserva}</td>
+              reservas.map(reserva => (
+                <tr key={reserva.id} className="super-reservas-row">
+                  <td>{reserva.usuario?.nombre || 'Usuario no disponible'}</td>
+                  <td>{reserva.evento?.nombre || 'Evento no disponible'}</td>
+                  <td>{formatDate(reserva.fecha_hora)}</td>
+                  <td>{reserva.aprobacion}</td>
                   <td>
-                    <div className="reservas-user-info">
-                      <span>{reserva.usuario?.nombre || 'Usuario no disponible'}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="reservas-event-info">
-                      <span>{reserva.evento?.nombre || 'Evento no disponible'}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="reservas-date-info">
-                      <FaCalendar className="date-icon" />
-                      <span>{new Date(reserva.fecha_hora).toLocaleString()}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`reservas-status-badge ${reserva.aprobacion?.toLowerCase()}`}>
-                      {reserva.aprobacion}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="reservas-actions">
-                      <button
-                        className="reservas-btn reservas-btn-secondary"
-                        onClick={() => handleView(reserva)}
-                        title="Ver detalles"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        className="reservas-btn reservas-btn-primary"
-                        onClick={() => handleAprobarReserva(reserva.numero_reserva, 'aceptado')}
-                        title="Aprobar reserva"
-                      >
-                        <FaCheck />
-                      </button>
-                      <button
-                        className="reservas-btn reservas-btn-danger"
-                        onClick={() => handleAprobarReserva(reserva.numero_reserva, 'rechazado')}
-                        title="Rechazar reserva"
-                      >
-                        <FaTimes />
-                      </button>
-                      <button
-                        className="reservas-btn reservas-btn-danger"
-                        onClick={() => handleDelete(reserva.id)}
-                        title="Eliminar reserva"
-                      >
-                        <FaTrash />
-                      </button>
+                    <div className="super-reservas-actions">
+                      <button className="super-reservas-btn view" onClick={() => handleView(reserva.numero_reserva)}>Ver</button>
+                      <button className="super-reservas-btn delete" onClick={() => handleDelete(reserva.id)}>Eliminar</button>
+                      <button className="super-reservas-btn view" onClick={() => handleAprobarReserva(reserva.numero_reserva, 'aceptado')}>Aprobar</button>
+                      <button className="super-reservas-btn delete" onClick={() => handleAprobarReserva(reserva.numero_reserva, 'rechazado')}>Rechazar</button>
                     </div>
                   </td>
                 </tr>
@@ -271,42 +237,6 @@ const ReservasSuper = () => {
           </tbody>
         </table>
       </div>
-
-      {showModal && selectedReserva && (
-        <div className="reservas-modal">
-          <div className="reservas-modal-content">
-            <h2>Detalles de la Reserva</h2>
-            <div className="reservas-form-group">
-              <label>Número de Reserva</label>
-              <p>{selectedReserva.numero_reserva}</p>
-            </div>
-            <div className="reservas-form-group">
-              <label>Usuario</label>
-              <p>{selectedReserva.usuario?.nombre}</p>
-            </div>
-            <div className="reservas-form-group">
-              <label>Evento</label>
-              <p>{selectedReserva.evento?.nombre}</p>
-            </div>
-            <div className="reservas-form-group">
-              <label>Fecha</label>
-              <p>{new Date(selectedReserva.fecha_hora).toLocaleString()}</p>
-            </div>
-            <div className="reservas-form-group">
-              <label>Estado</label>
-              <p>{selectedReserva.aprobacion}</p>
-            </div>
-            <div className="reservas-modal-actions">
-              <button
-                className="reservas-btn reservas-btn-secondary"
-                onClick={() => setShowModal(false)}
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

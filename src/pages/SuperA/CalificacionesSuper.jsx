@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaStar, FaUser, FaSearch, FaFilter, FaTrash, FaEdit, FaEye } from 'react-icons/fa';
+import { FaStar, FaUser, FaSearch, FaFilter, FaTrash, FaEye } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import './styles/CalificacionesSuper.css';
@@ -66,25 +66,6 @@ const CalificacionesSuper = () => {
   const handleView = (calificacion) => {
     setSelectedCalificacion(calificacion);
     setShowModal(true);
-  };
-
-  const handleEdit = async (id, puntuacion) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.put(`https://popnocturna.vercel.app/api/calificacion/${id}`, {
-        puntuacion
-      }, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      toast.success('Calificación actualizada correctamente');
-      fetchCalificaciones();
-    } catch (error) {
-      console.error('Error al actualizar:', error);
-      toast.error(error.response?.data?.mensaje || 'Error al actualizar la calificación');
-    }
   };
 
   const handleDelete = async (id) => {
@@ -207,13 +188,6 @@ const CalificacionesSuper = () => {
                         title="Ver detalles"
                       >
                         <FaEye />
-                      </button>
-                      <button
-                        className="calificaciones-btn calificaciones-btn-primary"
-                        onClick={() => handleEdit(calificacion.id, calificacion.puntuacion)}
-                        title="Editar calificación"
-                      >
-                        <FaEdit />
                       </button>
                       <button
                         className="calificaciones-btn calificaciones-btn-danger"
