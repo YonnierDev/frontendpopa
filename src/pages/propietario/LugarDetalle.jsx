@@ -145,16 +145,17 @@ const LugarDetalle = () => {
 
   console.log('Comentarios traídos para este lugar:', comentarios);
   return (
-    <div className="lugar-detalle">
+    <div className="dashboard">
       <Sidebar />
-      <div className="lugar-content">
-        <div className="lugar-header">
-          <div className="lugar-titulo">
-            <h1>{lugar.nombre}</h1>
-            <div className="lugar-ubicacion">
-              <FaMapMarkerAlt /> {lugar.direccion}
-            </div>
-          </div>
+      <div className="content-container">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1>{lugar?.nombre || 'Detalles del Lugar'}</h1>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate(`/propietario/comentarios/${id}`)}
+          >
+            Ver Comentarios
+          </button>
         </div>
 
         <div className="imagen-ajuste">

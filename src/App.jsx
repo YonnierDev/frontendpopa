@@ -114,11 +114,11 @@ function App() {
           {/* Rutas protegidas - PROPIETARIO (rol: 3) */}
           <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} />}>
             <Route path="/propietario/dashboard" element={<DashboardPropietario />} />
-            <Route path="/propietario/lugar/:id" element={<LugarDetalle />} />
             <Route path="/propietario/lugares" element={<LugaresProp />} />
+            <Route path="/propietario/lugar/:id" element={<LugarDetalle />} />
+            <Route path="/propietario/comentarios/:id" element={<ComentariosProp />} />
             <Route path="/propietario/eventos" element={<EventosProp />} />
             <Route path="/propietario/reservas" element={<ReservasProp />} />
-            <Route path="/propietario/comentarios" element={<ComentariosProp />} />
             <Route path="/propietario/calificaciones" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
             <Route path="/propietario/perfil" element={<Perfil />} />

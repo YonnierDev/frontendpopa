@@ -5,8 +5,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Comentarios.css';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Comentarios = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [comentarios, setComentarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -14,14 +18,51 @@ const Comentarios = () => {
   const [motivoReporte, setMotivoReporte] = useState('');
 
   useEffect(() => {
+    if (!id) {
+      navigate('/propietario/lugares');
+      return;
+    }
     cargarComentarios();
-  }, []);
+  }, [id, navigate]);
 
   const cargarComentarios = async () => {
     try {
       setCargando(true);
-      const { data } = await api.get('/comentarios');
-      setComentarios(data.comentarios || []);
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      const comentariosRes = await fetch('https://popnocturna.vercel.app/api/comentarios', {
+        headers: {
+          'Authorization': `Bearer ${usuario?.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (comentariosRes.ok) {
+        const comentariosData = await comentariosRes.json();
+        const comentariosLugar = (comentariosData.comentarios || []).filter(com => {
+          // Si el comentario tiene lugar directo
+          if (com.lugar && Number(com.lugar.id) === Number(id)) return true;
+          // Si el comentario tiene evento y el evento tiene lugar
+          if (com.evento && com.evento.lugar && Number(com.evento.lugar.id) === Number(id)) return true;
+          return false;
+        });
+        
+        // Verificar si los comentarios tienen la estructura esperada
+        console.log('Estructura de los comentarios:', comentariosLugar[0]);
+        
+        // Asegurarse de que los comentarios tengan la estructura correcta
+        const comentariosFormateados = comentariosLugar.map(com => ({
+          ...com,
+          usuario: com.usuario || {},
+          lugar: com.lugar || {},
+          evento: com.evento || {}
+        }));
+        
+        console.log('Comentarios formateados:', comentariosFormateados);
+        setComentarios(comentariosFormateados);
+        console.log('Comentarios filtrados para este lugar:', comentariosLugar);
+        setComentarios(comentariosLugar);
+      } else {
+        setComentarios([]);
+      }
     } catch (err) {
       console.error('Error al cargar comentarios:', err);
       toast.error('Error al cargar los comentarios');
