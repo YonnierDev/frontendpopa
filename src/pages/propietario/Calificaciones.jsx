@@ -80,10 +80,10 @@ const Calificaciones = () => {
           <p className="promedio-texto">
             Promedio de Calificaciones: <span className="estrellas">★</span> {calcularPromedio().toFixed(1)}
           </p>
-          <p>Total de calificaciones: {calificaciones.length}</p>
+          <p className="total-calificaciones">Total de calificaciones: {calificaciones.length}</p>
 
           {calificaciones.length === 0 ? (
-            <p style={styles.noCalificaciones}>No hay calificaciones para este lugar</p>
+            <p className="no-calificaciones">No hay calificaciones para este lugar</p>
           ) : (
             <table className="tabla-calificaciones">
               <thead>

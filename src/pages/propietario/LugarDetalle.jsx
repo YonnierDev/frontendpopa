@@ -150,18 +150,6 @@ const LugarDetalle = () => {
       <div className="content-container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1>{lugar?.nombre || 'Detalles del Lugar'}</h1>
-          <button 
-            className="btn btn-primary me-2"
-            onClick={() => navigate(`/propietario/comentarios/${id}`)}
-          >
-            Ver Comentarios
-          </button>
-          <button 
-            className="btn btn-primary"
-            onClick={() => navigate(`/propietario/calificaciones/${id}`)}
-          >
-            Ver Calificaciones
-          </button>
         </div>
 
         <div className="imagen-ajuste">

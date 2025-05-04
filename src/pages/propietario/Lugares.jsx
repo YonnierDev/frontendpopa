@@ -210,12 +210,6 @@ const Lugares = () => {
         <div className="lugares-container">
           <div className="lugares-header">
             <h2>Mis Lugares</h2>
-            <button 
-              className="btn-crear"
-              onClick={() => setShowModal(true)}
-            >
-              <FaPlus /> Crear Nuevo Lugar
-            </button>
           </div>
 
           {error && (
