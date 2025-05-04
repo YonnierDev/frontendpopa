@@ -125,20 +125,34 @@
 /* Grid de información */
 .lugar-info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
   padding: 1rem 0;
+  grid-auto-flow: row;
+  height: fit-content;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .info-card {
   background: #ffffff;
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: 1px solid #e0e0e0;
   text-align: left;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 300px;
 }
 
 .info-card:hover {
@@ -149,8 +163,8 @@
 .info-card h2 {
   font-size: 1.2rem;
   color: #000000;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   border-bottom: 2px solid #ffffff;
   font-weight: 600;
   text-align: center;
@@ -162,10 +176,14 @@
 
 .info-card p {
   font-size: 1rem;
-  color: #666666;
-  line-height: 1.6;
+  color: #ffffff;
+  line-height: 1.4;
   margin: 0.5rem 0;
   text-align: left;
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  min-height: 100px;
 }
 
 /* Eventos */
@@ -176,6 +194,7 @@
   border-radius: 8px;
   border-left: 4px solid #3498db;
   text-align: left;
+  color: #ffffff;
 }
 
 .evento-item:last-child {
@@ -184,13 +203,13 @@
 
 .evento-item h3 {
   margin: 0 0 0.5rem 0;
-  color: #2c3e50;
+  color: #ffffff;
   font-size: 1.1rem;
 }
 
 .evento-item p {
   margin: 0.25rem 0;
-  color: #666;
+  color: #ffffff;
   font-size: 0.9rem;
 }
 
