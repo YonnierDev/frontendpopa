@@ -50,8 +50,8 @@ const Sidebar = () => {
           <span className="emoji">💬</span> Comentarios
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/calificaciones')}
+          className={`sidebar-button ${isActive(`/propietario/calificaciones/${lugarId}`) ? 'active' : ''}`}
+          onClick={() => navigate(`/propietario/calificaciones/${lugarId}`)}
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>
