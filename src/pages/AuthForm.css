@@ -168,6 +168,14 @@ select option {
     justify-content: center;
 }
 
+/* --- Mensaje de error --- */
+.error-message {
+    color: #ff3333;
+    text-align: center;
+    margin: 10px 0;
+    font-weight: 500;
+}
+
 /* --- Logo grande --- */
 .logo-img {
     width: 350px;
