@@ -318,26 +318,7 @@ const EventosSuper = () => {
               >
                 <FaFilter />
               </button>
-              <button 
-                className="super-btn super-btn-primary"
-                onClick={() => {
-                  setSelectedEvento(null);
-                  setFormData({
-                    nombre: '',
-                    descripcion: '',
-                    fecha: '',
-                    hora: '',
-                    lugarid: '',
-                    capacidad: '',
-                    precio: '',
-                    estado: true
-                  });
-                  setShowModal(true);
-                }}
-                data-tooltip="Crear nuevo evento"
-              >
-                Nuevo Evento
-              </button>
+              
             </div>
           </div>
 

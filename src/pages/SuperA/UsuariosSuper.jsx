@@ -70,13 +70,22 @@ const UsuariosSuper = () => {
     return matchesSearch && matchesRole;
   });
 
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleEdit = (usuario) => {
     setSelectedUser(usuario);
     setFormData({
       nombre: usuario.nombre,
       apellido: usuario.apellido,
       correo: usuario.correo,
-      fecha_nacimiento: usuario.fecha_nacimiento,
+      fecha_nacimiento: formatDateForInput(usuario.fecha_nacimiento),
       genero: usuario.genero,
       rolid: usuario.rolid,
       estado: usuario.estado
@@ -136,13 +145,24 @@ const UsuariosSuper = () => {
     }
     try {
       if (selectedUser) {
-        const data = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-          if (key === 'imagen' && !value) return;
-          data.append(key, value);
-        });
-        await axios.put(`https://popnocturna.vercel.app/api/usuario/${selectedUser.id}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+        // Para actualización, enviar los datos como JSON
+        const datosActualizados = {
+          nombre: formData.nombre,
+          apellido: formData.apellido,
+          correo: formData.correo,
+          fecha_nacimiento: formData.fecha_nacimiento,
+          genero: formData.genero,
+          estado: formData.estado,
+          rolid: formData.rolid
+        };
+
+        // Si hay contraseña nueva, incluirla
+        if (formData.contrasena) {
+          datosActualizados.contrasena = formData.contrasena;
+        }
+
+        await axios.put(`https://popnocturna.vercel.app/api/usuario/${selectedUser.id}`, datosActualizados, {
+          headers: { 'Content-Type': 'application/json' }
         });
         toast.success('Usuario actualizado correctamente');
       } else {
