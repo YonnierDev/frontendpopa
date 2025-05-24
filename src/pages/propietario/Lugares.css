@@ -1,120 +1,202 @@
-.dashboard-container {
+.lugares-container {
   display: flex;
   min-height: 100vh;
   background-color: #f5f5f5;
-  position: relative;
 }
 
-.dashboard-content {
+.lugares-content {
   flex: 1;
-  padding: 2rem 1rem;
+  padding: 2rem;
   margin-left: 250px;
-  min-height: 100vh;
-  position: relative;
-  width: calc(100% - 250px);
-  display: flex;
-  justify-content: center;
-  z-index: 1;
-}
-
-.lugares-container {
-  width: 100%;
-  max-width: 1800px;
-  margin: 0 auto;
-  padding: 0;
 }
 
 .lugares-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 8.5rem 0 2rem 0;
-  padding: 0;
+  margin-bottom: 2rem;
 }
 
 .lugares-header h2 {
-  font-size: 2.5rem;
-  color: #ffffff;
   margin: 0;
-  font-weight: 600;
+  color: #333;
+  font-size: 1.8rem;
 }
 
-.btn-crear {
-  background: #ffcc00;
+.btn-nuevo-lugar {
+  background-color: #ffcc00;
   color: #000;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.3s ease;
+  font-weight: 500;
+  transition: background-color 0.3s;
 }
 
-.btn-crear:hover {
-  background: #e6b800;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.btn-nuevo-lugar:hover {
+  background-color: #e6b800;
 }
 
-.modal {
+.lugares-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.lugar-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.lugar-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.lugar-imagen {
+  height: 200px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lugar-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sin-imagen {
+  color: #999;
+  text-align: center;
+  padding: 2rem;
+}
+
+.lugar-info {
+  padding: 1.5rem;
+}
+
+.lugar-info h3 {
+  margin: 0 0 0.5rem;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.lugar-info p {
+  color: #666;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.lugar-estado {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.activo {
+  color: #28a745;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.inactivo {
+  color: #dc3545;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-editar {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.btn-editar:hover {
+  background-color: #0056b3;
+}
+
+/* Modal */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
 .modal-content {
   background: white;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: 8px;
   width: 100%;
-  max-width: 800px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-content h3 {
+  margin-top: 0;
   margin-bottom: 1.5rem;
   color: #333;
   font-size: 1.5rem;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #666;
+  color: #555;
   font-weight: 500;
 }
 
-.form-group input,
+.form-group input[type="text"],
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.6rem;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s;
 }
 
-.form-group input:focus,
+.form-group input[type="text"]:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #ffcc00;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .form-group textarea {
@@ -122,354 +204,76 @@
   resize: vertical;
 }
 
-.image-upload-container {
-  border: 2px dashed #ddd;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.image-preview {
-  margin-top: 1rem;
-}
-
-.image-preview img {
-  max-width: 100%;
-  max-height: 200px;
-  border-radius: 8px;
-}
-
-.modal-buttons {
+.form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
-.modal-buttons button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modal-buttons button[type="button"] {
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-  color: #666;
-}
-
-.modal-buttons button[type="submit"] {
-  background: #ffcc00;
-  border: none;
-  color: #000;
-}
-
-.modal-buttons button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.lugares-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(450px, 1fr));
-  gap: 2rem;
-  padding: 0;
-  width: 100%;
-}
-
-.lugar-card {
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: 1px solid #eee;
-  min-width: 450px;
-  position: relative;
-}
-
-.lugar-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.lugar-imagen {
-  height: 250px;
-  overflow: hidden;
-  position: relative;
-}
-
-.estado-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 6px 12px;
-  border-radius: 18px;
-  font-size: 14px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.estado-badge.activo {
-  background: #e6f9e6;
-  color: #219a00;
-  border: 1px solid #b6eab6;
-}
-
-.estado-badge.inactivo {
-  background: #f9e6e6;
-  color: #a10000;
-  border: 1px solid #eab6b6;
-}
-
-.estado-badge svg {
   font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
-.lugar-imagen::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+.btn-cancelar:hover {
+  background-color: #5a6268;
 }
 
-.lugar-imagen img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.lugar-card:hover .lugar-imagen img {
-  transform: scale(1.05);
-}
-
-.lugar-info {
-  padding: 1.5rem;
-  background: white;
-}
-
-.lugar-info h3 {
-  margin: 0 0 1rem 0;
-  color: #1a1a1a;
-  font-size: 1.6rem;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.lugar-info p {
-  color: #000 !important;
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lugar-ubicacion {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #666;
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #eee;
-}
-
-.lugar-ubicacion svg {
-  color: #ffcc00;
-  font-size: 1.2rem;
-}
-
-.lugar-actions {
-  display: flex;
-  gap: 1rem;
-  padding-top: 0.5rem;
-}
-
-.btn-edit,
-.btn-delete {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
+.btn-guardar {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s;
 }
 
-.btn-edit {
-  background: #e3f2fd;
-  color: #1976d2;
-  border: none;
-}
-
-.btn-delete {
-  background: #ffebee;
-  color: #d32f2f;
-  border: none;
-}
-
-.btn-edit:hover,
-.btn-delete:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.btn-edit:hover {
-  background: #1976d2;
-  color: white;
-}
-
-.btn-delete:hover {
-  background: #d32f2f;
-  color: white;
-}
-
-.loading,
-.error {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.2rem;
-  color: #666;
-}
-
-.error {
-  color: #d32f2f;
+.btn-guardar:hover {
+  background-color: #218838;
 }
 
 .error-message {
-  background-color: #fee;
-  border: 1px solid #fcc;
-  color: #d32f2f;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.btn-retry {
-  background: #d32f2f;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem 1.25rem;
   border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
 }
 
-.btn-retry:hover {
-  background: #b71c1c;
-  transform: translateY(-1px);
-}
-
-@media (max-width: 1800px) {
-  .lugares-grid {
-    grid-template-columns: repeat(2, minmax(450px, 1fr));
-  }
-}
-
-@media (max-width: 1400px) {
-  .lugares-grid {
-    grid-template-columns: repeat(2, minmax(400px, 1fr));
-  }
-
-  .lugar-card {
-    min-width: 400px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .lugares-grid {
-    grid-template-columns: repeat(2, minmax(350px, 1fr));
-  }
-
-  .lugar-card {
-    min-width: 350px;
-  }
-
-  .lugar-info h3 {
-    font-size: 1.4rem;
-  }
-
-  .lugar-info p {
-    font-size: 1rem;
-  }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-  .dashboard-content {
+  .lugares-content {
     margin-left: 0;
-    width: 100%;
     padding: 1rem;
   }
-
-  .lugares-container {
-    padding: 0;
-  }
-
+  
   .lugares-header {
     flex-direction: column;
-    gap: 1rem;
     align-items: flex-start;
-    padding: 0;
+    gap: 1rem;
   }
-
-  .lugares-header h2 {
-    font-size: 2rem;
-  }
-
-  .btn-crear {
+  
+  .btn-nuevo-lugar {
     width: 100%;
     justify-content: center;
   }
-
+  
   .lugares-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
   }
-
-  .lugar-card {
-    min-width: unset;
-  }
-
-  .lugar-imagen {
-    height: 200px;
-  }
-
-  .lugar-info {
-    padding: 1.25rem;
-  }
-
-  .lugar-info h3 {
-    font-size: 1.3rem;
-  }
-
-  .lugar-info p {
-    font-size: 1rem;
-    -webkit-line-clamp: 2;
-  }
-
-  .lugar-ubicacion {
-    font-size: 1rem;
+  
+  .modal-content {
+    margin: 0 1rem;
+    padding: 1.5rem;
   }
 }

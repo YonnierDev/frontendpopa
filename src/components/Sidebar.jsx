@@ -1,18 +1,20 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
+import { FaArrowLeft } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
 
   const isActive = (path) => location.pathname === path;
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    navigate('/login');
-  };
+
+  // Obtener el ID del lugar desde la URL actual
+  const locationId = location.pathname.match(/\/propietario\/lugar\/([^/]+)/);
+  const lugarId = locationId ? locationId[1] : null;
 
   // Mostrar botón solo en LugarDetalle (ruta real: /propietario/lugar/:id)
   const showVolverLugares = /\/propietario\/lugar\//i.test(location.pathname);
@@ -23,18 +25,7 @@ const Sidebar = () => {
         <h3>PopNocturna</h3>
       </div> */}
       <div className="sidebar-menu">
-        <button 
-          className={`sidebar-button ${isActive('/propietario/dashboard') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/dashboard')}
-        >
-          <span className="emoji">🏠</span> Inicio
-        </button>
-        <button 
-          className={`sidebar-button ${isActive('/propietario/lugares') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/lugares')}
-        >
-          <span className="emoji">📍</span> Lugares
-        </button>
+        
         <button 
           className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
           onClick={() => navigate('/propietario/eventos')}
@@ -48,46 +39,22 @@ const Sidebar = () => {
           <span className="emoji">📅</span> Reservas
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/comentarios') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/comentarios')}
+          className={`sidebar-button ${isActive(`/propietario/comentarios/${lugarId}`) ? 'active' : ''}`}
+          onClick={() => navigate(`/propietario/comentarios/${lugarId}`)}
         >
           <span className="emoji">💬</span> Comentarios
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/calificaciones')}
+          className={`sidebar-button ${isActive(`/propietario/calificaciones/${lugarId}`) ? 'active' : ''}`}
+          onClick={() => navigate(`/propietario/calificaciones/${lugarId}`)}
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>
-        {showVolverLugares && (
-          <button
-            className="sidebar-button sidebar-volver-lugares"
-            style={{
-              background: 'linear-gradient(90deg, #ff512f 0%, #dd2476 100%)', // degradado naranja-rosado
-              color: '#fff',
-              borderRadius: '30px',
-              fontWeight: 'bold',
-              marginTop: '15px',
-              marginBottom: '5px',
-              boxShadow: '0 4px 16px rgba(221,36,118,0.18)',
-              border: '2px solid #fff',
-              letterSpacing: '1px',
-              fontSize: '1.08rem',
-              transition: 'background 0.2s, transform 0.15s',
-              outline: 'none',
-              textShadow: '0 2px 8px rgba(0,0,0,0.10)',
-            }}
-            onClick={() => navigate('/propietario/lugares')}
-            onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #ff512f 0%, #f09819 100%)'}
-            onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #ff512f 0%, #dd2476 100%)'}
-          >
-            Volver a lugares
-          </button>
-        )}
-      </div>
-      <div className="logout-container">
-        <button className="logout-btn" onClick={handleLogout}>
-          <span className="emoji">🚪</span> Cerrar Sesión
+        <button
+          className="sidebar-button sidebar-volver-lugares"
+          onClick={() => navigate('/propietario/dashboard')}
+        >
+          <span style={{display:'inline-flex',alignItems:'center'}}><FaArrowLeft style={{marginRight:'8px'}}/>Volver a lugares</span>
         </button>
       </div>
     </div>
