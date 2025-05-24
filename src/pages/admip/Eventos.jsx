@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../admip/styles/Eventos.css";
 
-// Configurar axios con el token de autenticación
-axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
-
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -16,16 +13,23 @@ const Eventos = () => {
   }, []);
 
   const fetchEventos = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMensaje("No se encontró token. Por favor, inicia sesión.");
+      return;
+    }
+
     try {
-      const response = await axios.get("https://popnocturna.vercel.app/api/eventos");
-      // La respuesta viene en la propiedad 'datos'
+      const response = await axios.get("https://popnocturna.vercel.app/api/eventos", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = response.data?.datos || [];
       setEventos(data);
     } catch (error) {
       console.error("Error al cargar eventos", error);
       setMensaje("Error al cargar eventos. Por favor, inicia sesión.");
       setTimeout(() => setMensaje(""), 3000);
-      setEventos([]); // Limpiamos los eventos en caso de error
+      setEventos([]);
     }
   };
 
@@ -34,24 +38,30 @@ const Eventos = () => {
   };
 
   const mostrarDetalles = async (evento) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMensaje("No se encontró token. Por favor, inicia sesión.");
+      return;
+    }
+
     try {
       const response = await axios.get(
-        `https://popnocturna.vercel.app/api/evento/${evento.id}?con_relaciones=true`
+        `https://popnocturna.vercel.app/api/evento/${evento.id}?con_relaciones=true`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      console.log("Respuesta del backend:", response.data); // Para depuración
-      
-      const data = response.data.datos; // El dato está en la propiedad 'datos'
-      
-      // Extraer comentarios y calificaciones con sus relaciones
+      const data = response.data.datos;
+
       const comentarios = data.comentarios?.map(comentario => ({
         id: comentario.id,
         usuario: {
           id: comentario.usuario?.id,
           nombre: comentario.usuario?.nombre,
-          correo: comentario.usuario?.correo
+          correo: comentario.usuario?.correo,
         },
         contenido: comentario.contenido,
-        fecha: comentario.fecha
+        fecha: comentario.fecha,
       })) || [];
 
       const calificaciones = data.calificaciones?.map(calificacion => ({
@@ -59,11 +69,11 @@ const Eventos = () => {
         usuario: {
           id: calificacion.usuario?.id,
           nombre: calificacion.usuario?.nombre,
-          correo: calificacion.usuario?.correo
+          correo: calificacion.usuario?.correo,
         },
         puntuacion: calificacion.puntuacion,
         comentario: calificacion.comentario,
-        fecha: calificacion.fecha
+        fecha: calificacion.fecha,
       })) || [];
 
       const eventoDetalles = {
@@ -76,7 +86,7 @@ const Eventos = () => {
         fecha_hora: data.fecha_hora,
         estado: data.estado,
         comentarios: comentarios,
-        calificaciones: calificaciones
+        calificaciones: calificaciones,
       };
 
       setEventoSeleccionado(eventoDetalles);
@@ -88,11 +98,21 @@ const Eventos = () => {
   };
 
   const cambiarEstadoEvento = async (id, estadoActual) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMensaje("No se encontró token. Por favor, inicia sesión.");
+      return;
+    }
+
     try {
       const nuevoEstado = !estadoActual;
-      await axios.patch(`https://popnocturna.vercel.app/api/evento/estado/${id}`, {
-        estado: nuevoEstado
-      });
+      await axios.patch(
+        `https://popnocturna.vercel.app/api/evento/estado/${id}`,
+        { estado: nuevoEstado },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setEventos(prev =>
         prev.map(evento =>
@@ -117,7 +137,13 @@ const Eventos = () => {
             {mensaje}
           </div>
         )}
-        <input type="text" placeholder="Buscar evento..." value={busqueda} onChange={handleBusqueda} className="buscador-eventos" />
+        <input
+          type="text"
+          placeholder="Buscar evento..."
+          value={busqueda}
+          onChange={handleBusqueda}
+          className="buscador-eventos"
+        />
         <table className="eventos-tabla">
           <thead>
             <tr>
@@ -134,9 +160,7 @@ const Eventos = () => {
           <tbody>
             {eventos
               .filter((evento) =>
-                evento.descripcion
-                  .toLowerCase()
-                  .includes(busqueda.toLowerCase())
+                evento.descripcion?.toLowerCase().includes(busqueda.toLowerCase())
               )
               .map((evento) => (
                 <tr key={evento.id} className="evento-item">
@@ -145,9 +169,7 @@ const Eventos = () => {
                   <td>{evento.lugar?.usuario?.nombre || "No disponible"}</td>
                   <td>{evento.capacidad}</td>
                   <td>${evento.precio}</td>
-                  <td>
-                    {new Date(evento.fecha_hora).toLocaleString()}
-                  </td>
+                  <td>{new Date(evento.fecha_hora).toLocaleString()}</td>
                   <td>
                     <label className="switch">
                       <input
@@ -156,13 +178,21 @@ const Eventos = () => {
                         onChange={() => cambiarEstadoEvento(evento.id, evento.estado)}
                       />
                       <span className="slider"></span>
-                      <div style={{ textAlign: "center", marginTop: "5px", fontWeight: "bold" }}>
+                      <div
+                        style={{
+                          textAlign: "center",
+                          marginTop: "5px",
+                          fontWeight: "bold",
+                        }}
+                      >
                         {evento.estado ? "Activo" : "Inactivo"}
                       </div>
                     </label>
                   </td>
                   <td className="acciones">
-                    <button className="detalles" onClick={() => mostrarDetalles(evento)}>Detalles</button>
+                    <button className="detalles" onClick={() => mostrarDetalles(evento)}>
+                      Detalles
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -182,8 +212,6 @@ const Eventos = () => {
             <p><strong>Precio:</strong> ${eventoSeleccionado.precio}</p>
             <p><strong>Fecha:</strong> {new Date(eventoSeleccionado.fecha_hora).toLocaleString()}</p>
             <p><strong>Estado:</strong> {eventoSeleccionado.estado ? "Activo" : "Inactivo"}</p>
-            <p><strong>Descripción:</strong> {eventoSeleccionado.descripcion}</p>
-            <p><strong>Ubicación:</strong> {eventoSeleccionado.lugar?.ubicacion}</p>
 
             <div className="seccion-detalle">
               <h4>Comentarios ({eventoSeleccionado.comentarios?.length || 0})</h4>
@@ -192,13 +220,13 @@ const Eventos = () => {
                   {eventoSeleccionado.comentarios.map((comentario) => (
                     <div key={comentario.id} className="comentario">
                       <div className="comentario-header">
-                        <strong>{comentario.usuario?.nombre || comentario.usuario || "Anónimo"}</strong>
+                        <strong>{comentario.usuario?.nombre || "Anónimo"}</strong>
                         <span className="fecha-comentario">
                           {new Date(comentario.fecha).toLocaleString()}
                         </span>
                       </div>
                       <p className="comentario-texto">
-                        {comentario.contenido || comentario.texto || comentario.comentario}
+                        {comentario.contenido}
                       </p>
                     </div>
                   ))}
@@ -215,14 +243,14 @@ const Eventos = () => {
                   {eventoSeleccionado.calificaciones.map((calificacion) => (
                     <div key={calificacion.id} className="calificacion">
                       <div className="calificacion-header">
-                        <strong>{calificacion.usuario?.nombre || calificacion.usuario || "Anónimo"}</strong>
+                        <strong>{calificacion.usuario?.nombre || "Anónimo"}</strong>
                         <span className="fecha-calificacion">
                           {new Date(calificacion.fecha).toLocaleString()}
                         </span>
                       </div>
                       <div className="calificacion-info">
                         <span className="puntuacion">
-                          <strong>Puntuación:</strong> {calificacion.puntuacion || calificacion.rating || calificacion.calificacion}
+                          <strong>Puntuación:</strong> {calificacion.puntuacion}
                         </span>
                         {calificacion.comentario && (
                           <p className="comentario-calificacion">
@@ -238,16 +266,22 @@ const Eventos = () => {
               )}
             </div>
 
-            <button className="cerrar-modal" style={{
-              backgroundColor: '#dc3545',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              cursor: 'pointer',
-              borderRadius: '5px',
-              marginTop: '20px',
-              width: '100%'
-            }} onClick={cerrarModal}>Cerrar</button>
+            <button
+              className="cerrar-modal"
+              style={{
+                backgroundColor: '#dc3545',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '5px',
+                marginTop: '20px',
+                width: '100%',
+              }}
+              onClick={cerrarModal}
+            >
+              Cerrar
+            </button>
           </div>
         </div>
       )}
