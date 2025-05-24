@@ -290,6 +290,14 @@ html, body {
   font-size: 0.875em;
 }
 
+.form-botones-modal {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .propietario-content {
