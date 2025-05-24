@@ -103,53 +103,52 @@ const DashboardPropietario = () => {
   };
 
   useEffect(() => {
-    cargarCategorias();
+  cargarCategorias();
 
-    const obtenerLugaresDelPropietario = async () => {
-      try {
-        if (!usuario || !usuario.token) {
+  const obtenerLugaresDelPropietario = async () => {
+    try {
+      if (!usuario || !usuario.token) {
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/propietario/lugares`, {
+        headers: { 'Authorization': `Bearer ${usuario.token}` }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
           navigate('/login');
           return;
         }
-
-        const response = await fetch(`${API_URL}/propietario/lugares`, {
-          headers: { 'Authorization': `Bearer ${usuario.token}` }
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            navigate('/login');
-            return;
-          }
-          throw new Error('No se pudo obtener los lugares');
-        }
-
-        const data = await response.json();
-        setLugares(data);
-      } catch (error) {
-        setError('Error al cargar los lugares: ' + error.message);
-      } finally {
-        setLoading(false);
+        throw new Error('No se pudo obtener los lugares');
       }
-    };
 
-    obtenerLugaresDelPropietario();
+      const data = await response.json();
+      setLugares(data);
+    } catch (error) {
+      setError('Error al cargar los lugares: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const cargarComentarios = async () => {
-      try {
-        const response = await fetch(`${API_URL}/comentarios`, {
-          headers: { 'Authorization': `Bearer ${usuario.token}` }
-        });
-        if (!response.ok) throw new Error('No se pudo cargar comentarios');
-        const data = await response.json();
-        setComentarios(Array.isArray(data) ? data : []);
-      } catch (error) {
-        setComentarios([]);
-      }
-    };
+  const cargarComentarios = async () => {
+    try {
+      const response = await fetch(`${API_URL}/comentarios`, {
+        headers: { 'Authorization': `Bearer ${usuario.token}` }
+      });
+      if (!response.ok) throw new Error('No se pudo cargar comentarios');
+      const data = await response.json();
+      setComentarios(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setComentarios([]);
+    }
+  };
 
-    if (usuario && usuario.token) cargarComentarios();
-  }, [usuario, navigate]);
+  obtenerLugaresDelPropietario();
+  if (usuario && usuario.token) cargarComentarios();
+}, []);
 
   if (loading) {
     return (
