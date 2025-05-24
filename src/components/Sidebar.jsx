@@ -11,11 +11,6 @@ const Sidebar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    navigate('/login');
-  };
 
   // Obtener el ID del lugar desde la URL actual
   const locationId = location.pathname.match(/\/propietario\/lugar\/([^/]+)/);
@@ -60,11 +55,6 @@ const Sidebar = () => {
           onClick={() => navigate('/propietario/dashboard')}
         >
           <span style={{display:'inline-flex',alignItems:'center'}}><FaArrowLeft style={{marginRight:'8px'}}/>Volver a lugares</span>
-        </button>
-      </div>
-      <div className="logout-container">
-        <button className="logout-btn" onClick={handleLogout}>
-          <span className="emoji">🚪</span> Cerrar Sesión
         </button>
       </div>
     </div>

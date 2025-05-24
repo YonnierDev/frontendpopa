@@ -37,12 +37,12 @@ import UsuariosAdmip from "./pages/admip/Usuarios";
 import DashboardPropietario from "./pages/propietario/DashboardPropietario";
 import LugarDetalle from "./pages/propietario/LugarDetalle";
 import ComentariosProp from "./pages/propietario/Comentarios";
-import LugaresProp from "./pages/propietario/Lugares";
 import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 import Perfil from "./pages/propietario/Perfil";
+import Lugares from "./pages/propietario/Lugares";
 
 // Mostrar u ocultar Navbar
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
@@ -114,7 +114,7 @@ function App() {
           {/* Rutas protegidas - PROPIETARIO (rol: 3) */}
           <Route element={<PrivateRoute isAuthenticated={isAuthenticated} allowedRoles={[3]} />}>
             <Route path="/propietario/dashboard" element={<DashboardPropietario />} />
-            <Route path="/propietario/lugares" element={<LugaresProp />} />
+
             <Route path="/propietario/lugar/:id" element={<LugarDetalle />} />
             <Route path="/propietario/comentarios/:id" element={<ComentariosProp />} />
             <Route path="/propietario/eventos" element={<EventosProp />} />
@@ -122,6 +122,7 @@ function App() {
             <Route path="/propietario/calificaciones/:lugarid" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
             <Route path="/propietario/perfil" element={<Perfil />} />
+            <Route path="/propietario/lugares" element={<Lugares />} />
           </Route>
 
           {/* Ruta por defecto */}
