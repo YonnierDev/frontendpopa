@@ -30,8 +30,8 @@ const SidebarSuper = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Obtener el nombre del SuperAdministrador
-    const fetchAdminInfo = async () => {
+    // Obtener el nombre del SuperAdministrador y las solicitudes pendientes
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -39,23 +39,41 @@ const SidebarSuper = () => {
           return;
         }
 
-        const response = await axios.get('https://popnocturna.vercel.app/api/usuario/1', {
+        // Obtener información del admin
+        const adminResponse = await axios.get('https://popnocturna.vercel.app/api/usuario/1', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        setNombreAdmin(response.data.nombre || "");
-        setApellidoAdmin(response.data.apellido || "");
+        setNombreAdmin(adminResponse.data.nombre || "");
+        setApellidoAdmin(adminResponse.data.apellido || "");
+
+        // Obtener solicitudes pendientes
+        const solicitudesResponse = await axios.get('https://popnocturna.vercel.app/api/lugares/pendientes', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        // Actualizar el contador con el número de lugares pendientes
+        const numeroSolicitudes = solicitudesResponse.data.lugares ? solicitudesResponse.data.lugares.length : 0;
+        setCantidadSolicitudes(numeroSolicitudes);
         
       } catch (error) {
-        console.error("Error al obtener información del SuperAdministrador:", error);
+        console.error("Error al obtener información:", error);
         setNombreAdmin("");
         setApellidoAdmin("");
-        
+        setCantidadSolicitudes(0);
       }
     };
 
-    fetchAdminInfo();
+    fetchData();
+
+    // Configurar un intervalo para actualizar las solicitudes cada minuto
+    const interval = setInterval(fetchData, 60000);
+
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(interval);
   }, [navigate]);
 
   const handleLogout = () => {
@@ -87,28 +105,9 @@ const SidebarSuper = () => {
           >
             <FaBars />
           </button>
-          <div className="superadmin-header-title">Panel de Administración</div>
+          
         </div>
-        <div className="superadmin-user-menu">
-          <button 
-            className="superadmin-user-btn"
-            onClick={() => setShowUserMenu(!showUserMenu)}
-          >
-            <FaUser />
-          </button>
-          {showUserMenu && (
-            <div className="superadmin-user-dropdown">
-              <div className="superadmin-user-info">
-                <div className="superadmin-user-name">{`${nombreAdmin} ${apellidoAdmin}`}</div>
-                <div className="superadmin-user-role">{rolAdmin}</div>
-              </div>
-              <button className="superadmin-logout-btn" onClick={handleLogout}>
-                <FaSignOutAlt />
-                <span>Cerrar Sesión</span>
-              </button>
-            </div>
-          )}
-        </div>
+        
       </div>
 
       <div className="superadmin-dashboard">
@@ -138,7 +137,7 @@ const SidebarSuper = () => {
                   <h2>Panel de Control</h2>
                   <p>Bienvenido, {`${nombreAdmin} ${apellidoAdmin}`}</p>
                   <p className="superadmin-bienvenida-subtitle">{rolAdmin}</p>
-                  <SuperAdminStats />
+                  <SuperAdminStats onSectionChange={setMostrarSeccion} />
                 </div>
               )}
               {mostrarSeccion === "categorias" && <CategoriasSuper />}

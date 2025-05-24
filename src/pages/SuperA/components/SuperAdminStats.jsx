@@ -20,7 +20,7 @@ const getArray = (data) => {
   return [];
 };
 
-const SuperAdminStats = () => {
+const SuperAdminStats = ({ onSectionChange }) => {
   const [stats, setStats] = useState({
     usuarios: 0,
     eventos: null,
@@ -133,27 +133,33 @@ const SuperAdminStats = () => {
   return (
     <div className="superadmin-stats-container">
       <div className="superadmin-stats-cards">
-        <div className="superadmin-stats-card"><FaUsers /><span>{stats.usuarios}</span><label>Usuarios</label></div>
-        <div className="superadmin-stats-card"><FaCalendarAlt /><span>{stats.eventos === null ? '-' : stats.eventos}</span><label>Eventos{!permiso.eventos && <div className="stats-warning">Sin permisos</div>}</label></div>
-        <div className="superadmin-stats-card"><FaClipboardList /><span>{stats.reservas === null ? '-' : stats.reservas}</span><label>Reservas{!permiso.reservas && <div className="stats-warning">Sin permisos</div>}</label></div>
-        <div className="superadmin-stats-card"><FaMapMarkerAlt /><span>{stats.lugares}</span><label>Lugares</label></div>
-        <div className="superadmin-stats-card"><FaTags /><span>{stats.categorias}</span><label>Categorías</label></div>
-        <div className="superadmin-stats-card"><FaComment /><span>{stats.comentarios === null ? '-' : stats.comentarios}</span><label>Comentarios{!permiso.comentarios && <div className="stats-warning">Sin permisos</div>}</label></div>
-        <div className="superadmin-stats-card"><FaStar /><span>{stats.calificaciones === null ? '-' : stats.calificaciones}</span><label>Calificaciones{!permiso.calificaciones && <div className="stats-warning">Sin permisos</div>}</label></div>
+        <div className="superadmin-stats-card" onClick={() => onSectionChange('usuarios')} style={{ cursor: 'pointer' }}>
+          <FaUsers /><span>{stats.usuarios}</span><label>Usuarios</label>
+        </div>
+        <div className="superadmin-stats-card" onClick={() => permiso.eventos && onSectionChange('eventos')} style={{ cursor: permiso.eventos ? 'pointer' : 'not-allowed' }}>
+          <FaCalendarAlt /><span>{stats.eventos === null ? '-' : stats.eventos}</span>
+          <label>Eventos{!permiso.eventos && <div className="stats-warning">Sin permisos</div>}</label>
+        </div>
+        <div className="superadmin-stats-card" onClick={() => permiso.reservas && onSectionChange('reservas')} style={{ cursor: permiso.reservas ? 'pointer' : 'not-allowed' }}>
+          <FaClipboardList /><span>{stats.reservas === null ? '-' : stats.reservas}</span>
+          <label>Reservas{!permiso.reservas && <div className="stats-warning">Sin permisos</div>}</label>
+        </div>
+        <div className="superadmin-stats-card" onClick={() => onSectionChange('lugares')} style={{ cursor: 'pointer' }}>
+          <FaMapMarkerAlt /><span>{stats.lugares}</span><label>Lugares</label>
+        </div>
+        <div className="superadmin-stats-card" onClick={() => onSectionChange('categorias')} style={{ cursor: 'pointer' }}>
+          <FaTags /><span>{stats.categorias}</span><label>Categorías</label>
+        </div>
+        <div className="superadmin-stats-card" onClick={() => permiso.comentarios && onSectionChange('comentarios')} style={{ cursor: permiso.comentarios ? 'pointer' : 'not-allowed' }}>
+          <FaComment /><span>{stats.comentarios === null ? '-' : stats.comentarios}</span>
+          <label>Comentarios{!permiso.comentarios && <div className="stats-warning">Sin permisos</div>}</label>
+        </div>
+        <div className="superadmin-stats-card" onClick={() => permiso.calificaciones && onSectionChange('calificaciones')} style={{ cursor: permiso.calificaciones ? 'pointer' : 'not-allowed' }}>
+          <FaStar /><span>{stats.calificaciones === null ? '-' : stats.calificaciones}</span>
+          <label>Calificaciones{!permiso.calificaciones && <div className="stats-warning">Sin permisos</div>}</label>
+        </div>
       </div>
-      <div className="superadmin-stats-graph">
-        <h4>Reservas por Estado</h4>
-        <ResponsiveContainer width="100%" height={220}>
-          <PieChart>
-            <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label>
-              {pieData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+      
       {!auth && <div className="stats-warning-global">Debes iniciar sesión como super admin para ver todas las estadísticas.</div>}
       <div style={{marginTop: '1rem', color: '#888', fontSize: '0.95rem'}}>
         
