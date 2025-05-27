@@ -163,16 +163,12 @@ const DashboardPropietario = () => {
   const promedioCalificacion = lugares.length > 0
     ? (lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length).toFixed(1)
     : '0.0';
-  const totalComentarios = comentarios.length;
-
   return (
     <div className="propietario-dashboard">
       <div className="content-container">
         <div className="propietario-kpis-row">
-          <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaBuilding /></div><div className="propietario-stat-content"><h3>Lugares Registrados</h3><p className="propietario-stat-value">{lugares.length}</p></div></div>
-          <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaStar /></div><div className="propietario-stat-content"><h3>Calificación Promedio</h3><p className="propietario-stat-value">{promedioCalificacion}</p></div></div>
-          <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaComments /></div><div className="propietario-stat-content"><h3>Total de Comentarios</h3><p className="propietario-stat-value">{totalComentarios}</p></div></div>
-        </div>
+           <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaBuilding /></div><div className="propietario-stat-content"><h3>Lugares Registrados</h3><p className="propietario-stat-value">{lugares.length}</p></div></div>
+         </div>
 
         <div className="propietario-welcome">
           <h1 style={{ color: 'white' }}>Bienvenido, {usuario?.nombre || 'Propietario'}</h1>
