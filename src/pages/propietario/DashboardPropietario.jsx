@@ -175,7 +175,7 @@ const DashboardPropietario = () => {
         </div>
 
         <div className="propietario-welcome">
-          <h1>Bienvenido, {usuario?.nombre || 'Propietario'}</h1>
+          <h1 style={{ color: 'white' }}>Bienvenido, {usuario?.nombre || 'Propietario'}</h1>
           <p>Gestiona tus lugares y revisa tus estadísticas</p>
         </div>
 
@@ -201,9 +201,9 @@ const DashboardPropietario = () => {
                     ) : (
                       <div className="propietario-no-image">Sin imagen</div>
                     )}
+                    <h3 className="propietario-place-title">{lugar.nombre}</h3>
                   </div>
                   <div className="propietario-place-info">
-                    <h3>{lugar.nombre}</h3>
                     <p className="propietario-place-location"><FaMapMarkerAlt />{lugar.ubicacion}</p>
                     <div className="propietario-place-stats">
                       <span><FaStar /> {lugar.calificacion_promedio?.toFixed(1) || '0.0'}</span>
