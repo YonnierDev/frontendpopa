@@ -163,7 +163,7 @@ const DashboardPropietario = () => {
   const promedioCalificacion = lugares.length > 0
     ? (lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length).toFixed(1)
     : '0.0';
-  const totalComentarios = lugares.reduce((acc, lugar) => acc + (lugar.total_comentarios || 0), 0);
+  const totalComentarios = comentarios.length;
 
   return (
     <div className="propietario-dashboard">

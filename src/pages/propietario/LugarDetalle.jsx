@@ -110,14 +110,11 @@ const LugarDetalle = () => {
     <div className="dashboard">
       <Sidebar lugarId={id} />
       <div className="content-container">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1>{lugar?.nombre || 'Detalles del Lugar'}</h1>
-        </div>
-
         <div className="imagen-ajuste">
-          <div className="lugar-imagen-container">
-            <img src={lugar.imagen} alt={lugar.nombre} style={imageSize} />
-          </div>
+  <div className="lugar-imagen-container" style={{position: 'relative'}}>
+    <h3 className="lugar-detalle-place-title">{lugar?.nombre || 'Detalles del Lugar'}</h3>
+    <img src={lugar.imagen} alt={lugar.nombre} style={imageSize} />
+  </div>
           <div className="imagen-controles">
             <button onClick={() => handleImageSizeChange('decrease')}>
               <FaMinus /> Reducir

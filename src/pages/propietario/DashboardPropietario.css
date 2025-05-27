@@ -287,16 +287,17 @@ html, body {
 .propietario-place-title {
   position: absolute;
   left: 50%;
-  top: 1em;
+  top: unset;
+bottom: 1em;
   transform: translateX(-50%);
   background: linear-gradient(90deg, rgba(255,255,255,0.72) 60%, rgba(255,244,184,0.61) 100%);
   color: #212121;
   font-family: 'Bebas Neue', Arial, sans-serif;
-  font-size: 1.32em;
+  font-size: 2.2em;
   font-weight: 800;
   letter-spacing: 0.5px;
   text-align: center;
-  padding: 0.45em 1.5em;
+  padding: 0.55em 2.2em;
   margin: 0;
   border-radius: 1.7em;
   line-height: 1.14;
@@ -312,7 +313,8 @@ html, body {
 
   position: absolute;
   left: 50%;
-  top: 1em;
+  top: unset;
+bottom: 1em;
   transform: translateX(-50%);
   background: rgba(255,255,255,0.92);
   color: #111;
@@ -334,7 +336,8 @@ html, body {
 
   position: absolute;
   left: 50%;
-  top: 1em;
+  top: unset;
+bottom: 1em;
   transform: translateX(-50%);
   background: rgba(255,255,255,0.92);
   color: #111;
@@ -359,16 +362,17 @@ html, body {
 .propietario-place-title {
   position: absolute;
   left: 50%;
-  top: 1em;
+  top: unset;
+bottom: 1em;
   transform: translateX(-50%);
   background: linear-gradient(90deg, rgba(255,255,255,0.72) 60%, rgba(255,244,184,0.61) 100%);
   color: #212121;
   font-family: 'Bebas Neue', Arial, sans-serif;
-  font-size: 1.32em;
+  font-size: 2.2em;
   font-weight: 800;
   letter-spacing: 0.5px;
   text-align: center;
-  padding: 0.45em 1.5em;
+  padding: 0.55em 2.2em;
   margin: 0;
   border-radius: 1.7em;
   line-height: 1.14;
@@ -384,7 +388,8 @@ html, body {
 
   position: absolute;
   left: 50%;
-  top: 1em;
+  top: unset;
+bottom: 1em;
   transform: translateX(-50%);
   background: rgba(255,255,255,0.92);
   color: #111;
@@ -427,16 +432,17 @@ html, body {
 .propietario-place-title {
   position: absolute;
   left: 50%;
-  top: 1em;
+  top: unset;
+bottom: 1em;
   transform: translateX(-50%);
   background: linear-gradient(90deg, rgba(255,255,255,0.72) 60%, rgba(255,244,184,0.61) 100%);
   color: #212121;
   font-family: 'Bebas Neue', Arial, sans-serif;
-  font-size: 1.32em;
+  font-size: 2.2em;
   font-weight: 800;
   letter-spacing: 0.5px;
   text-align: center;
-  padding: 0.45em 1.5em;
+  padding: 0.55em 2.2em;
   margin: 0;
   border-radius: 1.7em;
   line-height: 1.14;
@@ -452,7 +458,8 @@ html, body {
 
   position: absolute;
   left: 50%;
-  top: 1em;
+  top: unset;
+bottom: 1em;
   transform: translateX(-50%);
   background: rgba(255,255,255,0.92);
   color: #111;
