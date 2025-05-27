@@ -108,7 +108,7 @@ const LugarDetalle = () => {
 
   return (
     <div className="dashboard">
-      <Sidebar />
+      <Sidebar lugarId={id} />
       <div className="content-container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1>{lugar?.nombre || 'Detalles del Lugar'}</h1>

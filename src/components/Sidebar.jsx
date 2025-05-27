@@ -4,20 +4,10 @@ import './Sidebar.css';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 
-const Sidebar = () => {
+const Sidebar = ({ lugarId }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams();
-
   const isActive = (path) => location.pathname === path;
-
-
-  // Obtener el ID del lugar desde la URL actual
-  const locationId = location.pathname.match(/\/propietario\/lugar\/([^/]+)/);
-  const lugarId = locationId ? locationId[1] : null;
-
-  // Mostrar botón solo en LugarDetalle (ruta real: /propietario/lugar/:id)
-  const showVolverLugares = /\/propietario\/lugar\//i.test(location.pathname);
 
   return (
     <div className="sidebar">
@@ -27,14 +17,14 @@ const Sidebar = () => {
       <div className="sidebar-menu">
         
         <button 
-          className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/eventos')}
+          className={`sidebar-button ${isActive(`/propietario/eventos/${lugarId}`) ? 'active' : ''}`}
+          onClick={() => navigate(`/propietario/eventos/${lugarId}`)}
         >
           <span className="emoji">🎉</span> Eventos
         </button>
         <button 
-          className={`sidebar-button ${isActive('/propietario/reservas') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/reservas')}
+          className={`sidebar-button ${isActive(`/propietario/reservas/${lugarId}`) ? 'active' : ''}`}
+          onClick={() => navigate(`/propietario/reservas/${lugarId}`)}
         >
           <span className="emoji">📅</span> Reservas
         </button>

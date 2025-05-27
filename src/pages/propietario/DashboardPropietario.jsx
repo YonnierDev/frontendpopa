@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../../components/Sidebar';
+// import Sidebar from '../../components/Sidebar';
 import './DashboardPropietario.css';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding, FaPlus, FaTimes } from 'react-icons/fa';
@@ -153,7 +153,6 @@ const DashboardPropietario = () => {
   if (loading) {
     return (
       <div className="propietario-dashboard">
-        <Sidebar />
         <div className="propietario-content">
           <div className="propietario-loading">Cargando...</div>
         </div>
@@ -168,8 +167,7 @@ const DashboardPropietario = () => {
 
   return (
     <div className="propietario-dashboard">
-      <Sidebar />
-      <div className="propietario-content">
+      <div className="content-container">
         <div className="propietario-kpis-row">
           <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaBuilding /></div><div className="propietario-stat-content"><h3>Lugares Registrados</h3><p className="propietario-stat-value">{lugares.length}</p></div></div>
           <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaStar /></div><div className="propietario-stat-content"><h3>Calificación Promedio</h3><p className="propietario-stat-value">{promedioCalificacion}</p></div></div>
