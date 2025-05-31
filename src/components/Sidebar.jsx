@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 const Sidebar = ({ lugarId }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname.startsWith(path);
 
   return (
     <div className="sidebar">
@@ -15,28 +15,27 @@ const Sidebar = ({ lugarId }) => {
         <h3>PopNocturna</h3>
       </div> */}
       <div className="sidebar-menu">
-        
         <button 
-          className={`sidebar-button ${isActive(`/propietario/eventos/${lugarId}`) ? 'active' : ''}`}
-          onClick={() => navigate(`/propietario/eventos/${lugarId}`)}
+          className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/eventos')}
         >
           <span className="emoji">🎉</span> Eventos
         </button>
         <button 
-          className={`sidebar-button ${isActive(`/propietario/reservas/${lugarId}`) ? 'active' : ''}`}
-          onClick={() => navigate(`/propietario/reservas/${lugarId}`)}
+          className={`sidebar-button ${isActive('/propietario/reservas') ? 'active' : ''}`}
+          onClick={() => navigate('/propietario/reservas')}
         >
           <span className="emoji">📅</span> Reservas
         </button>
         <button 
-          className={`sidebar-button ${isActive(`/propietario/comentarios/${lugarId}`) ? 'active' : ''}`}
-          onClick={() => navigate(`/propietario/comentarios/${lugarId}`)}
+          className={`sidebar-button ${isActive('/propietario/comentarios') ? 'active' : ''}`}
+          onClick={() => lugarId ? navigate(`/propietario/comentarios/${lugarId}`) : navigate('/propietario/lugares')}
         >
           <span className="emoji">💬</span> Comentarios
         </button>
         <button 
-          className={`sidebar-button ${isActive(`/propietario/calificaciones/${lugarId}`) ? 'active' : ''}`}
-          onClick={() => navigate(`/propietario/calificaciones/${lugarId}`)}
+          className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
+          onClick={() => lugarId ? navigate(`/propietario/calificaciones/${lugarId}`) : navigate('/propietario/lugares')}
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>

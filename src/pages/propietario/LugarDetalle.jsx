@@ -68,15 +68,23 @@ const LugarDetalle = () => {
         }
         
         setLugar(lugarEncontrado);
-        // Traer eventos del backend para este lugar
-        const eventosRes = await fetch('https://popnocturna.vercel.app/api/public/eventos');
+        // Traer eventos del backend para este lugar usando el endpoint de lugares con eventos
+        const eventosRes = await fetch('https://popnocturna.vercel.app/api/propietario/lugares-eventos', {
+          headers: {
+            'Authorization': `Bearer ${usuario.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
         if (eventosRes.ok) {
-          const eventosData = await eventosRes.json();
-          const eventosArray = eventosData.datos || [];
-          // Filtrar eventos por el id del lugar anidado
-          const eventosFiltrados = eventosArray.filter(ev => ev.lugar && Number(ev.lugar.id) === Number(lugarEncontrado.id));
-          setEventosLugar(eventosFiltrados);
+          const lugaresConEventos = await eventosRes.json();
+          // Buscar el lugar actual en la respuesta
+          const lugarActual = lugaresConEventos.find(l => l.id === lugarEncontrado.id);
+          // Obtener los eventos del lugar actual o un array vacío si no hay eventos
+          const eventosDelLugar = lugarActual?.eventos || [];
+          setEventosLugar(eventosDelLugar);
         } else {
+          console.error('Error al cargar eventos:', await eventosRes.text());
           setEventosLugar([]);
         }
 

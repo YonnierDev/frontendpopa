@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from "../../components/api/api";
 import Sidebar from '../../components/Sidebar';
 import './Eventos.css';
+import { toast } from 'react-toastify';
 
 const Eventos = () => {
   const [eventos, setEventos] = useState([]);
@@ -23,6 +25,32 @@ const Eventos = () => {
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const navigate = useNavigate();
+
+  // Verificar autenticación al cargar el componente
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const token = localStorage.getItem('token');
+    
+    if (!usuario || !token) {
+      console.log('No hay usuario o token, redirigiendo a login');
+      toast.error('Debes iniciar sesión para acceder a esta página');
+      navigate('/login');
+      return;
+    }
+    
+    // Verificar si el rol es el correcto
+    if (parseInt(usuario.rol) !== 3) {
+      console.log('Rol no autorizado, redirigiendo a login');
+      toast.error('No tienes permiso para acceder a esta sección');
+      navigate('/propietario/dashboard');
+      return;
+    }
+    
+    // Si todo está bien, cargar los datos
+    cargarEventos();
+    cargarLugares();
+  }, [navigate]);
 
   useEffect(() => {
     function updateNavbarHeight() {
@@ -36,19 +64,37 @@ const Eventos = () => {
     return () => window.removeEventListener('resize', updateNavbarHeight);
   }, []);
 
-  useEffect(() => {
-    cargarEventos();
-    cargarLugares();
-  }, []);
+  // Las funciones cargarEventos y cargarLugares se llaman desde el efecto de autenticación
 
   const cargarEventos = async () => {
     setLoading(true);
     try {
-      const response = await api.get("/eventos");
-      setEventos(Array.isArray(response.data.datos) ? response.data.datos : []);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No se encontró el token de autenticación');
+      }
+      
+      // Usar el endpoint de eventos del propietario
+      const response = await fetch('https://popnocturna.vercel.app/api/propietario/eventos', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.mensaje || 'Error al cargar los eventos');
+      }
+      
+      const data = await response.json();
+      setEventos(Array.isArray(data) ? data : []);
       setMensaje('');
+      
+      return true;
     } catch (error) {
-      setMensaje('Error al cargar los eventos: ' + (error.response?.data?.mensaje || error.message));
+      console.error('Error al cargar eventos:', error);
+      setMensaje('Error al cargar los eventos: ' + error.message);
       setEventos([]);
     } finally {
       setLoading(false);
@@ -57,10 +103,27 @@ const Eventos = () => {
 
   const cargarLugares = async () => {
     try {
-      const response = await api.get("/lugares");
-      setLugares(Array.isArray(response.data.datos) ? response.data.datos : response.data);
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      if (!usuario?.token) {
+        throw new Error('No se encontró el token de autenticación');
+      }
+      
+      const response = await fetch('https://popnocturna.vercel.app/api/propietario/lugares', {
+        headers: {
+          'Authorization': `Bearer ${usuario.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al cargar los lugares');
+      }
+      
+      const data = await response.json();
+      setLugares(Array.isArray(data) ? data : []);
     } catch (error) {
-      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.mensaje || error.message));
+      console.error('Error al cargar lugares:', error);
+      setMensaje('Error al cargar los lugares: ' + error.message);
       setLugares([]);
     }
   };
