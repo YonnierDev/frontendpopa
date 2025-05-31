@@ -40,15 +40,33 @@ const LugarDetalle = () => {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const lugaresRes = await fetch('https://popnocturna.vercel.app/api/lugares');
-        if (!lugaresRes.ok) {
-          throw new Error(`Error al cargar los lugares: ${lugaresRes.status}`);
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        if (!usuario?.token) {
+          navigate('/login');
+          return;
         }
-        const lugaresData = await lugaresRes.json();
-        const lugarEncontrado = lugaresData.find(l => l.id === parseInt(id));
+        
+        // Usar el endpoint específico del propietario para obtener el lugar
+        const lugarRes = await fetch(`https://popnocturna.vercel.app/api/propietario/lugares`, {
+          headers: {
+            'Authorization': `Bearer ${usuario.token}`
+          }
+        });
+        
+        if (!lugarRes.ok) {
+          throw new Error(`Error al cargar el lugar: ${lugarRes.status}`);
+        }
+        
+        const lugaresData = await lugarRes.json();
+        // El endpoint ya devuelve solo los lugares del propietario
+        const lugarEncontrado = Array.isArray(lugaresData) 
+          ? lugaresData.find(l => l.id === parseInt(id))
+          : null;
+          
         if (!lugarEncontrado) {
-          throw new Error('Lugar no encontrado');
+          throw new Error('Lugar no encontrado o no tienes permisos para verlo');
         }
+        
         setLugar(lugarEncontrado);
         // Traer eventos del backend para este lugar
         const eventosRes = await fetch('https://popnocturna.vercel.app/api/public/eventos');
