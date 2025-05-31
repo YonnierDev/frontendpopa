@@ -68,8 +68,8 @@ const LugarDetalle = () => {
         }
         
         setLugar(lugarEncontrado);
-        // Traer eventos del backend para este lugar usando el endpoint de lugares con eventos
-        const eventosRes = await fetch('https://popnocturna.vercel.app/api/propietario/lugares-eventos', {
+        // Cargar eventos del lugar específico
+        const eventosRes = await fetch(`https://popnocturna.vercel.app/api/eventos?lugarId=${lugarEncontrado.id}`, {
           headers: {
             'Authorization': `Bearer ${usuario.token}`,
             'Content-Type': 'application/json'
@@ -77,15 +77,38 @@ const LugarDetalle = () => {
         });
         
         if (eventosRes.ok) {
-          const lugaresConEventos = await eventosRes.json();
-          // Buscar el lugar actual en la respuesta
-          const lugarActual = lugaresConEventos.find(l => l.id === lugarEncontrado.id);
-          // Obtener los eventos del lugar actual o un array vacío si no hay eventos
-          const eventosDelLugar = lugarActual?.eventos || [];
+          const eventosData = await eventosRes.json();
+          // Asegurarse de que eventosData.datos es un array
+          const eventosDelLugar = Array.isArray(eventosData.datos) ? eventosData.datos : [];
           setEventosLugar(eventosDelLugar);
         } else {
-          console.error('Error al cargar eventos:', await eventosRes.text());
-          setEventosLugar([]);
+          const errorText = await eventosRes.text();
+          console.error('Error al cargar eventos:', errorText);
+          // Si hay un error, intentar con el endpoint alternativo
+          try {
+            const altEventosRes = await fetch('https://popnocturna.vercel.app/api/eventos', {
+              headers: {
+                'Authorization': `Bearer ${usuario.token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (altEventosRes.ok) {
+              const eventosData = await altEventosRes.json();
+              // Filtrar eventos por lugarId
+              const eventosFiltrados = Array.isArray(eventosData.datos) 
+                ? eventosData.datos.filter(evento => 
+                    evento.lugar && parseInt(evento.lugar.id) === parseInt(lugarEncontrado.id)
+                  )
+                : [];
+              setEventosLugar(eventosFiltrados);
+            } else {
+              throw new Error('Error al cargar eventos alternativos');
+            }
+          } catch (altError) {
+            console.error('Error al cargar eventos alternativos:', altError);
+            setEventosLugar([]);
+          }
         }
 
         setLoading(false);

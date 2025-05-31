@@ -74,21 +74,47 @@ const Eventos = () => {
         throw new Error('No se encontró el token de autenticación');
       }
       
-      // Usar el endpoint de eventos del propietario
-      const response = await fetch('https://popnocturna.vercel.app/api/propietario/eventos', {
+      // Primero obtenemos los lugares del propietario
+      const lugaresResponse = await fetch('https://popnocturna.vercel.app/api/propietario/lugares', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
       
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.mensaje || 'Error al cargar los eventos');
+      if (!lugaresResponse.ok) {
+        throw new Error('Error al cargar los lugares del propietario');
       }
       
-      const data = await response.json();
-      setEventos(Array.isArray(data) ? data : []);
+      const lugaresData = await lugaresResponse.json();
+      const lugaresIds = lugaresData.map(lugar => lugar.id);
+      
+      if (lugaresIds.length === 0) {
+        setEventos([]);
+        setMensaje('No tienes lugares registrados');
+        return;
+      }
+      
+      // Luego obtenemos todos los eventos y filtramos los que pertenecen a los lugares del propietario
+      const eventosResponse = await fetch('https://popnocturna.vercel.app/api/eventos', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!eventosResponse.ok) {
+        throw new Error('Error al cargar los eventos');
+      }
+      
+      const eventosData = await eventosResponse.json();
+      
+      // Filtramos los eventos que pertenecen a los lugares del propietario
+      const eventosFiltrados = eventosData.datos.filter(evento => 
+        evento.lugar && lugaresIds.includes(parseInt(evento.lugar.id))
+      );
+      
+      setEventos(eventosFiltrados);
       setMensaje('');
       
       return true;
