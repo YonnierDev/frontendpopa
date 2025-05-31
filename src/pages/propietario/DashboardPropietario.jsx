@@ -199,16 +199,6 @@ const DashboardPropietario = () => {
                     )}
                     <h3 className="propietario-place-title">{lugar.nombre}</h3>
                   </div>
-                  <div className="propietario-place-info">
-                    <p className="propietario-place-location"><FaMapMarkerAlt />{lugar.ubicacion}</p>
-                    <div className="propietario-place-stats">
-                      <span><FaStar /> {lugar.calificacion_promedio?.toFixed(1) || '0.0'}</span>
-                      <span style={{ color: '#111', fontWeight: 600 }}>
-                        <FaComments style={{ marginRight: 4 }} />
-                        {comentarios.filter(c => c.lugar === lugar.id || c.lugar_id === lugar.id).length} comentario{comentarios.filter(c => c.lugar === lugar.id || c.lugar_id === lugar.id).length !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                  </div>
                 </div>
               ))
             )}

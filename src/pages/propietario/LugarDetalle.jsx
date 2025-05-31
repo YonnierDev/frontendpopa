@@ -196,8 +196,15 @@ const LugarDetalle = () => {
 
           <div className="info-card">
             <h2>Propietario</h2>
-            <p>Nombre: {lugar.usuario?.nombre || 'No especificado'}</p>
-            <p>Correo: {lugar.usuario?.correo || 'No especificado'}</p>
+            {(() => {
+              const usuario = JSON.parse(localStorage.getItem('usuario'));
+              return (
+                <>
+                  <p>Nombre: {usuario?.nombre || 'No especificado'}</p>
+                  <p>Correo: {usuario?.email || usuario?.correo || 'No especificado'}</p>
+                </>
+              );
+            })()}
           </div>
 
           <div className="info-card">
