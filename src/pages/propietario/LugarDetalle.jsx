@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 import './LugarDetalle.css';
@@ -31,11 +31,99 @@ const LugarDetalle = () => {
   const [imageSize, setImageSize] = useState({ width: '100%', height: 'auto' });
   const [tempImageSize, setTempImageSize] = useState({ width: '100%', height: 'auto' });
   const [editingSize, setEditingSize] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showLightbox, setShowLightbox] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const sliderRef = useRef(null);
 
+  // Componentes personalizados para las flechas de navegación
+  const NextArrow = ({ onClick }) => (
+    <div 
+      className="slick-arrow next-arrow" 
+      onClick={onClick}
+      style={{
+        right: '25px',
+        zIndex: 1
+      }}
+    >
+      <FaChevronRight />
+    </div>
+  );
 
+  const PrevArrow = ({ onClick }) => (
+    <div 
+      className="slick-arrow prev-arrow" 
+      onClick={onClick}
+      style={{
+        left: '25px',
+        zIndex: 1
+      }}
+    >
+      <FaChevronLeft />
+    </div>
+  );
+
+  // Configuración del carrusel
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    beforeChange: (current, next) => setCurrentSlide(next),
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    appendDots: dots => (
+      <div>
+        <ul style={{ margin: '0px', padding: '10px 0' }}>{dots}</ul>
+      </div>
+    ),
+    customPaging: i => (
+      <div
+        style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          backgroundColor: i === currentSlide ? '#ffcc00' : '#ccc',
+          margin: '0 4px',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+      />
+    )
+  };
+
+  // Función para abrir el lightbox
+  const openLightbox = (index) => {
+    setLightboxIndex(index);
+    setShowLightbox(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Función para cerrar el lightbox
+  const closeLightbox = () => {
+    setShowLightbox(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  // Función para navegar en el lightbox
+  const goToSlide = (index) => {
+    setLightboxIndex(index);
+    if (sliderRef.current) {
+      sliderRef.current.slickGoTo(index);
+    }
+  };
 
   // Estado para eventos del lugar
   const [eventosLugar, setEventosLugar] = useState([]);
+  
+  // Obtener todas las imágenes del lugar (imagen principal + fotos adicionales)
+  const allImages = lugar ? [
+    lugar.imagen,
+    ...(lugar.fotos_lugar || [])
+  ].filter(Boolean) : [];
 
   useEffect(() => {
     const cargarDatos = async () => {

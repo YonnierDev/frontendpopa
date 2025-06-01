@@ -224,14 +224,68 @@ const DashboardPropietario = () => {
               <div className="propietario-no-places">No tienes lugares registrados aún</div>
             ) : (
               lugares.map((lugar) => (
-                <div key={lugar.id} className="propietario-place-card" onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}>
-                  <div className="propietario-place-image">
-                    {lugar.imagen ? (
-                      <img src={lugar.imagen} alt={lugar.nombre} />
-                    ) : (
-                      <div className="propietario-no-image">Sin imagen</div>
+                <div key={lugar.id} className="propietario-place-card">
+                  <div 
+                    className="propietario-place-image" 
+                    onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
+                  >
+                    <div className="image-container">
+                      <img 
+                        src={lugar.imagen || 'https://via.placeholder.com/300x200?text=Sin+imagen'} 
+                        alt={lugar.nombre} 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/300x200?text=Error+imagen';
+                        }}
+                      />
+                    </div>
+                    
+                    <div className="propietario-place-status">
+                      {lugar.aprobacion ? (
+                        <span className="status-badge approved">Aprobado</span>
+                      ) : (
+                        <span className="status-badge pending">En revisión</span>
+                      )}
+                    </div>
+                    
+                    <div className="propietario-place-info">
+                      <h3 className="propietario-place-title">{lugar.nombre}</h3>
+                      <p className="propietario-place-location">
+                        <FaMapMarkerAlt /> {lugar.ubicacion}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="propietario-place-footer">
+                    <div className="additional-images-preview">
+                      {lugar.fotos_lugar && lugar.fotos_lugar.slice(0, 3).map((foto, index) => (
+                        <div key={index} className="thumbnail">
+                          <img 
+                            src={foto} 
+                            alt={`Foto ${index + 1}`}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://via.placeholder.com/50x50?text=Imagen';
+                            }}
+                          />
+                        </div>
+                      ))}
+                      {lugar.fotos_lugar && lugar.fotos_lugar.length > 3 && (
+                        <div className="more-images">+{lugar.fotos_lugar.length - 3}</div>
+                      )}
+                    </div>
+                    
+                    {lugar.carta_pdf && (
+                      <a 
+                        href={lugar.carta_pdf} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="pdf-link"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Ver PDF
+                      </a>
                     )}
-                    <h3 className="propietario-place-title">{lugar.nombre}</h3>
                   </div>
                 </div>
               ))
