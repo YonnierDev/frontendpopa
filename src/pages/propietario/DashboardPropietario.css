@@ -15,31 +15,27 @@ html, body {
 .propietario-content {
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto 0 2.5rem;
-  padding: 2.5rem 0.5rem 2rem 0.5rem;
-  overflow-y: auto;
-  min-height: 100vh;
-  margin-top: 1.5rem;
+  margin: 0 auto;
+  padding: 2rem;
   box-sizing: border-box;
+  min-height: 100vh;
 }
 
 @media (max-width: 1100px) {
   .propietario-content {
-    margin-left: 1rem;
+    padding: 1.5rem;
   }
 }
+
 @media (max-width: 700px) {
   .propietario-content {
-    margin-left: 0;
-    margin-right: 0;
+    padding: 1rem;
   }
 }
 
 @media (min-width: 1600px) {
   .propietario-content {
     max-width: 96vw;
-    padding-left: 0;
-    padding-right: 0;
   }
 }
 
@@ -128,14 +124,16 @@ html, body {
 }
 
 /* Sección de lugares */
+/* Estilos para la sección de lugares */
 .propietario-places {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 2rem;
   margin-top: 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Encabezado de la sección de lugares */
 .propietario-places-header {
   display: flex;
   justify-content: space-between;
@@ -145,6 +143,7 @@ html, body {
   gap: 1rem;
 }
 
+/* Botón de nuevo lugar */
 .btn-nuevo-lugar {
   background: #ffcc00;
   color: #000;
@@ -173,44 +172,55 @@ html, body {
   font-size: 1em;
 }
 
+/* Título de la sección */
 .propietario-places h2 {
   margin: 0 0 1.25rem;
   font-size: 1.25em;
-  color: #ffffff;
-  font-weight: 600;
-  border-bottom: 2px solid #eaeaea;
+  color: #ffffff; /* Cambiado a blanco */
+  font-weight: 700;
   padding-bottom: 0.75rem;
   line-height: 1.2;
+  border-bottom: 2px solid #f0f0f0;
 }
 
+/* Grid de tarjetas de lugares */
 .propietario-places-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(370px, 1fr));
-  gap: 2.5rem;
-  margin-top: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
   width: 100%;
-  justify-items: stretch;
 }
 
+/* Media queries para la cuadrícula */
 @media (min-width: 1500px) {
   .propietario-places-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
 @media (min-width: 1100px) and (max-width: 1499px) {
   .propietario-places-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-@media (max-width: 1100px) {
+
+@media (max-width: 1099px) {
+  .propietario-places {
+    padding: 1.5rem;
+  }
+  
   .propietario-places-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 700px) {
+  .propietario-places {
+    padding: 1rem;
+  }
+  
   .propietario-places-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
   }
 }
 
@@ -227,274 +237,7 @@ html, body {
   }
 }
 
-.propietario-place-card {
-  background: linear-gradient(135deg, #fffbe6 0%, #f8f9fa 100%);
-  border: none;
-  border-radius: 1.25rem;
-  overflow: hidden;
-  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  display: flex;
-  gap: 2rem;
-  min-height: 280px;
-  box-shadow: 0 6px 32px 0 rgba(0,0,0,0.12), 0 1.5px 6px 0 rgba(0,0,0,0.10);
-  padding: 1.5rem;
-  align-items: center;
-  position: relative;
-}
-
-.propietario-place-card:hover {
-  transform: scale(1.03) translateY(-6px);
-  box-shadow: 0 16px 40px rgba(255,204,0,0.18), 0 2px 8px rgba(0,0,0,0.13);
-  border: 1.5px solid #ffe066;
-}
-
-.propietario-place-image {
-  width: 15rem;
-  height: 11rem;
-  flex-shrink: 0;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
-  background: #fff9e6;
-  position: relative;
-}
-
-
-.propietario-place-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 1rem;
-}
-
-.propietario-place-info {
-  flex: 1;
-  padding: 2rem 2rem 2rem 0;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  justify-content: center;
-}
-
-
-
-/* Forzar visibilidad del nombre fuera de la imagen */
-.propietario-place-title {
-  position: absolute;
-  left: 50%;
-  top: unset;
-bottom: 1em;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, rgba(255,255,255,0.72) 60%, rgba(255,244,184,0.61) 100%);
-  color: #212121;
-  font-family: 'Bebas Neue', Arial, sans-serif;
-  font-size: 2.2em;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-align: center;
-  padding: 0.55em 2.2em;
-  margin: 0;
-  border-radius: 1.7em;
-  line-height: 1.14;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12), 0 1.5px 6px 0 rgba(255,224,102,0.13);
-  z-index: 2;
-  text-shadow: 0 2px 12px rgba(255,224,102,0.22), 0 1px 4px rgba(0,0,0,0.14);
-  border: 2.5px solid #ffe066;
-  transition: box-shadow 0.18s, background 0.18s;
-}
-
-  position: absolute;
-  left: 50%;
-  top: unset;
-bottom: 1em;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,0.92);
-  color: #111;
-  font-size: 1.25em;
-  font-weight: 700;
-  text-align: center;
-  padding: 0.35em 1.1em;
-  margin: 0;
-  border-radius: 1em;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  z-index: 2;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-  position: absolute;
-  left: 50%;
-  top: unset;
-bottom: 1em;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,0.92);
-  color: #111;
-  font-size: 1.25em;
-  font-weight: 700;
-  text-align: center;
-  padding: 0.35em 1.1em;
-  margin: 0;
-  border-radius: 1em;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  z-index: 2;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-
-
-.propietario-place-title {
-  position: absolute;
-  left: 50%;
-  top: unset;
-bottom: 1em;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, rgba(255,255,255,0.72) 60%, rgba(255,244,184,0.61) 100%);
-  color: #212121;
-  font-family: 'Bebas Neue', Arial, sans-serif;
-  font-size: 2.2em;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-align: center;
-  padding: 0.55em 2.2em;
-  margin: 0;
-  border-radius: 1.7em;
-  line-height: 1.14;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12), 0 1.5px 6px 0 rgba(255,224,102,0.13);
-  z-index: 2;
-  text-shadow: 0 2px 12px rgba(255,224,102,0.22), 0 1px 4px rgba(0,0,0,0.14);
-  border: 2.5px solid #ffe066;
-  transition: box-shadow 0.18s, background 0.18s;
-}
-
-  position: absolute;
-  left: 50%;
-  top: unset;
-bottom: 1em;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,0.92);
-  color: #111;
-  font-size: 1.25em;
-  font-weight: 700;
-  text-align: center;
-  padding: 0.35em 1.1em;
-  margin: 0;
-  border-radius: 1em;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  z-index: 2;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-  position: static;
-  display: block;
-  background: #fff;
-  color: #000;
-  font-size: 1.5em;
-  font-weight: 700;
-  text-align: center;
-  padding: 0.5em 1em;
-  margin: 0.5em auto 0.5em auto;
-  border-bottom: 3px solid #ffe066;
-  border-radius: 0 0 1rem 1rem;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  width: 90%;
-}
-
-.propietario-place-title {
-  position: absolute;
-  left: 50%;
-  top: unset;
-bottom: 1em;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, rgba(255,255,255,0.72) 60%, rgba(255,244,184,0.61) 100%);
-  color: #212121;
-  font-family: 'Bebas Neue', Arial, sans-serif;
-  font-size: 2.2em;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-align: center;
-  padding: 0.55em 2.2em;
-  margin: 0;
-  border-radius: 1.7em;
-  line-height: 1.14;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12), 0 1.5px 6px 0 rgba(255,224,102,0.13);
-  z-index: 2;
-  text-shadow: 0 2px 12px rgba(255,224,102,0.22), 0 1px 4px rgba(0,0,0,0.14);
-  border: 2.5px solid #ffe066;
-  transition: box-shadow 0.18s, background 0.18s;
-}
-
-  position: absolute;
-  left: 50%;
-  top: unset;
-bottom: 1em;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,0.92);
-  color: #111;
-  font-size: 1.25em;
-  font-weight: 700;
-  text-align: center;
-  padding: 0.35em 1.1em;
-  margin: 0;
-  border-radius: 1em;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  z-index: 2;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-  color: #000;
-  font-size: 2em;
-  font-weight: 700;
-  text-align: center;
-  margin: 1rem 0 0.5rem 0;
-  line-height: 1.1;
-  letter-spacing: -1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border-bottom: 3px solid #ffe066;
-  padding-bottom: 0.15em;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  background: none;
-  border-radius: 2px;
-}
-
-
+/* Estilos para las tarjetas de lugares */
 .propietario-place-card {
   background: white;
   border: none;
@@ -503,34 +246,76 @@ bottom: 1em;
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   display: flex;
-  gap: 2rem;
-  min-height: 280px;
+  flex-direction: column;
+  height: 100%;
   box-shadow: 0 6px 32px 0 rgba(0,0,0,0.10), 0 1.5px 6px 0 rgba(0,0,0,0.08);
-  padding: 1.5rem;
-  align-items: center;
 }
 
 .propietario-place-card:hover {
   transform: scale(1.025) translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+  box-shadow: 0 16px 40px rgba(255,204,0,0.18), 0 2px 8px rgba(0,0,0,0.13);
   border: 1.5px solid #ffe066;
 }
 
+/* Contenedor de la imagen */
 .propietario-place-image {
-  width: 18rem;
-  height: 13rem;
-  flex-shrink: 0;
-  border-radius: 1rem;
+  position: relative;
+  width: 100%;
+  height: 200px; /* Altura fija para la imagen */
   overflow: hidden;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  background: #f8f9fa;
 }
 
 .propietario-place-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
+/* Título de la tarjeta */
+.propietario-place-title {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.72) 60%, rgba(255,244,184,0.61) 100%);
+  color: #212121;
+  font-family: 'Bebas Neue', Arial, sans-serif;
+  font-size: 1.8em;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 0.4em 1.2em;
+  margin: 0;
+  border-radius: 1.5em;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12), 0 1.5px 6px 0 rgba(255,224,102,0.13);
+  z-index: 2;
+  text-shadow: 0 2px 12px rgba(255,224,102,0.22), 0 1px 4px rgba(0,0,0,0.14);
+  border: 2px solid #ffe066;
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover en el título */
+.propietario-place-card:hover .propietario-place-title {
+  background: linear-gradient(90deg, rgba(255,255,255,0.85) 60%, rgba(255,244,184,0.75) 100%);
+  transform: translateX(-50%) scale(1.05);
+}
+
+/* Contenido de la tarjeta */
+.propietario-place-info {
+  padding: 1.2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Imagen de relleno cuando no hay imagen */
 .propietario-no-image {
   width: 100%;
   height: 100%;
@@ -542,25 +327,12 @@ bottom: 1em;
   font-size: 0.875em;
 }
 
-.propietario-place-info {
-  flex: 1;
-  padding: 2rem 2rem 2rem 0;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  justify-content: center;
-}
-
-.propietario-place-info h3 {
-  margin: 0 0 0.75rem 0;
-  font-size: 2em;
-  color: #222;
-  font-weight: 700;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: -1px;
+/* Media queries para tarjetas */
+@media (max-width: 768px) {
+  .propietario-place-title {
+    font-size: 1.5em;
+    padding: 0.3em 1em;
+  }
 }
 
 .propietario-place-location {
