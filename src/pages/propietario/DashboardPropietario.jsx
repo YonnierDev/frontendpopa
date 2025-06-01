@@ -16,7 +16,9 @@ const DashboardPropietario = () => {
     descripcion: '',
     ubicacion: '',
     categoriaid: '',
-    imagen: null
+    imagen: null,
+    fotos_lugar: [],
+    carta_pdf: null
   });
 
   const API_URL = 'https://popnocturna.vercel.app/api';
@@ -46,20 +48,44 @@ const DashboardPropietario = () => {
     }
   };
 
+  const handleFotosChange = (e) => {
+    if (e.target.files) {
+      setFormData({ ...formData, fotos_lugar: [...e.target.files] });
+    }
+  };
+
+  const handlePdfChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData({ ...formData, carta_pdf: e.target.files[0] });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Validación frontend: imagen obligatoria
     if (!formData.imagen) {
-      setError('La imagen es requerida');
+      setError('La imagen principal es requerida');
       return;
     }
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('nombre', formData.nombre.trim().toLowerCase()); // El backend espera nombre en minúsculas
+      formDataToSend.append('nombre', formData.nombre.trim().toLowerCase());
       formDataToSend.append('descripcion', formData.descripcion);
       formDataToSend.append('ubicacion', formData.ubicacion);
       formDataToSend.append('categoriaid', formData.categoriaid);
-      formDataToSend.append('imagen', formData.imagen); // Imagen es obligatoria
+      formDataToSend.append('imagen', formData.imagen);
+      
+      // Agregar fotos adicionales si existen
+      if (formData.fotos_lugar && formData.fotos_lugar.length > 0) {
+        formData.fotos_lugar.forEach(foto => {
+          formDataToSend.append('fotos_lugar', foto);
+        });
+      }
+
+      // Agregar PDF si existe
+      if (formData.carta_pdf) {
+        formDataToSend.append('carta_pdf', formData.carta_pdf);
+      }
 
       const response = await fetch(`${API_URL}/propietario/lugar`, {
         method: 'POST',
@@ -80,7 +106,15 @@ const DashboardPropietario = () => {
 
       cargarDatos();
       setShowModal(false);
-      setFormData({ nombre: '', descripcion: '', ubicacion: '', categoriaid: '', imagen: null });
+      setFormData({
+        nombre: '',
+        descripcion: '',
+        ubicacion: '',
+        categoriaid: '',
+        imagen: null,
+        fotos_lugar: [],
+        carta_pdf: null
+      });
     } catch (error) {
       console.error('Error creando lugar:', error);
       setError('Error al crear el lugar: ' + error.message);
@@ -239,12 +273,52 @@ const DashboardPropietario = () => {
     </select>
   </div>
   <div className="form-group">
-    <label htmlFor="imagen">Imagen</label>
-    <input type="file" id="imagen" accept="image/*" onChange={handleImageChange} />
+    <label htmlFor="imagen">Imagen Principal *</label>
+    <input 
+      type="file" 
+      id="imagen" 
+      accept="image/*" 
+      onChange={handleImageChange} 
+      required 
+    />
+    <small className="form-text">La imagen principal es obligatoria</small>
   </div>
+
+  <div className="form-group">
+    <label htmlFor="fotos_lugar">Fotos Adicionales</label>
+    <input 
+      type="file" 
+      id="fotos_lugar" 
+      accept="image/*" 
+      multiple 
+      onChange={handleFotosChange} 
+    />
+    <small className="form-text">Puedes seleccionar múltiples imágenes (opcional)</small>
+    {formData.fotos_lugar.length > 0 && (
+      <div className="mt-2">
+        <small>{formData.fotos_lugar.length} archivo(s) seleccionado(s)</small>
+      </div>
+    )}
+  </div>
+
+  <div className="form-group">
+    <label htmlFor="carta_pdf">Carta de Presentación (PDF)</label>
+    <input 
+      type="file" 
+      id="carta_pdf" 
+      accept=".pdf" 
+      onChange={handlePdfChange} 
+    />
+    <small className="form-text">Documento PDF con información adicional (opcional)</small>
+  </div>
+
   <div className="form-botones-modal">
-    <button type="button" onClick={() => setShowModal(false)} className="btn-cancelar-lugar">Cancelar</button>
-    <button type="submit" className="btn-submit-lugar">Crear Lugar</button>
+    <button type="button" onClick={() => setShowModal(false)} className="btn-cancelar-lugar">
+      Cancelar
+    </button>
+    <button type="submit" className="btn-submit-lugar">
+      Crear Lugar
+    </button>
   </div>
 </form>
             </div>
