@@ -17,7 +17,9 @@ import {
   FaSmokingBan,
   FaPlus,
   FaMinus,
-  FaUndo
+  FaUndo,
+  FaChevronLeft,
+  FaChevronRight
 } from 'react-icons/fa';
 
 const LugarDetalle = () => {
@@ -124,6 +126,15 @@ const LugarDetalle = () => {
     lugar.imagen,
     ...(lugar.fotos_lugar || [])
   ].filter(Boolean) : [];
+
+  // Navegación entre imágenes
+  const nextImage = () => {
+    setCurrentSlide((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentSlide((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -248,10 +259,39 @@ const LugarDetalle = () => {
       <Sidebar lugarId={id} />
       <div className="content-container">
         <div className="imagen-ajuste">
-  <div className="lugar-imagen-container" style={{position: 'relative'}}>
-    <h3 className="lugar-detalle-place-title">{lugar?.nombre || 'Detalles del Lugar'}</h3>
-    <img src={lugar.imagen} alt={lugar.nombre} style={imageSize} />
-  </div>
+          <div className="lugar-imagen-container" style={{position: 'relative'}}>
+            <h3 className="lugar-detalle-place-title">{lugar?.nombre || 'Detalles del Lugar'}</h3>
+            {allImages.length > 0 && (
+              <div className="image-slider-container">
+                <img 
+                  src={allImages[currentSlide]} 
+                  alt={`${lugar.nombre} - Imagen ${currentSlide + 1}`} 
+                  style={imageSize} 
+                />
+                {allImages.length > 1 && (
+                  <>
+                    <button 
+                      className="nav-arrow left-arrow" 
+                      onClick={prevImage}
+                      aria-label="Imagen anterior"
+                    >
+                      <FaChevronLeft />
+                    </button>
+                    <button 
+                      className="nav-arrow right-arrow" 
+                      onClick={nextImage}
+                      aria-label="Siguiente imagen"
+                    >
+                      <FaChevronRight />
+                    </button>
+                    <div className="image-counter">
+                      {currentSlide + 1} / {allImages.length}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
           <div className="imagen-controles">
             <button onClick={() => handleImageSizeChange('decrease')}>
               <FaMinus /> Reducir
