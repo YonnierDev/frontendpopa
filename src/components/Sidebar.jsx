@@ -17,7 +17,7 @@ const Sidebar = ({ lugarId }) => {
       <div className="sidebar-menu">
         <button 
           className={`sidebar-button ${isActive('/propietario/eventos') ? 'active' : ''}`}
-          onClick={() => navigate('/propietario/eventos')}
+          onClick={() => navigate(lugarId ? `/propietario/eventos?lugarId=${lugarId}` : '/propietario/eventos')}
         >
           <span className="emoji">🎉</span> Eventos
         </button>

@@ -19,13 +19,17 @@ import {
   FaMinus,
   FaUndo,
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
+  FaCalendarAlt,
+  FaTag,
+  FaUsers
 } from 'react-icons/fa';
 
 const LugarDetalle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [lugar, setLugar] = useState(null);
+  const [eventos, setEventos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingImage, setEditingImage] = useState(false);
@@ -118,35 +122,48 @@ const LugarDetalle = () => {
     }
   };
 
-  // Estado para eventos del lugar
-  const [eventosLugar, setEventosLugar] = useState([]);
-  
   // Obtener todas las imágenes del lugar (imagen principal + fotos adicionales)
-  const allImages = lugar ? [
-    lugar.imagen,
-    ...(lugar.fotos_lugar || [])
-  ].filter(Boolean) : [];
+  const allImages = React.useMemo(() => {
+    if (!lugar) return [];
+    return [
+      lugar.imagen,
+      ...(lugar.fotos_lugar || []).map(foto => 
+        typeof foto === 'string' ? foto : foto.url || foto.imagen
+      )
+    ].filter(Boolean);
+  }, [lugar]);
+
+  // Ordenar eventos por fecha (más recientes primero)
+  const eventosLugar = React.useMemo(() => {
+    if (!eventos || !eventos.length) return [];
+    
+    return [...eventos].sort((a, b) => 
+      new Date(b.fecha_hora) - new Date(a.fecha_hora)
+    );
+  }, [eventos]);
 
   // Navegación entre imágenes
   const nextImage = () => {
-    setCurrentSlide((prev) => (prev + 1) % allImages.length);
+    setCurrentSlide(prev => (prev + 1) % allImages.length);
   };
 
   const prevImage = () => {
-    setCurrentSlide((prev) => (prev - 1 + allImages.length) % allImages.length);
+    setCurrentSlide(prev => (prev - 1 + allImages.length) % allImages.length);
   };
 
+  // Cargar datos del lugar y eventos
   useEffect(() => {
     const cargarDatos = async () => {
       try {
+        setLoading(true);
         const usuario = JSON.parse(localStorage.getItem('usuario'));
         if (!usuario?.token) {
           navigate('/login');
           return;
         }
         
-        // Usar el endpoint específico del propietario para obtener el lugar
-        const lugarRes = await fetch(`https://popnocturna.vercel.app/api/propietario/lugares`, {
+        // Cargar datos del lugar
+        const lugarRes = await fetch(`https://popnocturna.vercel.app/api/lugar/${id}`, {
           headers: {
             'Authorization': `Bearer ${usuario.token}`
           }
@@ -156,68 +173,48 @@ const LugarDetalle = () => {
           throw new Error(`Error al cargar el lugar: ${lugarRes.status}`);
         }
         
-        const lugaresData = await lugarRes.json();
-        // El endpoint ya devuelve solo los lugares del propietario
-        const lugarEncontrado = Array.isArray(lugaresData) 
-          ? lugaresData.find(l => l.id === parseInt(id))
-          : null;
-          
-        if (!lugarEncontrado) {
-          throw new Error('Lugar no encontrado o no tienes permisos para verlo');
-        }
+        const lugarData = await lugarRes.json();
+        console.log('Datos del lugar recibidos:', lugarData);
+        setLugar(lugarData);
         
-        setLugar(lugarEncontrado);
-        // Cargar eventos del lugar específico
-        const eventosRes = await fetch(`https://popnocturna.vercel.app/api/eventos?lugarId=${lugarEncontrado.id}`, {
+        // Cargar todos los eventos del usuario
+        const eventosRes = await fetch('https://popnocturna.vercel.app/api/eventos', {
           headers: {
-            'Authorization': `Bearer ${usuario.token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${usuario.token}`
           }
         });
         
         if (eventosRes.ok) {
-          const eventosData = await eventosRes.json();
-          // Asegurarse de que eventosData.datos es un array
-          const eventosDelLugar = Array.isArray(eventosData.datos) ? eventosData.datos : [];
-          setEventosLugar(eventosDelLugar);
+          const response = await eventosRes.json();
+          console.log('Todos los eventos recibidos:', response);
+          
+          // Verificar si la respuesta tiene la propiedad 'datos' con los eventos
+          const eventosArray = response.datos || [];
+          
+          // Filtrar eventos para mostrar solo los del lugar actual
+          const eventosFiltrados = eventosArray.filter(evento => 
+            evento.lugarId === parseInt(id) || 
+            (evento.lugar && evento.lugar.id === parseInt(id))
+          );
+          
+          console.log(`Eventos filtrados para lugar ${id}:`, eventosFiltrados);
+          setEventos(eventosFiltrados);
         } else {
           const errorText = await eventosRes.text();
           console.error('Error al cargar eventos:', errorText);
-          // Si hay un error, intentar con el endpoint alternativo
-          try {
-            const altEventosRes = await fetch('https://popnocturna.vercel.app/api/eventos', {
-              headers: {
-                'Authorization': `Bearer ${usuario.token}`,
-                'Content-Type': 'application/json'
-              }
-            });
-            
-            if (altEventosRes.ok) {
-              const eventosData = await altEventosRes.json();
-              // Filtrar eventos por lugarId
-              const eventosFiltrados = Array.isArray(eventosData.datos) 
-                ? eventosData.datos.filter(evento => 
-                    evento.lugar && parseInt(evento.lugar.id) === parseInt(lugarEncontrado.id)
-                  )
-                : [];
-              setEventosLugar(eventosFiltrados);
-            } else {
-              throw new Error('Error al cargar eventos alternativos');
-            }
-          } catch (altError) {
-            console.error('Error al cargar eventos alternativos:', altError);
-            setEventosLugar([]);
-          }
+          setEventos([]);
         }
-
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
+        
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+        setError(error.message || 'Error al cargar los datos del lugar');
+      } finally {
         setLoading(false);
       }
     };
+    
     cargarDatos();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleImageSizeChange = (action) => {
     const currentWidth = parseInt(imageSize.width);
@@ -336,17 +333,46 @@ const LugarDetalle = () => {
           </div>
 
           <div className="info-card">
-            <h2>Próximos Eventos</h2>
+            <h2>Eventos</h2>
             {eventosLugar.length === 0 ? (
-              <p>No hay próximos eventos para este lugar.</p>
+              <p>No hay eventos programados para este lugar.</p>
             ) : (
-              eventosLugar.map((evento, index) => (
-                <div key={evento.id || index} className="evento-item">
-                  <h3>{evento.nombre}</h3>
-                  <p>{evento.descripcion}</p>
-                  <p>Fecha: {evento.fecha_hora ? new Date(evento.fecha_hora).toLocaleDateString() : 'Sin fecha'}</p>
-                </div>
-              ))
+              <div className="eventos-lista">
+                {eventosLugar.map((evento) => (
+                  <div key={evento.id} className="evento-item">
+                    <div className="evento-contenido">
+                      <h3>{evento.nombre}</h3>
+                      {evento.descripcion && (
+                        <p className="evento-descripcion">{evento.descripcion}</p>
+                      )}
+                      <div className="evento-detalles">
+                        <span className="evento-fecha">
+                          <FaCalendarAlt className="icono-evento" />
+                          {evento.fecha_hora ? new Date(evento.fecha_hora).toLocaleString('es-ES', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) : 'Sin fecha definida'}
+                        </span>
+                        {evento.precio && (
+                          <span className="evento-precio">
+                            <FaTag className="icono-evento" />
+                            ${parseFloat(evento.precio).toLocaleString('es-CO')}
+                          </span>
+                        )}
+                        {evento.capacidad && (
+                          <span className="evento-capacidad">
+                            <FaUsers className="icono-evento" />
+                            {evento.capacidad} personas
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

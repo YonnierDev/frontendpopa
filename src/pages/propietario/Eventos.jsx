@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from "../../components/api/api";
 import Sidebar from '../../components/Sidebar';
 import './Eventos.css';
@@ -26,6 +26,8 @@ const Eventos = () => {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const lugarId = searchParams.get('lugarId');
 
   // Verificar autenticación al cargar el componente
   useEffect(() => {
@@ -109,10 +111,27 @@ const Eventos = () => {
       
       const eventosData = await eventosResponse.json();
       
-      // Filtramos los eventos que pertenecen a los lugares del propietario
-      const eventosFiltrados = eventosData.datos.filter(evento => 
-        evento.lugar && lugaresIds.includes(parseInt(evento.lugar.id))
-      );
+      // Primero filtramos los eventos que pertenecen a los lugares del propietario
+      let eventosFiltrados = eventosData.datos.filter(evento => {
+        // Verificamos tanto evento.lugar.id como evento.lugarId para mayor compatibilidad
+        const eventoLugarId = evento.lugar?.id || evento.lugarId;
+        const incluir = eventoLugarId && lugaresIds.includes(parseInt(eventoLugarId));
+        console.log(`Evento ID: ${evento.id}, LugarID: ${eventoLugarId}, Incluir: ${incluir}`);
+        return incluir;
+      });
+      
+      // Si hay un lugarId en la URL, filtramos adicionalmente por ese lugar
+      if (lugarId) {
+        eventosFiltrados = eventosFiltrados.filter(evento => {
+          const eventoLugarId = evento.lugar?.id || evento.lugarId;
+          return eventoLugarId && parseInt(eventoLugarId) === parseInt(lugarId);
+        });
+        console.log(`Eventos filtrados por lugarId ${lugarId}:`, eventosFiltrados);
+      }
+      
+      console.log('Lugares del propietario:', lugaresIds);
+      console.log('Todos los eventos:', eventosData.datos);
+      console.log('Eventos filtrados:', eventosFiltrados);
       
       setEventos(eventosFiltrados);
       setMensaje('');
@@ -226,12 +245,20 @@ const Eventos = () => {
     );
   };
 
+  // Obtener el nombre del lugar si se está filtrando por uno específico
+  const lugarActual = lugarId && lugares.length > 0 ? 
+    lugares.find(l => l.id === parseInt(lugarId)) : null;
+
   return (
     <>
-      <Sidebar />
+      <Sidebar lugarId={lugarId} />
       <div className="app-container">
         <div className="main-content">
-          <h2>Mis Eventos</h2>
+          <h2>
+            {lugarActual 
+              ? `Eventos de ${lugarActual.nombre}` 
+              : 'Mis Eventos'}
+          </h2>
           {mensaje && <div className="mensaje">{mensaje}</div>}
           <form onSubmit={handleSubmit} className="form-container">
             <div className="form-group">
