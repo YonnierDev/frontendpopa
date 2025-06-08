@@ -288,6 +288,180 @@ h2 {
   border-radius: 3px;
 }
 
+/* Estilos para la visualización de imágenes en la lista de eventos */
+.portada-preview {
+  margin: 15px 0;
+}
+
+.portada-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.portada-item {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* Aspect ratio 1:1 */
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #e0e0e0;
+}
+
+.portada-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.portada-imagen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mas-imagenes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Modal para ver imagen en tamaño completo */
+.modal-imagen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-contenido {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.cerrar-modal:hover {
+  background: #ff0000;
+}
+
+.imagen-completa {
+  max-width: 100%;
+  max-height: 85vh;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Estilos para la sección de imágenes de portada */
+.imagenes-portada {
+  margin: 20px 0;
+  width: 100%;
+}
+
+.imagenes-portada label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #333;
+}
+
+.input-imagen {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.vista-previa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.imagen-contenedor {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.imagen-miniatura {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-eliminar-imagen {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+}
+
+.btn-eliminar-imagen:hover {
+  background: #ff0000;
+}
+
 /* Mejora visual para mensaje de sin eventos */
 .sin-eventos {
   text-align: center;

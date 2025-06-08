@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
+import { api } from '../../components/api/api';
 import './LugarDetalle.css';
 import { 
   FaMapMarkerAlt, 
@@ -156,57 +157,47 @@ const LugarDetalle = () => {
     const cargarDatos = async () => {
       try {
         setLoading(true);
-        const usuario = JSON.parse(localStorage.getItem('usuario'));
-        if (!usuario?.token) {
-          navigate('/login');
-          return;
-        }
         
         // Cargar datos del lugar
-        const lugarRes = await fetch(`https://popnocturna.vercel.app/api/lugar/${id}`, {
+        const lugarResponse = await api.get(`/lugar/${id}`);
+        console.log('Datos del lugar recibidos:', lugarResponse.data);
+        setLugar(lugarResponse.data);
+        
+        // Cargar eventos del lugar específico (incluyendo inactivos)
+        console.log('Solicitando eventos para el lugar ID:', id);
+        const eventosResponse = await api.get('/eventos', {
+          params: {
+            lugarId: id,
+            soloActivos: false
+          },
           headers: {
-            'Authorization': `Bearer ${usuario.token}`
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0'
           }
         });
         
-        if (!lugarRes.ok) {
-          throw new Error(`Error al cargar el lugar: ${lugarRes.status}`);
-        }
+        console.log('Respuesta completa de la API:', eventosResponse);
+        console.log('Datos de eventos recibidos:', eventosResponse.data);
         
-        const lugarData = await lugarRes.json();
-        console.log('Datos del lugar recibidos:', lugarData);
-        setLugar(lugarData);
+        // Verificar si la respuesta tiene la propiedad 'datos' con los eventos
+        const eventosArray = Array.isArray(eventosResponse.data.datos) ? eventosResponse.data.datos : [];
         
-        // Cargar todos los eventos del usuario
-        const eventosRes = await fetch('https://popnocturna.vercel.app/api/eventos', {
-          headers: {
-            'Authorization': `Bearer ${usuario.token}`
-          }
+        // Verificar si los eventos pertenecen al lugar correcto
+        const eventosFiltrados = eventosArray.filter(evento => {
+          const eventoLugarId = evento.lugarid || (evento.lugar && evento.lugar.id);
+          const coincide = eventoLugarId == id; // Usar == para comparación flexible
+          console.log(`Evento ID: ${evento.id}, Lugar ID: ${eventoLugarId}, Coincide: ${coincide}`);
+          return coincide;
         });
         
-        if (eventosRes.ok) {
-          const response = await eventosRes.json();
-          console.log('Todos los eventos recibidos:', response);
-          
-          // Verificar si la respuesta tiene la propiedad 'datos' con los eventos
-          const eventosArray = response.datos || [];
-          
-          // Filtrar eventos para mostrar solo los del lugar actual
-          const eventosFiltrados = eventosArray.filter(evento => 
-            evento.lugarId === parseInt(id) || 
-            (evento.lugar && evento.lugar.id === parseInt(id))
-          );
-          
-          console.log(`Eventos filtrados para lugar ${id}:`, eventosFiltrados);
-          setEventos(eventosFiltrados);
-        } else {
-          const errorText = await eventosRes.text();
-          console.error('Error al cargar eventos:', errorText);
-          setEventos([]);
-        }
+        console.log(`Eventos para el lugar ${id}:`, eventosFiltrados);
         
+        // Actualizar el estado con los eventos filtrados
+        setEventos(eventosFiltrados);
       } catch (error) {
-        console.error('Error al cargar datos:', error);
+        console.error('Error al cargar eventos:', error);
+        setEventos([]);
         setError(error.message || 'Error al cargar los datos del lugar');
       } finally {
         setLoading(false);
