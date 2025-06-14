@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../components/api/api';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './Calificaciones.css';
+import Sidebar from '../../components/Sidebar';
 
 const styles = {
   noCalificaciones: {
@@ -11,7 +14,6 @@ const styles = {
     fontSize: '1.2em'
   }
 };
-import Sidebar from '../../components/Sidebar';
 
 const Calificaciones = () => {
   const { lugarid } = useParams();
@@ -20,8 +22,24 @@ const Calificaciones = () => {
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
-
   const navigate = useNavigate();
+
+  // Verificar autenticación al montar el componente
+  useEffect(() => {
+    const verificarAutenticacion = () => {
+      const token = localStorage.getItem('token');
+      const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+      
+      if (!token || !usuario) {
+        toast.error('Por favor inicia sesión para continuar');
+        navigate('/login', { replace: true });
+        return false;
+      }
+      return true;
+    };
+    
+    verificarAutenticacion();
+  }, [navigate]);
 
   useEffect(() => {
     let isMounted = true;
@@ -37,7 +55,7 @@ const Calificaciones = () => {
         if (!token || !usuario) {
           console.log('No hay sesión activa, redirigiendo a login');
           localStorage.setItem('redirectAfterLogin', window.location.pathname);
-          window.location.href = '/login';
+          navigate('/login', { replace: true });
           return;
         }
         
@@ -223,8 +241,9 @@ const Calificaciones = () => {
 
   return (
     <div className="app-container">
+      <Sidebar />
       <div className="main-content">
-        <div style={{ textAlign: 'right', margin: '16px 120px 16px 0' }}>
+        <div style={{ textAlign: 'right', margin: '16px 0 24px 0' }}>
           <h2>Calificaciones del Lugar</h2>
         </div>
         

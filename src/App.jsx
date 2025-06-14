@@ -92,10 +92,32 @@ function App() {
     const handleStorageChange = () => {
       verificarAutenticacion();
     };
+
+    // Manejar evento de autenticación no autorizada
+    const handleUnauthorized = () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      setIsAuthenticated(false);
+      setRol(null);
+      
+      // Guardar la ruta actual para redirigir después del login
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login') {
+        localStorage.setItem('redirectAfterLogin', currentPath);
+      }
+      
+      // Redirigir al login si no estamos ya ahí
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    };
     
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('unauthorized', handleUnauthorized);
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('unauthorized', handleUnauthorized);
     };
   }, []);
 

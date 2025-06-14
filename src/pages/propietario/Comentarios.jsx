@@ -5,8 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Comentarios.css';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Comentarios = () => {
   const { id } = useParams();
@@ -17,8 +16,24 @@ const Comentarios = () => {
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
-
   const navigate = useNavigate();
+
+  // Verificar autenticación al montar el componente
+  useEffect(() => {
+    const verificarAutenticacion = () => {
+      const token = localStorage.getItem('token');
+      const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+      
+      if (!token || !usuario) {
+        toast.error('Por favor inicia sesión para continuar');
+        navigate('/login', { replace: true });
+        return false;
+      }
+      return true;
+    };
+    
+    verificarAutenticacion();
+  }, [navigate]);
 
   useEffect(() => {
     const verificarSesionYCargar = async () => {
@@ -31,7 +46,7 @@ const Comentarios = () => {
           console.log('No hay sesión activa, redirigiendo a login');
           // Guardar la ruta actual para redirigir después del login
           localStorage.setItem('redirectAfterLogin', window.location.pathname);
-          window.location.href = '/login';
+          navigate('/login', { replace: true });
           return;
         }
 

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
 import { FaPlus, FaEdit, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Sidebar from '../../components/Sidebar';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Lugares = () => {
   const navigate = useNavigate();
@@ -11,6 +13,23 @@ const Lugares = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  
+  // Verificar autenticación al montar el componente
+  useEffect(() => {
+    const verificarAutenticacion = () => {
+      const token = localStorage.getItem('token');
+      const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+      
+      if (!token || !usuario) {
+        toast.error('Por favor inicia sesión para continuar');
+        navigate('/login', { replace: true });
+        return false;
+      }
+      return true;
+    };
+    
+    verificarAutenticacion();
+  }, [navigate]);
   const [formData, setFormData] = useState({
     categoriaid: '',
     nombre: '',
