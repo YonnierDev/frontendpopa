@@ -56,23 +56,47 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [rol, setRol] = useState(null);
 
-  useEffect(() => {
+  // Función para verificar la autenticación
+  const verificarAutenticacion = () => {
     const token = localStorage.getItem("token");
     const storedUsuario = localStorage.getItem("usuario");
-
+    
     if (token && storedUsuario) {
-      setIsAuthenticated(true);
       try {
         const usuario = JSON.parse(storedUsuario);
-        setRol(usuario?.rol);
+        // Solo actualizar si los valores son diferentes
+        setIsAuthenticated(prev => {
+          if (prev !== true) return true;
+          return prev;
+        });
+        setRol(prevRol => {
+          if (prevRol !== usuario?.rol) return usuario?.rol;
+          return prevRol;
+        });
       } catch (err) {
         console.error("Error al parsear el usuario:", err);
+        setIsAuthenticated(false);
         setRol(null);
       }
     } else {
       setIsAuthenticated(false);
       setRol(null);
     }
+  };
+
+  // Verificar autenticación al montar
+  useEffect(() => {
+    verificarAutenticacion();
+    
+    // Escuchar cambios en el localStorage
+    const handleStorageChange = () => {
+      verificarAutenticacion();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   return (
