@@ -7,7 +7,7 @@
 .content-container {
   flex: 1;
   padding: 2rem;
-  margin-left: 250px;
+  margin: 2rem 0 0 250px; /* Añadido margen superior de 2rem */
   width: calc(100% - 250px);
   overflow-x: hidden; /* Quita el scroll horizontal */
 }
