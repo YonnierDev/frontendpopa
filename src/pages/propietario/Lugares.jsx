@@ -179,49 +179,12 @@ const Lugares = () => {
       <Sidebar />
       <div className="lugares-content">
         <div className="lugares-header">
-          <h2>Mis Lugares</h2>
           <button 
             className="btn-nuevo-lugar"
             onClick={() => setShowModal(true)}
           >
             <FaPlus /> Nuevo Lugar
           </button>
-        </div>
-
-        <div className="lugares-grid">
-          {lugares.map((lugar) => (
-            <div key={lugar.id} className="lugar-card">
-              <div className="lugar-imagen">
-                {lugar.imagen ? (
-                  <img 
-                    src={`https://popnocturna.vercel.app/uploads/${lugar.imagen}`} 
-                    alt={lugar.nombre} 
-                  />
-                ) : (
-                  <div className="sin-imagen">
-                    <FaMapMarkerAlt size={40} />
-                  </div>
-                )}
-              </div>
-              <div className="lugar-info">
-                <h3>{lugar.nombre}</h3>
-                <p>{lugar.descripcion}</p>
-                <div className="lugar-estado">
-                  Estado: {lugar.estado === 'activo' ? (
-                    <span className="activo"><FaCheckCircle /> Activo</span>
-                  ) : (
-                    <span className="inactivo"><FaTimesCircle /> Inactivo</span>
-                  )}
-                </div>
-                <button 
-                  className="btn-editar"
-                  onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
-                >
-                  <FaEdit /> Editar
-                </button>
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* Modal para crear nuevo lugar */}

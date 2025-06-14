@@ -16,29 +16,67 @@ const Comentarios = () => {
   const [showModal, setShowModal] = useState(false);
   const [comentarioSeleccionado, setComentarioSeleccionado] = useState(null);
   const [motivoReporte, setMotivoReporte] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario || !usuario.token) {
-      navigate('/login');
-      return;
-    }
+    const cargarDatos = async () => {
+      try {
+        setCargando(true);
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        
+        if (!usuario || !usuario.token) {
+          setError('No se encontró la sesión del usuario. Por favor, inicia sesión nuevamente.');
+          return;
+        }
+        
+        // Verificar si el token es válido usando un endpoint existente
+        // Si el token no es válido, la API devolverá un error 401/403
+        
+        // Si no hay ID, mostrar estado informativo
+        if (!id) {
+          setError('Selecciona un evento para ver sus comentarios');
+          setCargando(false);
+          return;
+        }
+        
+        // Cargar comentarios si hay ID
+        // La validación del token se hará automáticamente en la petición
+        await cargarComentarios();
+      } catch (error) {
+        console.error('Error en la carga inicial:', error);
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          setError('La sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        } else {
+          setError('Ocurrió un error al cargar los comentarios. Por favor, inténtalo de nuevo.');
+        }
+      } finally {
+        setCargando(false);
+      }
+    };
     
-    // Si no hay ID, redirigir a la lista de lugares para seleccionar uno
-    if (!id) {
-      navigate('/propietario/lugares');
-      return;
-    }
-    
-    cargarComentarios();
-  }, [id, navigate]);
+    cargarDatos();
+  }, [id]);
 
   const cargarComentarios = async () => {
     try {
       setCargando(true);
+      setError('');
+      
+      // Verificar si hay un token válido
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No se encontró el token de autenticación');
+        return;
+      }
       
       // Obtener los comentarios de los lugares del propietario
-      const response = await api.get('/comentarios/evento/' + id);
+      const response = await api.get('/comentarios/evento/' + id).catch(err => {
+        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+          setError('La sesión ha expirado. Por favor, inicia sesión nuevamente.');
+          throw err; // Detener la ejecución
+        }
+        throw err; // Re-lanzar otros errores
+      });
       
       if (response.data && response.data.comentarios) {
         // Formatear los comentarios con valores por defecto
@@ -64,7 +102,10 @@ const Comentarios = () => {
       }
     } catch (err) {
       console.error('Error al cargar comentarios:', err);
-      toast.error('Error al cargar los comentarios');
+      // No mostrar toast para errores de autenticación ya que ya se manejaron
+      if (!err.message.includes('Error de autenticación')) {
+        toast.error('Error al cargar los comentarios');
+      }
     } finally {
       setCargando(false);
     }
@@ -138,6 +179,63 @@ const Comentarios = () => {
       </div>
     );
   };
+
+  if (cargando) {
+    return (
+      <div className="comentarios-container">
+        <Sidebar />
+        <div className="comentarios-content text-center p-4">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-2">Cargando comentarios...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="comentarios-container">
+        <Sidebar />
+        <div className="comentarios-content p-4">
+          <div className="alert alert-warning" role="alert">
+            {error}
+            {error.includes('sesión') && (
+              <div className="mt-3">
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => window.location.href = '/login'}
+                >
+                  Ir al inicio de sesión
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!id) {
+    return (
+      <div className="comentarios-container">
+        <Sidebar />
+        <div className="comentarios-content p-4">
+          <div className="alert alert-info">
+            <h4>No se ha seleccionado ningún evento</h4>
+            <p>Por favor, selecciona un evento desde la página de lugares para ver sus comentarios.</p>
+            <button 
+              className="btn btn-primary mt-2"
+              onClick={() => window.history.back()}
+            >
+              Volver atrás
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="comentarios-container">

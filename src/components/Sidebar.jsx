@@ -29,13 +29,13 @@ const Sidebar = ({ lugarId }) => {
         </button>
         <button 
           className={`sidebar-button ${isActive('/propietario/comentarios') ? 'active' : ''}`}
-          onClick={() => lugarId ? navigate(`/propietario/comentarios/${lugarId}`) : navigate('/propietario/lugares')}
+          onClick={() => navigate(lugarId ? `/propietario/comentarios/${lugarId}` : '/propietario/comentarios')}
         >
           <span className="emoji">💬</span> Comentarios
         </button>
         <button 
           className={`sidebar-button ${isActive('/propietario/calificaciones') ? 'active' : ''}`}
-          onClick={() => lugarId ? navigate(`/propietario/calificaciones/${lugarId}`) : navigate('/propietario/lugares')}
+          onClick={() => navigate(lugarId ? `/propietario/calificaciones/${lugarId}` : '/propietario/calificaciones')}
         >
           <span className="emoji">⭐</span> Calificaciones
         </button>

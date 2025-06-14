@@ -18,31 +18,42 @@ const Calificaciones = () => {
   const [calificaciones, setCalificaciones] = useState([]);
   const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
   const [mensaje, setMensaje] = useState('');
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    console.log('Lugar ID:', lugarid); // Log para depuración
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario || !usuario.token) {
+      setError('No se encontró la sesión del usuario');
+      setCargando(false);
+      return;
+    }
+
     if (lugarid) {
       cargarCalificaciones();
+    } else {
+      setCargando(false);
     }
   }, [lugarid]);
 
   const cargarCalificaciones = async () => {
     try {
+      setCargando(true);
+      setError('');
+      
       // Usa el lugarid de los parámetros de la URL
       const response = await api.get(`/calificaciones/lugar/${lugarid}`);
       const datos = response.data?.datos || {};
       const calificacionesArray = datos.calificaciones || [];
-      console.log('Datos recibidos:', datos);
-      console.log('Calificaciones:', calificacionesArray);
+      
       setCalificaciones(calificacionesArray);
       setMensaje('');
     } catch (error) {
       console.error('Error al cargar calificaciones:', error.response || error);
-      setCalificaciones([]); // Asegura que siempre sea un array
-      setMensaje(
-        'Error al cargar las calificaciones: ' +
-        (error.response?.data?.mensaje || error.message)
-      );
+      setCalificaciones([]);
+      setError('Error al cargar las calificaciones. Por favor, inténtalo de nuevo más tarde.');
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -68,8 +79,44 @@ const Calificaciones = () => {
     setDetalleSeleccionado(null);
   };
 
+  if (cargando) {
+    return (
+      <div className="calificaciones-container">
+        <Sidebar />
+        <div className="calificaciones-content">
+          <div className="loading-spinner"></div>
+          <p>Cargando calificaciones...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="calificaciones-container">
+        <Sidebar />
+        <div className="calificaciones-content">
+          <div className="error-message">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!lugarid) {
+    return (
+      <div className="calificaciones-container">
+        <Sidebar />
+        <div className="calificaciones-content">
+          <div className="info-message">
+            <p>Selecciona un lugar para ver sus calificaciones</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="calificaciones-container">
       <Sidebar />
       <div className="app-container">
         <div className="main-content">
@@ -152,7 +199,7 @@ const Calificaciones = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
