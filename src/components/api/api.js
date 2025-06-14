@@ -21,16 +21,37 @@ api.interceptors.request.use((config) => {
 // Interceptor para manejar respuestas con errores
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response) {
-      // Manejar errores específicos de autenticación
-      if (error.response.status === 401 || error.response.status === 403) {
-        // No redirigir automáticamente, solo rechazar la promesa
-        console.error('Error de autenticación:', error.response.data);
-        return Promise.reject(new Error('Error de autenticación'));
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // Si el error no tiene respuesta o no es un error de autenticación, rechazar directamente
+    if (!error.response || (error.response.status !== 401 && error.response.status !== 403)) {
+      if (error.request) {
+        console.error('Error de red:', error.request);
+      } else {
+        console.error('Error:', error.message);
       }
+      return Promise.reject(error);
     }
-    // Para otros errores, simplemente rechazar la promesa
+
+    // Si es un error de autenticación y no es una solicitud de reintento
+    if (error.response.status === 401 || error.response.status === 403) {
+      // Verificar si ya estamos en la página de login para evitar bucles
+      if (window.location.pathname === '/login') {
+        return Promise.reject(error);
+      }
+
+      // Limpiar datos de sesión inválidos
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      
+      // Guardar la ruta actual para redirigir después del login
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+      
+      // Redirigir al login
+      window.location.href = '/login';
+    }
+
     return Promise.reject(error);
   }
 );

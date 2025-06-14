@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+                                                        import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
 import { FaPlus, FaEdit, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
@@ -24,9 +24,15 @@ const Lugares = () => {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('No se encontró token de autenticación');
+          return;
+        }
+        
+        const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
         if (!usuario) {
-          navigate('/login');
+          console.log('No se encontró información del usuario');
           return;
         }
 

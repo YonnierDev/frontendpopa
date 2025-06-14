@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../components/api/api';
 import './Calificaciones.css';
 
@@ -21,19 +21,51 @@ const Calificaciones = () => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario || !usuario.token) {
-      setError('No se encontró la sesión del usuario');
-      setCargando(false);
-      return;
-    }
+  const navigate = useNavigate();
 
-    if (lugarid) {
-      cargarCalificaciones();
-    } else {
-      setCargando(false);
+  useEffect(() => {
+    let isMounted = true;
+    
+    const cargarDatos = async () => {
+      try {
+        setCargando(true);
+        
+        // Verificar autenticación
+        const token = localStorage.getItem('token');
+        const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+        
+        if (!token || !usuario) {
+          console.log('No hay sesión activa, redirigiendo a login');
+          localStorage.setItem('redirectAfterLogin', window.location.pathname);
+          window.location.href = '/login';
+          return;
+        }
+        
+        if (!lugarid) {
+          console.log('No se proporcionó ID de lugar');
+          return;
+        }
+        
+        // Cargar calificaciones
+        await cargarCalificaciones();
+        
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+        // El interceptor manejará los errores de autenticación
+      } finally {
+        if (isMounted) {
+          setCargando(false);
+        }
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      cargarDatos();
     }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [lugarid]);
 
   const cargarCalificaciones = async () => {
