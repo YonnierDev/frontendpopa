@@ -62,11 +62,22 @@ const DashboardPropietario = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validación frontend: imagen obligatoria
-    if (!formData.imagen) {
-      setError('La imagen principal es requerida');
+    setLoading(true);
+    setError('');
+    
+    // Validación de campos requeridos
+    if (!formData.nombre || !formData.descripcion || !formData.ubicacion || !formData.categoriaid) {
+      setError('Todos los campos son obligatorios');
+      setLoading(false);
       return;
     }
+
+    if (!formData.imagen) {
+      setError('La imagen principal es requerida');
+      setLoading(false);
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('nombre', formData.nombre.trim().toLowerCase());
@@ -95,16 +106,16 @@ const DashboardPropietario = () => {
         body: formDataToSend
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        let mensaje = 'Error al crear el lugar';
-        try {
-          const errorData = await response.json();
-          mensaje = errorData.mensaje || mensaje;
-        } catch {}
-        throw new Error(mensaje);
+        throw new Error(data.mensaje || 'Error al crear el lugar');
       }
 
-      cargarDatos();
+      // Actualizar la lista de lugares
+      await cargarDatos();
+      
+      // Cerrar el modal y limpiar el formulario
       setShowModal(false);
       setFormData({
         nombre: '',
@@ -115,39 +126,30 @@ const DashboardPropietario = () => {
         fotos_lugar: [],
         carta_pdf: null
       });
+      
+      // Mostrar mensaje de éxito
+      alert(data.mensaje || 'Lugar creado con éxito');
+      
     } catch (error) {
       console.error('Error creando lugar:', error);
-      setError('Error al crear el lugar: ' + error.message);
-    }
-  };
-
-  const cargarDatos = async () => {
-    try {
-      const response = await fetch(`${API_URL}/propietario/lugares`, {
-        headers: { 'Authorization': `Bearer ${usuario.token}` }
-      });
-      if (!response.ok) throw new Error('No se pudo obtener los lugares');
-      const data = await response.json();
-      setLugares(data);
-    } catch (error) {
-      setError('Error al cargar los lugares: ' + error.message);
+      setError(error.message || 'Error al crear el lugar');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-  cargarCategorias();
-
-  const obtenerLugaresDelPropietario = async () => {
+  const cargarDatos = async () => {
     try {
-      if (!usuario || !usuario.token) {
+      if (!usuario?.token) {
         navigate('/login');
         return;
       }
 
       const response = await fetch(`${API_URL}/propietario/lugares`, {
-        headers: { 'Authorization': `Bearer ${usuario.token}` }
+        headers: { 
+          'Authorization': `Bearer ${usuario.token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (!response.ok) {
@@ -155,34 +157,65 @@ const DashboardPropietario = () => {
           navigate('/login');
           return;
         }
-        throw new Error('No se pudo obtener los lugares');
+        const errorData = await response.json();
+        throw new Error(errorData.mensaje || 'No se pudo obtener los lugares');
       }
 
       const data = await response.json();
-      setLugares(data);
+      setLugares(Array.isArray(data) ? data : []);
+      return data;
     } catch (error) {
-      setError('Error al cargar los lugares: ' + error.message);
+      console.error('Error cargando lugares:', error);
+      setError('Error al cargar los lugares: ' + (error.message || 'Error desconocido'));
+      return [];
     } finally {
       setLoading(false);
     }
   };
 
-  const cargarComentarios = async () => {
-    try {
-      const response = await fetch(`${API_URL}/comentarios`, {
-        headers: { 'Authorization': `Bearer ${usuario.token}` }
-      });
-      if (!response.ok) throw new Error('No se pudo cargar comentarios');
-      const data = await response.json();
-      setComentarios(Array.isArray(data) ? data : []);
-    } catch (error) {
-      setComentarios([]);
+  // Efecto para cargar datos iniciales
+  useEffect(() => {
+    // Verificar autenticación primero
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario?.token) {
+      navigate('/login');
+      return;
     }
-  };
 
-  obtenerLugaresDelPropietario();
-  if (usuario && usuario.token) cargarComentarios();
-}, []);
+    const cargarTodo = async () => {
+      setLoading(true);
+      try {
+        // Cargar categorías
+        await cargarCategorias();
+        
+        // Cargar lugares
+        const lugaresData = await cargarDatos();
+        setLugares(Array.isArray(lugaresData) ? lugaresData : []);
+        
+        // Cargar comentarios
+        try {
+          const response = await fetch(`${API_URL}/comentarios`, {
+            headers: { 'Authorization': `Bearer ${usuario.token}` }
+          });
+          
+          if (response.ok) {
+            const comentariosData = await response.json();
+            setComentarios(Array.isArray(comentariosData) ? comentariosData : []);
+          }
+        } catch (error) {
+          console.error('Error cargando comentarios:', error);
+          setComentarios([]);
+        }
+      } catch (error) {
+        console.error('Error en carga inicial:', error);
+        setError('Error al cargar los datos: ' + (error.message || 'Error desconocido'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarTodo();
+  }, [navigate]); // Solo dependencia de navigate
 
   if (loading) {
     return (
