@@ -18,52 +18,36 @@ const Comentarios = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Verificar autenticación al montar el componente
-  useEffect(() => {
-    const verificarAutenticacion = () => {
-      const token = localStorage.getItem('token');
-      const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
-      
-      if (!token || !usuario) {
-        toast.error('Por favor inicia sesión para continuar');
-        navigate('/login', { replace: true });
-        return false;
-      }
-      return true;
-    };
-    
-    verificarAutenticacion();
-  }, [navigate]);
-
   useEffect(() => {
     const verificarSesionYCargar = async () => {
       const token = localStorage.getItem('token');
       const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
       
-      // Verificar si estamos en el cliente antes de usar window
-      if (typeof window !== 'undefined') {
-        if (!token || !usuario) {
-          console.log('No hay sesión activa, redirigiendo a login');
-          // Guardar la ruta actual para redirigir después del login
-          localStorage.setItem('redirectAfterLogin', window.location.pathname);
-          navigate('/login', { replace: true });
-          return;
-        }
-
-        if (!id) {
-          console.log('No se proporcionó ID de evento');
-          setCargando(false);
-          return;
-        }
-
-        // Cargar comentarios directamente
-        // El interceptor manejará cualquier error de autenticación
-        await cargarComentarios();
+      // Verificar si estamos en el cliente
+      if (typeof window === 'undefined') return;
+      
+      // Verificar autenticación
+      if (!token || !usuario) {
+        console.log('No hay sesión activa, redirigiendo a login');
+        // Guardar la ruta actual para redirigir después del login
+        localStorage.setItem('redirectAfterLogin', window.location.pathname);
+        toast.error('Por favor inicia sesión para continuar');
+        navigate('/login', { replace: true });
+        return;
       }
+
+      if (!id) {
+        console.log('No se proporcionó ID de evento');
+        setCargando(false);
+        return;
+      }
+
+      // Cargar comentarios
+      await cargarComentarios();
     };
 
     verificarSesionYCargar();
-  }, [id]);
+  }, [id, navigate]);
 
   const cargarComentarios = async () => {
     try {
