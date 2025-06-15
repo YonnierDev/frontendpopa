@@ -1,0 +1,11 @@
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/propietario/.*", "dest": "/index.html" },
+    { "src": "/admip/.*", "dest": "/index.html" },
+    { "src": "/super/.*", "dest": "/index.html" },
+    { "src": "/login", "dest": "/index.html" },
+    { "src": "/register", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
