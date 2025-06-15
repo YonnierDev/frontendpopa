@@ -18,6 +18,21 @@ const Comentarios = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Función para obtener el primer lugar del propietario
+  const obtenerPrimerLugar = async () => {
+    try {
+      const response = await api.get('/propietario/lugares');
+      if (response.data && response.data.length > 0) {
+        const primerLugar = response.data[0];
+        return primerLugar.id;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener los lugares del propietario:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const verificarSesionYCargar = async () => {
       const token = localStorage.getItem('token');
@@ -29,21 +44,42 @@ const Comentarios = () => {
       // Verificar autenticación
       if (!token || !usuario) {
         console.log('No hay sesión activa, redirigiendo a login');
-        // Guardar la ruta actual para redirigir después del login
         localStorage.setItem('redirectAfterLogin', window.location.pathname);
         toast.error('Por favor inicia sesión para continuar');
         navigate('/login', { replace: true });
         return;
       }
 
+      // Si no hay id, intentar obtener el primer lugar del propietario
       if (!id) {
-        console.log('No se proporcionó ID de evento');
-        setCargando(false);
+        const primerLugarId = await obtenerPrimerLugar();
+        if (primerLugarId) {
+          // Redirigir a la ruta con el ID del primer lugar
+          navigate(`/propietario/comentarios/${primerLugarId}`, { replace: true });
+        } else {
+          // Si no hay lugares, mostrar mensaje y redirigir al dashboard
+          toast.error('No tienes lugares registrados');
+          navigate('/propietario/dashboard');
+        }
         return;
       }
 
-      // Cargar comentarios
-      await cargarComentarios();
+      // Si llegamos aquí, tenemos un id válido
+      try {
+        await cargarComentarios();
+      } catch (error) {
+        console.error('Error al cargar comentarios:', error);
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          // Manejar errores de autenticación
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          navigate('/login', { replace: true });
+        } else {
+          setError('Error al cargar los comentarios. Por favor, inténtalo de nuevo.');
+        }
+      } finally {
+        setCargando(false);
+      }
     };
 
     verificarSesionYCargar();

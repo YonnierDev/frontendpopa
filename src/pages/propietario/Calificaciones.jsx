@@ -24,6 +24,21 @@ const Calificaciones = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Función para obtener el primer lugar del propietario
+  const obtenerPrimerLugar = async () => {
+    try {
+      const response = await api.get('/propietario/lugares');
+      if (response.data && response.data.length > 0) {
+        const primerLugar = response.data[0];
+        return primerLugar.id;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener los lugares del propietario:', error);
+      return null;
+    }
+  };
+
   // Verificar autenticación al montar el componente
   useEffect(() => {
     const verificarAutenticacion = () => {
@@ -32,59 +47,59 @@ const Calificaciones = () => {
       
       if (!token || !usuario) {
         toast.error('Por favor inicia sesión para continuar');
+        localStorage.setItem('redirectAfterLogin', window.location.pathname);
         navigate('/login', { replace: true });
         return false;
       }
       return true;
     };
     
-    verificarAutenticacion();
-  }, [navigate]);
-
-  useEffect(() => {
-    let isMounted = true;
+    if (!verificarAutenticacion()) return;
     
-    const cargarDatos = async () => {
-      try {
-        setCargando(true);
-        
-        // Verificar autenticación
-        const token = localStorage.getItem('token');
-        const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
-        
-        if (!token || !usuario) {
-          console.log('No hay sesión activa, redirigiendo a login');
-          localStorage.setItem('redirectAfterLogin', window.location.pathname);
-          navigate('/login', { replace: true });
-          return;
-        }
-        
-        if (!lugarid) {
-          console.log('No se proporcionó ID de lugar');
-          return;
-        }
-        
-        // Cargar calificaciones
-        await cargarCalificaciones();
-        
-      } catch (error) {
-        console.error('Error al cargar datos:', error);
-        // El interceptor manejará los errores de autenticación
-      } finally {
-        if (isMounted) {
-          setCargando(false);
-        }
+    // Si no hay lugarid, intentar obtener el primer lugar del propietario
+    const manejarLugarNoEspecificado = async () => {
+      const primerLugarId = await obtenerPrimerLugar();
+      if (primerLugarId) {
+        // Redirigir a la ruta con el ID del primer lugar
+        navigate(`/propietario/calificaciones/${primerLugarId}`, { replace: true });
+      } else {
+        // Si no hay lugares, mostrar mensaje y redirigir al dashboard
+        toast.error('No tienes lugares registrados');
+        navigate('/propietario/dashboard');
       }
     };
     
-    if (typeof window !== 'undefined') {
-      cargarDatos();
+    if (!lugarid) {
+      manejarLugarNoEspecificado();
+      return;
     }
     
-    return () => {
-      isMounted = false;
+    // Si llegamos aquí, tenemos un lugarid válido
+    const cargarDatos = async () => {
+      try {
+        setCargando(true);
+        await cargarCalificaciones();
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          // Manejar errores de autenticación
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          navigate('/login', { replace: true });
+        } else {
+          setError('Error al cargar las calificaciones. Por favor, inténtalo de nuevo.');
+        }
+      } finally {
+        setCargando(false);
+      }
     };
-  }, [lugarid]);
+    
+    cargarDatos();
+    
+    return () => {
+      // Limpieza si es necesario
+    };
+  }, [lugarid, navigate]);
 
   const cargarCalificaciones = async () => {
     try {

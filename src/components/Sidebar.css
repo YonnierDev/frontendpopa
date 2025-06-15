@@ -90,6 +90,54 @@
   color: white;
 }
 
+/* Estilos para los estados de carga, error e información */
+.sidebar-loading,
+.sidebar-error,
+.sidebar-info {
+  padding: 1rem;
+  text-align: center;
+  color: #fff;
+  margin: 0.5rem;
+  border-radius: 4px;
+}
+
+.sidebar-loading {
+  background-color: rgba(0, 123, 255, 0.2);
+}
+
+.sidebar-error {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #ff6b6b;
+}
+
+.sidebar-info {
+  background-color: rgba(23, 162, 184, 0.2);
+  color: #4dabf7;
+}
+
+/* Mejoras en los botones de acción */
+.sidebar-button.retry-button {
+  justify-content: center;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  margin: 0.5rem;
+  border-radius: 4px;
+}
+
+.sidebar-button.retry-button:hover {
+  background-color: rgba(255, 107, 107, 0.2);
+}
+
+/* Mejoras en la accesibilidad */
+.sidebar-button:focus {
+  outline: 2px solid #4dabf7;
+  outline-offset: 2px;
+}
+
+.sidebar-button:active {
+  transform: translateY(1px);
+}
+
 .logout-container {
   margin-top: auto;
   padding: 1rem;
