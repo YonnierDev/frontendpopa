@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-// import Sidebar from '../../components/Sidebar';
-import './DashboardPropietario.css';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding, FaPlus, FaTimes } from 'react-icons/fa';
+import { api } from '../../components/api/api';
+import './DashboardPropietario.css';
 
 const DashboardPropietario = () => {
   const [lugares, setLugares] = useState([]);
@@ -21,16 +21,13 @@ const DashboardPropietario = () => {
     carta_pdf: null
   });
 
-  const API_URL = 'https://popnocturna.vercel.app/api';
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   const navigate = useNavigate();
 
   const cargarCategorias = async () => {
     try {
-      const response = await fetch(`${API_URL}/categorias`);
-      if (!response.ok) throw new Error('Error al cargar categorías');
-      const data = await response.json();
-      setCategorias(data);
+      const response = await api.get('/categorias');
+      setCategorias(response.data);
     } catch (error) {
       console.error('Error cargando categorías:', error);
       setError('No se pudieron cargar las categorías');
@@ -78,45 +75,34 @@ const DashboardPropietario = () => {
       return;
     }
 
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('nombre', formData.nombre.trim().toLowerCase());
-      formDataToSend.append('descripcion', formData.descripcion);
-      formDataToSend.append('ubicacion', formData.ubicacion);
-      formDataToSend.append('categoriaid', formData.categoriaid);
-      formDataToSend.append('imagen', formData.imagen);
-      
-      // Agregar fotos adicionales si existen
-      if (formData.fotos_lugar && formData.fotos_lugar.length > 0) {
-        formData.fotos_lugar.forEach(foto => {
-          formDataToSend.append('fotos_lugar', foto);
+    const formDataToSend = new FormData();
+    
+    // Agregar campos al FormData
+    Object.keys(formData).forEach(key => {
+      if (key === 'fotos_lugar' && formData[key].length > 0) {
+        // Para múltiples archivos en fotos_lugar
+        formData[key].forEach(file => {
+          formDataToSend.append('fotos_lugar', file);
         });
+      } else if (formData[key] !== null && formData[key] !== '') {
+        // Para campos simples
+        formDataToSend.append(key, formData[key]);
       }
+    });
 
-      // Agregar PDF si existe
-      if (formData.carta_pdf) {
-        formDataToSend.append('carta_pdf', formData.carta_pdf);
-      }
-
-      const response = await fetch(`${API_URL}/propietario/lugar`, {
-        method: 'POST',
+    try {
+      // Usar la instancia de Axios configurada
+      await api.post('/propietario/lugar', formDataToSend, {
         headers: {
-          'Authorization': `Bearer ${usuario.token}`
-        },
-        body: formDataToSend
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.mensaje || 'Error al crear el lugar');
-      }
-
-      // Actualizar la lista de lugares
+      // Cerrar modal y recargar datos
+      setShowModal(false);
       await cargarDatos();
       
-      // Cerrar el modal y limpiar el formulario
-      setShowModal(false);
+      // Resetear formulario
       setFormData({
         nombre: '',
         descripcion: '',
@@ -127,12 +113,9 @@ const DashboardPropietario = () => {
         carta_pdf: null
       });
       
-      // Mostrar mensaje de éxito
-      alert(data.mensaje || 'Lugar creado con éxito');
-      
     } catch (error) {
-      console.error('Error creando lugar:', error);
-      setError(error.message || 'Error al crear el lugar');
+      console.error('Error al crear lugar:', error);
+      setError(error.response?.data?.message || 'Error al crear el lugar. Por favor, inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -142,70 +125,49 @@ const DashboardPropietario = () => {
     try {
       if (!usuario?.token) {
         navigate('/login');
-        return;
+        return [];
       }
 
-      const response = await fetch(`${API_URL}/propietario/lugares`, {
-        headers: { 
-          'Authorization': `Bearer ${usuario.token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const [lugaresRes, comentariosRes] = await Promise.all([
+        api.get('/propietario/lugares'),
+        api.get('/comentarios')
+      ]);
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          navigate('/login');
-          return;
-        }
-        const errorData = await response.json();
-        throw new Error(errorData.mensaje || 'No se pudo obtener los lugares');
-      }
-
-      const data = await response.json();
-      setLugares(Array.isArray(data) ? data : []);
-      return data;
+      const lugaresData = Array.isArray(lugaresRes.data) ? lugaresRes.data : [];
+      const comentariosData = Array.isArray(comentariosRes.data) ? comentariosRes.data : [];
+      
+      setLugares(lugaresData);
+      setComentarios(comentariosData);
+      
+      return lugaresData;
     } catch (error) {
-      console.error('Error cargando lugares:', error);
-      setError('Error al cargar los lugares: ' + (error.message || 'Error desconocido'));
+      console.error('Error cargando datos:', error);
+      setError('Error al cargar los datos: ' + (error.response?.data?.message || error.message || 'Error desconocido'));
+      if (error.response?.status === 401) {
+        navigate('/login');
+      }
       return [];
-    } finally {
-      setLoading(false);
     }
   };
 
   // Efecto para cargar datos iniciales
   useEffect(() => {
-    // Verificar autenticación primero
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario?.token) {
-      navigate('/login');
-      return;
-    }
-
     const cargarTodo = async () => {
       setLoading(true);
       try {
+        // Verificar autenticación primero
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        if (!usuario?.token) {
+          navigate('/login');
+          return;
+        }
+
         // Cargar categorías
         await cargarCategorias();
         
-        // Cargar lugares
-        const lugaresData = await cargarDatos();
-        setLugares(Array.isArray(lugaresData) ? lugaresData : []);
+        // Cargar lugares y comentarios (ya se cargan juntos en cargarDatos)
+        await cargarDatos();
         
-        // Cargar comentarios
-        try {
-          const response = await fetch(`${API_URL}/comentarios`, {
-            headers: { 'Authorization': `Bearer ${usuario.token}` }
-          });
-          
-          if (response.ok) {
-            const comentariosData = await response.json();
-            setComentarios(Array.isArray(comentariosData) ? comentariosData : []);
-          }
-        } catch (error) {
-          console.error('Error cargando comentarios:', error);
-          setComentarios([]);
-        }
       } catch (error) {
         console.error('Error en carga inicial:', error);
         setError('Error al cargar los datos: ' + (error.message || 'Error desconocido'));

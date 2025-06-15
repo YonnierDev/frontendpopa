@@ -12,26 +12,23 @@ export default defineConfig(({ mode }) => {
 
   // Configuración del proxy solo para desarrollo
   const proxyConfig = isDev ? {
-    '^/api': {
+    '/api': {
       target: apiUrl,
       changeOrigin: true,
       secure: false,
-      ws: true,
-      configure: (proxy, _options) => {
-        proxy.on('error', (err, _req, _res) => {
+      rewrite: (path) => path.replace(/^\/api/, ''),
+      configure: (proxy) => {
+        proxy.on('error', (err) => {
           console.error('Proxy error:', err);
         });
-        proxy.on('proxyReq', (proxyReq, req, _res) => {
-          console.log('Proxying request to:', req.method, req.url);
-          proxyReq.setHeader('Origin', apiUrl);
-          proxyReq.setHeader('Referer', apiUrl);
+        proxy.on('proxyReq', (proxyReq) => {
+          proxyReq.setHeader('Origin', 'http://localhost:3000');
         });
-        proxy.on('proxyRes', (proxyRes, req, _res) => {
-          console.log('Received response:', req.method, req.url, '->', proxyRes.statusCode);
+        proxy.on('proxyRes', (proxyRes) => {
           proxyRes.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000';
-          proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
-          proxyRes.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, Content-Type, Authorization, Accept';
           proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
+          proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
+          proxyRes.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, content-type, Authorization';
         });
       }
     }

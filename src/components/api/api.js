@@ -1,26 +1,70 @@
 import axios from "axios";
 
-export const api = axios.create({
-  baseURL: "https://popnocturna.vercel.app/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});              
+// Configuración de la URL base según el entorno
+const isDevelopment = import.meta.env.DEV;
+const baseURL = isDevelopment 
+  ? '/api'  // Usar el proxy en desarrollo
+  : (import.meta.env.VITE_API_URL || 'https://popnocturna.vercel.app') + '/api';  // Usar la URL completa en producción
 
-// Interceptor para añadir el token a todas las peticiones
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
+console.log('API Base URL:', baseURL);
+
+// Configuración de Axios
+export const api = axios.create({
+  baseURL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    'Access-Control-Allow-Origin': isDevelopment ? 'http://localhost:3000' : undefined,
+    'Access-Control-Allow-Credentials': 'true'
+  },
+  timeout: 10000 // 10 segundos de timeout
 });
 
+// Interceptor para añadir el token a las peticiones
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor para manejar respuestas de error
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Si el error es 401 y no es una solicitud de login
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      // Limpiar credenciales inválidas
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      
+      // Redirigir al login si no estamos ya en esa página
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
 // Función para verificar si la ruta actual es una ruta de la API
-const isApiRoute = (url) => {
-  return url && (url.startsWith('https://popnocturna.vercel.app/api') || url.startsWith('/api'));
+export const isApiRoute = (url) => {
+  if (!url) return false;
+  return url.startsWith('/api') || 
+         (import.meta.env.VITE_API_URL && url.includes(import.meta.env.VITE_API_URL));
 };
 
 // Interceptor para manejar respuestas con errores

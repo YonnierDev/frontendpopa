@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Comentarios.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaStar, FaStarHalfAlt, FaRegStar, FaFlag, FaTimes, FaArrowLeft } from 'react-icons/fa';
+import { FaFlag, FaTimes, FaArrowLeft } from 'react-icons/fa';  // Eliminados los íconos de estrellas
 
 const Comentarios = () => {
   const { id } = useParams();
@@ -184,27 +184,9 @@ const Comentarios = () => {
     return new Date(fechaString).toLocaleDateString('es-ES', opciones);
   };
 
-  // Función para renderizar las estrellas de calificación
-  const renderEstrellas = (puntuacion) => {
-    const estrellas = [];
-    const puntuacionRedondeada = Math.round(puntuacion * 2) / 2; // Redondear al medio punto más cercano
-    
-    for (let i = 1; i <= 5; i++) {
-      if (i <= puntuacionRedondeada) {
-        estrellas.push(<FaStar key={i} className="star-icon filled" />);
-      } else if (i - 0.5 === puntuacionRedondeada) {
-        estrellas.push(<FaStarHalfAlt key={i} className="star-icon filled" />);
-      } else {
-        estrellas.push(<FaRegStar key={i} className="star-icon" />);
-      }
-    }
-    
-    return (
-      <div className="rating-stars">
-        {estrellas}
-        <span className="rating-text">({puntuacion.toFixed(1)})</span>
-      </div>
-    );
+  // Función para renderizar las estrellas de calificación (deshabilitada)
+  const renderEstrellas = () => {
+    return null; // No mostrar estrellas
   };
   
   // Función para obtener las iniciales del nombre
@@ -220,216 +202,104 @@ const Comentarios = () => {
 
   if (cargando) {
     return (
-      <div className="dashboard">
-        <Sidebar lugarId={id} />
-        <div className="content-container">
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }} role="status">
-              <span className="visually-hidden">Cargando...</span>
-            </div>
-            <p className="mt-3 text-muted">Cargando comentarios...</p>
-          </div>
+      <div className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+        <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }} role="status">
+          <span className="visually-hidden">Cargando...</span>
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="dashboard">
-        <Sidebar lugarId={id} />
-        <div className="content-container p-4">
-          <div className="alert alert-danger">
-            <h5 className="alert-heading">Error</h5>
-            <p className="mb-0">{error}</p>
-            {error.includes('sesión') && (
-              <div className="mt-3">
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => window.location.href = '/login'}
-                >
-                  <i className="bi bi-box-arrow-in-right me-2"></i>
-                  Ir al inicio de sesión
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!id) {
-    return (
-      <div className="dashboard">
-        <Sidebar />
-        <div className="content-container p-4">
-          <div className="card shadow-sm">
-            <div className="card-body text-center p-5">
-              <div className="mb-4">
-                <i className="bi bi-chat-square-text text-muted" style={{ fontSize: '4rem' }}></i>
-              </div>
-              <h4 className="mb-3">Selecciona un evento</h4>
-              <p className="text-muted mb-4">Para ver los comentarios, por favor selecciona un evento de la lista.</p>
-              <button 
-                className="btn btn-primary"
-                onClick={() => window.history.back()}
-              >
-                <i className="bi bi-arrow-left me-2"></i>
-                Volver atrás
-              </button>
-            </div>
-          </div>
-        </div>
+        <p className="text-muted mt-2">Cargando comentarios...</p>
       </div>
     );
   }
 
   return (
     <div className="dashboard">
-      <Sidebar lugarId={id} />
-      <div className="content-container p-4">
+      <Sidebar />
+      <div className="content-container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h1 className="mb-1">Comentarios</h1>
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb mb-0">
-                <li className="breadcrumb-item">
-                  <a href="/propietario/dashboard" className="text-decoration-none">Inicio</a>
-                </li>
-                <li className="breadcrumb-item active" aria-current="page">Comentarios</li>
-              </ol>
-            </nav>
-          </div>
-          <button 
-            className="btn btn-outline-secondary"
-            onClick={() => navigate('/propietario/dashboard')}
-          >
-            <FaArrowLeft className="me-2" />
-            Volver al inicio
-          </button>
-        </div>
-        
-        <div className="row g-4">
-          {/* Sidebar de estadísticas */}
-          <div className="col-md-4 col-lg-3">
-            <div className="card shadow-sm h-100">
-              <div className="card-body">
-                <h5 className="card-title mb-4">Resumen de Comentarios</h5>
-                
-                <div className="d-flex align-items-center mb-3">
-                  <div className="icon-circle bg-primary bg-opacity-10 text-primary p-3 rounded-circle me-3">
-                    <i className="bi bi-chat-square-text fs-4"></i>
-                  </div>
-                  <div>
-                    <h6 className="mb-0">Total de comentarios</h6>
-                    <p className="text-muted mb-0">{comentarios.length}</p>
-                  </div>
-                </div>
-                
-                <div className="d-flex align-items-center mb-3">
-                  <div className="icon-circle bg-success bg-opacity-10 text-success p-3 rounded-circle me-3">
-                    <i className="bi bi-check-circle fs-4"></i>
-                  </div>
-                  <div>
-                    <h6 className="mb-0">Aprobados</h6>
-                    <p className="text-muted mb-0">
-                      {comentarios.filter(c => c.estado === 'aprobado').length}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="d-flex align-items-center">
-                  <div className="icon-circle bg-warning bg-opacity-10 text-warning p-3 rounded-circle me-3">
-                    <i className="bi bi-exclamation-triangle fs-4"></i>
-                  </div>
-                  <div>
-                    <h6 className="mb-0">Pendientes</h6>
-                    <p className="text-muted mb-0">
-                      {comentarios.filter(c => c.estado === 'pendiente').length}
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <h1 className="mb-2">
+              <i className="bi bi-chat-square-quote-fill me-2 text-primary"></i>
+              Comentarios
+            </h1>
+            <div className="d-flex align-items-center">
+              <nav aria-label="breadcrumb" className="me-3">
+                <ol className="breadcrumb mb-0">
+                  <li className="breadcrumb-item">
+                    <a href="/propietario/dashboard" className="text-decoration-none">Inicio</a>
+                  </li>
+                  <li className="breadcrumb-item active" aria-current="page">Comentarios</li>
+                </ol>
+              </nav>
+              {comentarios.length > 0 && (
+                <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                  {comentarios.length} {comentarios.length === 1 ? 'comentario' : 'comentarios'}
+                </span>
+              )}
             </div>
           </div>
-          
-          {/* Lista de comentarios */}
-          <div className="col-md-8 col-lg-9">
-            {comentarios.length > 0 ? (
-              <div className="row g-4">
-                {comentarios.map((comentario) => (
-                  <div key={comentario.id} className="col-12">
-                    <div className={`card shadow-sm h-100 border-${comentario.estado === 'aprobado' ? 'success' : comentario.estado === 'pendiente' ? 'warning' : 'danger'}`}>
-                      <div className="card-body">
-                        <div className="d-flex justify-content-between align-items-start mb-3">
-                          <div className="d-flex align-items-center">
-                            <div className="avatar bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                 style={{ width: '48px', height: '48px' }}>
-                              {getIniciales(comentario.usuario?.nombre || '??')}
-                            </div>
-                            <div>
-                              <h5 className="card-title mb-0">{comentario.usuario?.nombre || 'Usuario anónimo'}</h5>
-                              <small className="text-muted">
-                                {new Date(comentario.fecha).toLocaleDateString('es-ES', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </small>
-                            </div>
-                          </div>
-                          <span className={`badge bg-${comentario.estado === 'aprobado' ? 'success' : comentario.estado === 'pendiente' ? 'warning' : 'danger'} text-capitalize`}>
-                            {comentario.estado}
-                          </span>
-                        </div>
-                        
-                        <div className="mb-3">
-                          {comentario.puntuacion && renderEstrellas(comentario.puntuacion)}
-                        </div>
-                        
-                        <p className="card-text">{comentario.contenido}</p>
-                        
-                        {comentario.evento?.nombre && (
-                          <div className="mt-2">
-                            <span className="badge bg-info bg-opacity-10 text-info">
-                              <i className="bi bi-calendar-event me-1"></i>
-                              {comentario.evento.nombre}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="card-footer bg-transparent border-top-0 d-flex justify-content-end">
-                        {comentario.estado !== 'rechazado' && (
-                          <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => {
-                              setComentarioSeleccionado(comentario);
-                              setShowModal(true);
-                            }}
+        </div>
+
+        <div className="comments-container">
+          {comentarios.length > 0 ? (
+            <div className="row g-4">
+              {comentarios.map((comentario) => (
+                <div key={comentario.id} className="col-12 mb-4">
+                  <div className="comment-card">
+                    <div className="card h-100 border-0">
+                      <div className="card-body p-4">
+                        {/* Header del comentario */}
+                        <div className="d-flex align-items-start mb-3">
+                          <div 
+                            className="avatar bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                            style={{ width: '48px', height: '48px', fontSize: '1.1rem', fontWeight: '600' }}
                           >
-                            <FaFlag className="me-1" />
-                            Reportar
-                          </button>
-                        )}
+                            {getIniciales(comentario.usuario?.nombre || 'U')}
+                          </div>
+                          <div className="flex-grow-1">
+                            <div className="d-flex justify-content-between align-items-start">
+                              <div>
+                                <h5 className="card-title mb-0 fw-semibold">
+                                  {comentario.usuario?.nombre || 'Usuario anónimo'}
+                                </h5>
+                                <p className="text-muted small mb-0">
+                                  {formatearFecha(comentario.fecha)}
+                                </p>
+                              </div>
+                              <div className="d-flex align-items-center">
+                                {/* Sección de calificación eliminada */}
+                              </div>
+                            </div>
+                            
+                            <div className="mt-3">
+                              <p className="card-text">{comentario.contenido}</p>
+                            </div>
+                            
+                            <div className="mt-3 d-flex justify-content-end">
+                              <button 
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={() => abrirModalReporte(comentario)}
+                              >
+                                <FaFlag className="me-1" />
+                                Reportar
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-5 my-5">
-                <div className="mb-3">
-                  <i className="bi bi-chat-square-text" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
                 </div>
-                <h4 className="text-muted">No hay comentarios aún</h4>
-                <p className="text-muted">Este lugar no tiene comentarios. Los comentarios aparecerán aquí cuando los usuarios los dejen.</p>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-5 my-5 w-100">
+              <div className="mb-3">
+                <i className="bi bi-chat-square-text" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
               </div>
-            )}
-          </div>
+              <h4 className="text-muted">No hay comentarios aún</h4>
+              <p className="text-muted">Este lugar no tiene comentarios. Los comentarios aparecerán aquí cuando los usuarios los dejen.</p>
+            </div>
+          )}
         </div>
 
         {/* Modal de Reporte */}
@@ -506,10 +376,12 @@ const Comentarios = () => {
                       placeholder="Proporciona más detalles sobre el problema..."
                       value={mensaje}
                       onChange={(e) => setMensaje(e.target.value)}
-                    ></textarea>
-                    <div className="form-text">
-                      Tu reporte será revisado por nuestro equipo de moderación.
-                    </div>
+                    />
+                  </div>
+                  
+                  <div className="alert alert-info small mb-0">
+                    <i className="bi bi-info-circle me-1"></i>
+                    Tu reporte será revisado por nuestro equipo de moderación.
                   </div>
                 </div>
                 

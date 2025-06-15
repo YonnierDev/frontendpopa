@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { api } from "../components/api/api";
 import "./AuthForm.css";
 import logo from "./camm.png";
 
@@ -26,7 +26,7 @@ const Login = ({ setIsAuthenticated }) => {
     }
 
     try {
-      const response = await axios.post("https://popnocturna.vercel.app/api/login", {
+      const response = await api.post("/login", {
         correo,
         contrasena,
       });

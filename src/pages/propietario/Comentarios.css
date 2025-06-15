@@ -7,15 +7,17 @@
 
 .content-container {
   flex: 1;
-  padding: 2rem 2.5rem;
-  margin-left: 250px; /* Ancho del menú lateral */
-  width: calc(100% - 250px); /* Restar el ancho del menú */
+  padding: 2rem 3rem;
+  margin-left: 250px;
+  width: calc(100% - 250px);
   background-color: #f8f9fa;
   transition: all 0.3s ease;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto 0 250px;
 }
 
 /* Ajustes para pantallas más pequeñas */
@@ -72,15 +74,20 @@
 /* Estilos para las tarjetas de comentarios */
 .comments-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin: 1.5rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.8rem;
+  margin: 2rem 0;
   width: 100%;
   max-width: 100%;
   padding: 0;
   box-sizing: border-box;
-  align-items: start;
-  justify-content: center; /* Centrar las tarjetas */
+  align-items: stretch;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Estilos para la tarjeta de comentario individual */
@@ -92,6 +99,35 @@
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.comment-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #4f46e5, #7c3aed);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.comment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: rgba(79, 70, 229, 0.2);
+}
+
+.comment-card:hover::before {
+  opacity: 1;
 }
 
 /* Asegurar que el contenido del comentario se ajuste */
@@ -240,10 +276,14 @@
 }
 
 .rating-value {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #495057;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
   margin-left: 0.5rem;
+  background: #f8f9fa;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
   line-height: 1;
 }
 
