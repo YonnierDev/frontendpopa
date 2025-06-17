@@ -20,25 +20,37 @@ const Login = ({ setIsAuthenticated }) => {
     e.preventDefault();
     setError("");
 
+    // Validación de campos vacíos
     if (!correo || !contrasena) {
       setError("Por favor, completa todos los campos.");
       return;
     }
 
+    // Validación de formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correo)) {
+      setError("Por favor, ingresa un correo electrónico válido.");
+      return;
+    }
+
     try {
       const response = await api.post("/login", {
-        correo,
-        contrasena,
+        correo: correo.trim(),
+        contrasena: contrasena.trim(),
       });
 
       console.log("Respuesta del servidor:", response.data);
 
       const { token, usuario } = response.data;
+      
+      if (!token || !usuario) {
+        throw new Error("Respuesta inválida del servidor");
+      }
+
       const { rolid, nombre, id: usuarioId, correo: correoUsuario } = usuario;
 
-      if (!token || rolid === undefined) {
-        setError("Respuesta inválida del servidor.");
-        return;
+      if (rolid === undefined) {
+        throw new Error("Rol de usuario no definido");
       }
 
       const rolId = parseInt(rolid);
@@ -76,10 +88,29 @@ const Login = ({ setIsAuthenticated }) => {
 
     } catch (err) {
       console.error("Error en login:", err);
-      if (err.response && err.response.status === 401) {
-        setError("Credenciales incorrectas.");
-      } else {
-        setError("Error al iniciar sesión. Intenta más tarde.");
+      
+      // Manejo de errores específicos del backend
+      if (err.response) {
+        // Error 401 con mensaje específico del backend
+        if (err.response.status === 401) {
+          setError(err.response.data.mensaje || "Credenciales incorrectas");
+        } 
+        // Otros códigos de error HTTP
+        else if (err.response.status >= 500) {
+          setError("Error del servidor. Por favor, inténtalo más tarde.");
+        } else if (err.response.status === 429) {
+          setError("Demasiados intentos. Por favor, espera un momento.");
+        } else {
+          setError("Error al procesar la solicitud. Intenta nuevamente.");
+        }
+      } 
+      // Errores de red o de conexión
+      else if (err.request) {
+        setError("No se pudo conectar al servidor. Verifica tu conexión a internet.");
+      } 
+      // Otros errores
+      else {
+        setError("Ocurrió un error inesperado. Por favor, inténtalo de nuevo.");
       }
     }
   };
