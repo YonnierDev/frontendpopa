@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaComment, FaStar, FaClipboardList, 
          FaBell, FaBars, FaSignOutAlt, FaHome, FaTags, FaUserShield, FaUser, FaChevronDown } from 'react-icons/fa';
-import axios from 'axios';
+import { api } from '../../../components/api/api';
 import '../styles/SuperAdminLayout.css';
 
 // Importa todos los componentes
@@ -39,21 +39,18 @@ const SidebarSuper = () => {
           return;
         }
 
-        // Obtener información del admin
-        const adminResponse = await axios.get('https://popnocturna.vercel.app/api/usuario/1', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        // Obtener información del admin desde el token
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        if (!usuario || !usuario.id) {
+          navigate('/login');
+          return;
+        }
+        const adminResponse = await api.get(`/usuario/${usuario.id}`);
         setNombreAdmin(adminResponse.data.nombre || "");
         setApellidoAdmin(adminResponse.data.apellido || "");
 
         // Obtener solicitudes pendientes
-        const solicitudesResponse = await axios.get('https://popnocturna.vercel.app/api/lugares/pendientes', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const solicitudesResponse = await api.get('/lugares/pendientes');
 
         // Actualizar el contador con el número de lugares pendientes
         const numeroSolicitudes = solicitudesResponse.data.lugares ? solicitudesResponse.data.lugares.length : 0;

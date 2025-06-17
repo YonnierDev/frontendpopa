@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaUser, FaEdit, FaTrash, FaSearch, FaFilter, FaPlus, FaCheck, FaTimes } from 'react-icons/fa';
-import axios from 'axios';
+import { api } from '../../components/api/api';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/UsuariosSuper.css';
@@ -35,22 +35,23 @@ const UsuariosSuper = () => {
 
   const fetchRoles = async () => {
     try {
-      const response = await axios.get('https://popnocturna.vercel.app/api/roles');
+      const response = await api.get('/roles');
       setRoles(response.data);
-    } catch (err) {
-      console.error('Error al cargar roles:', err);
-      toast.error('Error al cargar los roles');
+    } catch (error) {
+      console.error('Error al cargar roles:', error);
+      toast.error(error.response?.data?.mensaje || 'Error al cargar los roles');
     }
   };
 
   const fetchUsuarios = async () => {
     try {
-      const response = await axios.get('https://popnocturna.vercel.app/api/usuarios');
+      const response = await api.get('/usuarios');
       setUsuarios(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Error al cargar los usuarios');
-      toast.error('Error al cargar los usuarios');
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
+      setError(error.response?.data?.mensaje || 'Error al cargar los usuarios');
+      toast.error(error.response?.data?.mensaje || 'Error al cargar los usuarios');
       setLoading(false);
     }
   };
@@ -100,12 +101,13 @@ const UsuariosSuper = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`https://popnocturna.vercel.app/api/usuario/${selectedUser.id}`);
+      await api.delete(`/usuario/${selectedUser.id}`);
       toast.success('Usuario eliminado correctamente');
       setShowDeleteModal(false);
       fetchUsuarios();
-    } catch (err) {
-      toast.error('Error al eliminar el usuario');
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      toast.error(error.response?.data?.mensaje || 'Error al eliminar el usuario');
     }
   };
 
@@ -124,28 +126,61 @@ const UsuariosSuper = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedUser && !formData.imagen) {
-      toast.error('La imagen es obligatoria');
+    console.log('Formulario enviado:', formData);
+    
+    // Validaciones básicas
+    if (!formData.nombre || !formData.apellido || !formData.correo || 
+        !formData.fecha_nacimiento || !formData.genero) {
+      console.log('Error: campos requeridos faltantes');
+      toast.error('Todos los campos son obligatorios');
       return;
     }
-    if (!['Masculino', 'Femenino', 'Otro'].includes(formData.genero)) {
-      toast.error('El género debe ser Masculino, Femenino u Otro');
+
+    console.log('Validando correo:', formData.correo);
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.correo)) {
+      console.log('Error: formato correo inválido');
+      toast.error('Formato de correo no válido');
       return;
     }
-    if (!formData.rolid || isNaN(formData.rolid) || Number(formData.rolid) < 1) {
-      toast.error('ID de rol inválido');
+
+    console.log('Validando contraseña:', formData.contrasena);
+    // Validar contraseña (8-20 caracteres, 1 mayúscula, 1 número, 1 símbolo)
+    const contrasenaRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*\-])[A-Za-z\d!@#$%^&*\-]{8,20}$/;
+    if (!contrasenaRegex.test(formData.contrasena)) {
+      console.log('Error: contraseña no cumple requisitos');
+      toast.error('La contraseña debe tener entre 8 y 20 caracteres, incluir al menos una mayúscula, un número y un símbolo');
       return;
     }
-    if (!selectedUser) {
-      const erroresContrasena = validarContrasena(formData.contrasena);
-      if (erroresContrasena.length > 0) {
-        toast.error('Contraseña inválida: ' + erroresContrasena.join(' | '));
-        return;
-      }
+
+    // Validar fecha de nacimiento (edad mínima 16 años)
+    const fechaNacimiento = new Date(formData.fecha_nacimiento);
+    const edadMinima = 16;
+    const fechaMinima = new Date();
+    fechaMinima.setFullYear(fechaMinima.getFullYear() - edadMinima);
+    
+    if (fechaNacimiento > fechaMinima) {
+      console.log('Error: edad mínima no cumplida');
+      toast.error(`La edad mínima permitida es ${edadMinima} años`);
+      return;
     }
+
+    // Validar género
+    const generosValidos = ['Masculino', 'Femenino', 'Otro'];
+    if (!generosValidos.includes(formData.genero)) {
+      console.log('Error: género inválido');
+      toast.error('El género debe ser: Masculino, Femenino u Otro');
+      return;
+    }
+
+    console.log('Validaciones completadas. Iniciando envío...');
     try {
+      let response;
+      
       if (selectedUser) {
-        // Para actualización, enviar los datos como JSON
+        console.log('Modo actualización. Usuario ID:', selectedUser.id);
+        // Para actualización, enviar solo los campos modificados
         const datosActualizados = {
           nombre: formData.nombre,
           apellido: formData.apellido,
@@ -155,43 +190,89 @@ const UsuariosSuper = () => {
           estado: formData.estado,
           rolid: formData.rolid
         };
-
+        
         // Si hay contraseña nueva, incluirla
         if (formData.contrasena) {
           datosActualizados.contrasena = formData.contrasena;
         }
 
-        await axios.put(`https://popnocturna.vercel.app/api/usuario/${selectedUser.id}`, datosActualizados, {
-          headers: { 'Content-Type': 'application/json' }
-        });
-        toast.success('Usuario actualizado correctamente');
+        console.log('Datos a actualizar:', datosActualizados);
+        response = await api.put(`/usuario/${selectedUser.id}`, datosActualizados);
+        console.log('Respuesta de actualización:', response.status, response.data);
+        
+        if (response.status === 200) {
+          toast.success('Usuario actualizado correctamente');
+        } else if (response.status === 400) {
+          toast.error(response.data.mensaje || 'Error de validación');
+          console.error('Respuesta de error:', response.data);
+        } else {
+          toast.error('Error al actualizar el usuario');
+          console.error('Error desconocido:', response.data);
+        }
       } else {
-        const data = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-          data.append(key, value);
+        // Para creación, usar FormData para manejar la imagen
+        const formDataToSend = new FormData();
+        formDataToSend.append('nombre', formData.nombre);
+        formDataToSend.append('apellido', formData.apellido);
+        formDataToSend.append('correo', formData.correo);
+        formDataToSend.append('contrasena', formData.contrasena);
+        formDataToSend.append('fecha_nacimiento', formData.fecha_nacimiento);
+        formDataToSend.append('genero', formData.genero);
+        formDataToSend.append('rolid', formData.rolid || 3); // Rol por defecto 3 (propietario)
+        if (formData.imagen) {
+          formDataToSend.append('imagen', formData.imagen);
+        }
+
+        console.log('Datos a enviar:', {
+          nombre: formData.nombre,
+          apellido: formData.apellido,
+          correo: formData.correo,
+          contrasena: formData.contrasena,
+          fecha_nacimiento: formData.fecha_nacimiento,
+          genero: formData.genero,
+          rolid: formData.rolid,
+          imagen: formData.imagen ? formData.imagen.name : 'Sin imagen'
         });
-        await axios.post('https://popnocturna.vercel.app/api/usuario', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        toast.success('Usuario creado correctamente');
+
+        response = await api.post('/usuario', formDataToSend);
+        console.log('Respuesta de creación:', response.status, response.data);
+        
+        if (response.status === 201) {
+          toast.success('Usuario creado correctamente');
+        } else if (response.status === 400) {
+          toast.error(response.data.mensaje || 'Error de validación');
+          console.error('Respuesta de error:', response.data);
+        } else {
+          toast.error('Error al crear el usuario');
+          console.error('Error desconocido:', response.data);
+        }
       }
+      
       setShowModal(false);
       setPreviewImg(null);
       fetchUsuarios();
-    } catch (err) {
-      toast.error('Error al guardar el usuario');
+    } catch (error) {
+      console.error('Error al guardar el usuario:', error);
+      if (error.response?.data?.mensaje) {
+        toast.error(error.response.data.mensaje);
+      } else if (error.response?.status === 400) {
+        toast.error('Error de validación');
+      } else {
+        toast.error('Error al guardar el usuario');
+      }
     }
   };
 
   const handleEstadoChange = async (id, estadoActual) => {
     try {
-      await axios.patch(`https://popnocturna.vercel.app/api/usuario/estado/${id}`, {
+      await api.patch(`/usuario/estado/${id}`, {
         estado: !estadoActual
       });
       toast.success(`Usuario ${!estadoActual ? 'activado' : 'desactivado'} correctamente`);
       fetchUsuarios();
-    } catch (err) {
-      toast.error('Error al cambiar el estado del usuario');
+    } catch (error) {
+      console.error('Error al cambiar estado:', error);
+      toast.error(error.response?.data?.mensaje || 'Error al cambiar el estado del usuario');
     }
   };
 
