@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+                                                        import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Lugares.css';
 import { FaPlus, FaEdit, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Sidebar from '../../components/Sidebar';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Lugares = () => {
   const navigate = useNavigate();
@@ -11,6 +13,23 @@ const Lugares = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  
+  // Verificar autenticación al montar el componente
+  useEffect(() => {
+    const verificarAutenticacion = () => {
+      const token = localStorage.getItem('token');
+      const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+      
+      if (!token || !usuario) {
+        toast.error('Por favor inicia sesión para continuar');
+        navigate('/login', { replace: true });
+        return false;
+      }
+      return true;
+    };
+    
+    verificarAutenticacion();
+  }, [navigate]);
   const [formData, setFormData] = useState({
     categoriaid: '',
     nombre: '',
@@ -24,9 +43,15 @@ const Lugares = () => {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('No se encontró token de autenticación');
+          return;
+        }
+        
+        const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
         if (!usuario) {
-          navigate('/login');
+          console.log('No se encontró información del usuario');
           return;
         }
 
@@ -179,49 +204,12 @@ const Lugares = () => {
       <Sidebar />
       <div className="lugares-content">
         <div className="lugares-header">
-          <h2>Mis Lugares</h2>
           <button 
             className="btn-nuevo-lugar"
             onClick={() => setShowModal(true)}
           >
             <FaPlus /> Nuevo Lugar
           </button>
-        </div>
-
-        <div className="lugares-grid">
-          {lugares.map((lugar) => (
-            <div key={lugar.id} className="lugar-card">
-              <div className="lugar-imagen">
-                {lugar.imagen ? (
-                  <img 
-                    src={`https://popnocturna.vercel.app/uploads/${lugar.imagen}`} 
-                    alt={lugar.nombre} 
-                  />
-                ) : (
-                  <div className="sin-imagen">
-                    <FaMapMarkerAlt size={40} />
-                  </div>
-                )}
-              </div>
-              <div className="lugar-info">
-                <h3>{lugar.nombre}</h3>
-                <p>{lugar.descripcion}</p>
-                <div className="lugar-estado">
-                  Estado: {lugar.estado === 'activo' ? (
-                    <span className="activo"><FaCheckCircle /> Activo</span>
-                  ) : (
-                    <span className="inactivo"><FaTimesCircle /> Inactivo</span>
-                  )}
-                </div>
-                <button 
-                  className="btn-editar"
-                  onClick={() => navigate(`/propietario/lugar/${lugar.id}`)}
-                >
-                  <FaEdit /> Editar
-                </button>
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* Modal para crear nuevo lugar */}

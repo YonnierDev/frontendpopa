@@ -2,6 +2,7 @@
   display: flex;
   min-height: 100vh;
   background-color: #f8f9fa;
+  padding-top: 4rem; /* Añadir espacio para el navbar */
 }
 
 .content-container {

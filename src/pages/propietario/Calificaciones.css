@@ -1,103 +1,145 @@
 /* CONTENEDOR GENERAL */
 .app-container {
-  margin-left: 250px;
-  min-height: 100vh;
-  background-color: #ffffff;
-}
-
-/* HEADER FIJO */
-.header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 250px;
-  height: 70px;
-  background-color: #000000;
-  padding: 0 30px;
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  z-index: 100;
+  min-height: 100vh;
+  background-color: #f5f7fa;
 }
 
-/* CONTENT PRINCIPAL */
+/* CONTENIDO PRINCIPAL */
 .main-content {
-  padding: 120px 30px 60px;
+  flex: 1;
   width: 100%;
+  max-width: 1800px;
+  background: white;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 40px 40px 40px 30px;
+  margin: 20px 0 20px 0;
+  transition: all 0.3s ease;
 }
 
-/* TÍTULO */
+/* ENCABEZADO */
+.calificaciones-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eaeef2;
+}
+
 h2 {
-  font-size: 34px;
-  margin-bottom: 35px;
+  font-size: 28px;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ESTADÍSTICAS */
+.estadisticas {
+  display: flex;
+  gap: 30px;
+  margin: 25px 0;
+}
+
+.estadistica-item {
+  background: #f8fafc;
   padding: 20px;
-  background-color: #000000;
   border-radius: 10px;
   text-align: center;
-  color: #171817;
+  flex: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.estadistica-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.estadistica-valor {
+  font-size: 32px;
+  font-weight: 700;
+  color: #4a5568;
+  margin: 10px 0 5px;
+}
+
+.estadistica-label {
+  color: #718096;
+  font-size: 14px;
   font-weight: 600;
-}
-
-/* TEXTO DE PROMEDIO */
-.promedio-texto {
-  font-size: 20px;
-  color: #000000;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.total-calificaciones {
-  font-size: 18px;
-  color: #000000;
-  font-weight: bold;
-  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* TABLA DE CALIFICACIONES */
 .tabla-calificaciones {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.tabla-calificaciones th,
-.tabla-calificaciones td {
-  border: 1px solid #000000;
-  padding: 12px;
-  font-weight: bold;
-  color: #000000;
-  vertical-align: middle;
-  text-align: center;
-  background-color: #ffffff;
+.tabla-calificaciones thead {
+  background: #4a5568;
 }
 
 .tabla-calificaciones th {
-  background-color: #000000;
-  color: #ffffff;
+  color: white;
+  font-weight: 600;
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* BOTONES DENTRO DE LA TABLA */
-.tabla-calificaciones button {
-  background-color: #000000;
-  color: #ffffff;
-  border: 1px solid #000000;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-weight: bold;
+.tabla-calificaciones td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #edf2f7;
+  color: #4a5568;
+  vertical-align: middle;
+}
+
+.tabla-calificaciones tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-calificaciones tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* BOTONES */
+.btn-detalle {
+  background: #4a5568;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.tabla-calificaciones button:hover {
-  background-color: #222222;
+.btn-detalle:hover {
+  background: #2d3748;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* ESTRELLAS DE PUNTUACIÓN */
 .estrellas {
-  color: #ffcc00;
-  font-size: 1.2em;
-  vertical-align: middle;
-  margin-right: 4px;
+  color: #f6ad55;
+  font-size: 1.1em;
+  letter-spacing: 2px;
 }
 
 /* MODAL OVERLAY */

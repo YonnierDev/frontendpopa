@@ -14,10 +14,18 @@ const Calificaciones = () => {
 
   const fetchCalificaciones = async () => {
     try {
-      const response = await axios.get("https://popnocturna.vercel.app/api/calificaciones");
+      const token = localStorage.getItem("token"); // o donde guardes el token
+
+      const response = await axios.get(
+        "https://popnocturna.vercel.app/api/calificaciones",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
       console.log("Respuesta del backend:", response.data);
-      
-      // Los datos están en response.data.datos.calificaciones
       const data = response.data?.datos?.calificaciones || [];
       setCalificaciones(data);
     } catch (error) {
@@ -31,25 +39,29 @@ const Calificaciones = () => {
     const nuevoEstado = !estadoActual;
 
     try {
-      // Usar la ruta correcta para cambiar el estado
-      await axios.patch(`https://popnocturna.vercel.app/api/calificacion/estado/${id}`, {
-        estado: nuevoEstado,
-      });
+      const token = localStorage.getItem("token");
 
-      // Actualizar el estado local
+      await axios.patch(
+        `https://popnocturna.vercel.app/api/calificacion/estado/${id}`,
+        { estado: nuevoEstado },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
       setCalificaciones(prev =>
-        prev.map(calificacion => 
+        prev.map(calificacion =>
           calificacion.id === id ? { ...calificacion, estado: nuevoEstado } : calificacion
         )
       );
 
-      // Mostrar mensaje de éxito
       setMensaje(`Estado de la calificación actualizado a ${nuevoEstado ? "Activo" : "Inactivo"}`);
       setTimeout(() => setMensaje(""), 3000);
     } catch (error) {
       console.error("Error al cambiar estado de la calificación:", error);
-      
-      // Mostrar mensaje específico según el código de error
+
       if (error.response?.status === 403) {
         setMensaje("Solo los administradores pueden cambiar el estado de las calificaciones");
       } else if (error.response?.status === 404) {
@@ -57,7 +69,7 @@ const Calificaciones = () => {
       } else {
         setMensaje("Error al cambiar el estado de la calificación");
       }
-      
+
       setTimeout(() => setMensaje(""), 3000);
     }
   };

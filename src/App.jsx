@@ -56,23 +56,69 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [rol, setRol] = useState(null);
 
-  useEffect(() => {
+  // Función para verificar la autenticación
+  const verificarAutenticacion = () => {
     const token = localStorage.getItem("token");
     const storedUsuario = localStorage.getItem("usuario");
-
+    
     if (token && storedUsuario) {
-      setIsAuthenticated(true);
       try {
         const usuario = JSON.parse(storedUsuario);
-        setRol(usuario?.rol);
+        // Solo actualizar si los valores son diferentes
+        setIsAuthenticated(prev => {
+          if (prev !== true) return true;
+          return prev;
+        });
+        setRol(prevRol => {
+          if (prevRol !== usuario?.rol) return usuario?.rol;
+          return prevRol;
+        });
       } catch (err) {
         console.error("Error al parsear el usuario:", err);
+        setIsAuthenticated(false);
         setRol(null);
       }
     } else {
       setIsAuthenticated(false);
       setRol(null);
     }
+  };
+
+  // Verificar autenticación al montar
+  useEffect(() => {
+    verificarAutenticacion();
+    
+    // Escuchar cambios en el localStorage
+    const handleStorageChange = () => {
+      verificarAutenticacion();
+    };
+
+    // Manejar evento de autenticación no autorizada
+    const handleUnauthorized = () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      setIsAuthenticated(false);
+      setRol(null);
+      
+      // Guardar la ruta actual para redirigir después del login
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login') {
+        localStorage.setItem('redirectAfterLogin', currentPath);
+      }
+      
+      // Redirigir al login si no estamos ya ahí
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('unauthorized', handleUnauthorized);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('unauthorized', handleUnauthorized);
+    };
   }, []);
 
   return (

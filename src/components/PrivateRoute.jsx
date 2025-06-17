@@ -1,25 +1,51 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 
-const PrivateRoute = ({ isAuthenticated, allowedRoles }) => {
-  // Validamos si hay sesión activa y datos del usuario en localStorage
-  const storedUser = localStorage.getItem("usuario");
-
-  // Si no hay sesión o usuario, redirige al login
-  if (!isAuthenticated || !storedUser) {
-    return <Navigate to="/login" />;
+const PrivateRoute = ({ isAuthenticated, allowedRoles = [] }) => {
+  const location = useLocation();
+  const token = localStorage.getItem("token");
+  const storedUsuario = localStorage.getItem("usuario");
+  
+  // Si no hay token o usuario, redirigir al login
+  if (!token || !storedUsuario) {
+    // Guardar la ruta actual para redirigir después del login
+    localStorage.setItem('redirectAfterLogin', location.pathname);
+    return <Navigate to="/login" replace />;
   }
 
-  // Obtenemos el rol del usuario desde el localStorage
-  const usuario = JSON.parse(storedUser);
-  const rolUsuario = usuario?.rol;
+  try {
+    const usuario = JSON.parse(storedUsuario);
+    
+    // Verificar si el usuario tiene un rol permitido
+    const tieneRolPermitido = allowedRoles.length === 0 || 
+      (usuario?.rol && allowedRoles.includes(usuario.rol));
+    
+    if (!tieneRolPermitido) {
+      // Si el usuario no tiene un rol permitido, redirigir al dashboard según su rol
+      let redirectPath = '/login';
+      switch(usuario?.rol) {
+        case 1: // Super Admin
+          redirectPath = '/superadmin/dashboard';
+          break;
+        case 2: // Admin
+          redirectPath = '/admip/dashboard';
+          break;
+        case 3: // Propietario
+          redirectPath = '/propietario/dashboard';
+          break;
+        default:
+          break;
+      }
+      return <Navigate to={redirectPath} replace />;
+    }
 
-  // Si el rol no está permitido, redirige al login
-  if (!allowedRoles.includes(rolUsuario)) {
-    return <Navigate to="/login" />;
+    // Si está autenticado y tiene un rol permitido, renderizar el contenido
+    return <Outlet />;
+  } catch (error) {
+    console.error('Error al verificar autenticación:', error);
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    return <Navigate to="/login" replace />;
   }
-
-  // Si todo va bien, renderiza la ruta protegida
-  return <Outlet />;
 };
 
 export default PrivateRoute;

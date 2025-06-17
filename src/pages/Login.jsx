@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { api } from "../components/api/api";
 import "./AuthForm.css";
 import logo from "./camm.png";
 
@@ -18,6 +18,7 @@ const Login = ({ setIsAuthenticated }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (!correo || !contrasena) {
       setError("Por favor, completa todos los campos.");
@@ -25,7 +26,7 @@ const Login = ({ setIsAuthenticated }) => {
     }
 
     try {
-      const response = await axios.post("https://popnocturna.vercel.app/api/login", {
+      const response = await api.post("/login", {
         correo,
         contrasena,
       });
@@ -42,31 +43,35 @@ const Login = ({ setIsAuthenticated }) => {
 
       const rolId = parseInt(rolid);
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("usuario", JSON.stringify({
-        rol: rolId,
-        nombre,
-        token,
-        id: usuarioId,
-        correo: correoUsuario
-      }));
+      try {
+        // Guardar en localStorage
+        localStorage.setItem("token", token);
+        localStorage.setItem("usuario", JSON.stringify({
+          rol: rolId,
+          nombre,
+          token,
+          id: usuarioId,
+          correo: correoUsuario
+        }));
 
-      setIsAuthenticated(true);
-      setError("");
+        // Actualizar estado si existe el setter
+        if (typeof setIsAuthenticated === 'function') {
+          setIsAuthenticated(true);
+        }
 
-      switch (rolId) {
-        case 1:
-          navigate("/superadmin/dashboard");
-          break;
-        case 2:
-          navigate("/admip/dashboard");
-          break;
-        case 3:
-          navigate("/propietario/dashboard");
-          break;
-        default:
-          navigate("/login");
-          break;
+        // Navegar según el rol
+        const targetPath = {
+          1: "/superadmin/dashboard",
+          2: "/admip/dashboard",
+          3: "/propietario/dashboard"
+        }[rolId] || "/login";
+
+        // Forzar recarga para asegurar que todos los estados se actualicen
+        window.location.href = targetPath;
+
+      } catch (storageError) {
+        console.error("Error al guardar en localStorage:", storageError);
+        setError("Error al guardar la sesión. Intenta nuevamente.");
       }
 
     } catch (err) {
