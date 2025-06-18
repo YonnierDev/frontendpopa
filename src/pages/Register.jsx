@@ -8,10 +8,10 @@ const Register = () => {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [correo, setCorreo] = useState("");
-  const [fecha_nacimiento, setFecha_nacimiento] = useState("");
   const [contrasena, setContrasena] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [genero, setGenero] = useState("");
-
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -28,21 +28,26 @@ const Register = () => {
         nombre,
         apellido,
         correo,
-        fecha_nacimiento,
         contrasena,
-        genero, // Ahora envía "Masculino", "Femenino" o "Otro"
-        rolid: 4, // rol fijo predeterminado
+        fecha_nacimiento: fechaNacimiento,
+        genero,
+        rolid: 4 // Propietario
       });
 
-      alert("¡Registrado exitosamente! Por favor, revisa tu correo para verificar tu cuenta.");
-      console.log("Respuesta:", response.data);
+      if (response.data.codigo === "REGISTRO_EXITOSO") {
+        alert("Registro exitoso");
+        navigate("/login");
+        console.log("Respuesta:", response.data);
 
-      // Limpiar campos después del registro
-      setNombre("");
-      setApellido("");
-      setCorreo("");
-      setFecha_nacimiento("");
-      setContrasena("");
+        // Limpiar campos después del registro
+        setNombre("");
+        setApellido("");
+        setCorreo("");
+        setContrasena("");
+        setFechaNacimiento("");
+        setGenero("");
+      }
+      setFechaNacimiento("");
       setGenero("");
 
       navigate("/usuarios"); 
@@ -63,51 +68,89 @@ const Register = () => {
         <h2 className="title">Registro</h2>
 
         <form onSubmit={handleRegister}>
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Apellido"
-            value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Correo"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            required
-          />
-          <input
-            type="date"
-            placeholder="Fecha de nacimiento"
-            value={fecha_nacimiento}
-            onChange={(e) => setFecha_nacimiento(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
-            required
-          />
-          <select
-            value={genero}
-            onChange={(e) => setGenero(e.target.value)}
-            required
-          >
-            <option value="">Selecciona tu género</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
-          </select>
+          <div className="input-group">
+            <label htmlFor="nombre">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="apellido">Apellido</label>
+            <input
+              type="text"
+              id="apellido"
+              value={apellido}
+              onChange={(e) => setApellido(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="correo">Correo Electrónico</label>
+            <input
+              type="email"
+              id="correo"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="contrasena">Contraseña</label>
+            <input
+              type="password"
+              id="contrasena"
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+              required
+            />
+            <small className="password-requirements">
+              La contraseña debe tener:
+              <br />
+              - Entre 8 y 20 caracteres
+              <br />
+              - Al menos una letra mayúscula
+              <br />
+              - Al menos una letra minúscula
+              <br />
+              - Al menos un número
+              <br />
+              - Al menos un símbolo
+            </small>
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
+            <input
+              type="date"
+              id="fechaNacimiento"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+              required
+              max={new Date().toISOString().split("T")[0]}
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="genero">Género</label>
+            <select
+              id="genero"
+              value={genero}
+              onChange={(e) => setGenero(e.target.value)}
+              required
+            >
+              <option value="">Selecciona tu género</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
 
           <button type="submit">Registrarse</button>
         </form>

@@ -22,6 +22,7 @@ const LugaresSuper = () => {
   });
   const [imagen, setImagen] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
+const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descripcion: '' });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -218,42 +219,58 @@ const LugaresSuper = () => {
     }));
   };
 
-  const handleToggleEstado = async (id, estadoActual) => {
+  const handleToggleEstado = async (lugar) => {
+    const nuevoEstado = !lugar.estado;
+
+    // Optimistic UI update for a faster user experience
+    const originalLugares = [...lugares];
+    setLugares(prevLugares =>
+      prevLugares.map(l =>
+        l.id === lugar.id ? { ...l, estado: nuevoEstado } : l
+      )
+    );
+
     try {
       const token = localStorage.getItem('token');
-      console.log('Cambiando estado del lugar:', id, 'de', estadoActual, 'a', !estadoActual);
+      await axios.patch(`https://popnocturna.vercel.app/api/lugar/${lugar.id}/estado`,
+        { estado: nuevoEstado },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      toast.success(`Estado del lugar actualizado a ${nuevoEstado ? 'Activo' : 'Inactivo'}.`);
+    } catch (error) {
+      // Revert the state on error
+      setLugares(originalLugares);
+      console.error('Error al actualizar el estado:', error.response?.data?.mensaje || error.message);
+      toast.error('Error al actualizar el estado del lugar.');
+    }
+  };
 
-      const response = await axios.patch(`https://popnocturna.vercel.app/api/lugar/estado/${id}`, {
-        estado: !estadoActual
+
+
+  const handleToggleAprobacion = async (lugar, aprobacion) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.patch(`https://popnocturna.vercel.app/api/lugar/aprobacion/${lugar.id}`, {
+        aprobacion: aprobacion
       }, {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
-
-      console.log('Respuesta cambio estado:', response.data);
-
-      // Actualizar el estado local con la respuesta del servidor
       if (response.data && response.data.lugar) {
-        const lugarActualizado = response.data.lugar;
-        console.log('Lugar actualizado:', lugarActualizado);
-        setLugares(prevLugares => {
-          const newLugares = prevLugares.map(lugar => 
-            lugar.id === id ? lugarActualizado : lugar
-          );
-          console.log('Nueva lista de lugares:', newLugares);
-          return newLugares;
-        });
+        setLugares(prevLugares => prevLugares.map(lugar =>
+          lugar.id === lugar.id ? { ...lugar, aprobacion: aprobacion } : lugar
+        ));
+        toast.success(aprobacion ? 'Lugar aprobado' : 'Lugar marcado como pendiente');
       }
-
-      toast.success('Estado del lugar actualizado');
-      // Forzar una recarga completa
-      await fetchLugares();
     } catch (error) {
-      console.error('Error completo:', error);
-      console.error('Error response:', error.response);
-      toast.error(error.response?.data?.mensaje || 'Error al cambiar el estado del lugar');
+      toast.error('No se pudo cambiar la aprobación');
     }
   };
 
@@ -263,7 +280,7 @@ const LugaresSuper = () => {
   return (
     <div className="lugares-container">
       <div className="lugares-header">
-        <h1 className="lugares-title">Gestión de Lugares</h1>
+        <h1 className="lugares-title" title="Gestión de Lugares">Gestión de Lugares</h1>
         <div className="lugares-header-actions">
           <button 
             className="lugares-btn lugares-btn-primary"
@@ -282,8 +299,18 @@ const LugaresSuper = () => {
               setPreviewUrl('');
               setShowModal(true);
             }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '0.75rem 1.5rem',
+              fontSize: '1rem',
+              fontWeight: '600',
+              borderRadius: '8px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
           >
-            Nuevo Lugar
+            <span>+</span> Nuevo Lugar
           </button>
         </div>
       </div>
@@ -302,18 +329,19 @@ const LugaresSuper = () => {
       </div>
 
       <div className="lugares-table-container">
-        <table className="lugares-table">
-          <thead>
-            <tr>
-              <th>Imagen</th>
-              <th>Nombre</th>
-              <th>Ubicación</th>
-              <th>Categoría</th>
-              <th>Estado</th>
-              <th>Aprobación</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+        <div className="lugares-table-wrapper">
+          <table className="lugares-table">
+            <thead>
+              <tr>
+                <th style={{ width: '70px', minWidth: '64px', maxWidth: '80px', verticalAlign: 'middle', padding: '12px 8px' }}>Imagen</th>
+                <th>Nombre</th>
+                <th>Ubicación</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+                <th>Aprobación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
           <tbody>
             {filteredLugares.length === 0 ? (
               <tr>
@@ -324,73 +352,140 @@ const LugaresSuper = () => {
             ) : (
               filteredLugares.map(lugar => (
                 <tr key={lugar.id}>
-                  <td>
-                    <div className="lugar-imagen">
-                      {lugar.imagen ? (
-                        <img src={lugar.imagen} alt={lugar.nombre} />
-                      ) : (
-                        <div className="no-imagen">
-                          <FaImage />
-                        </div>
-                      )}
+                  <td style={{ width: '70px', minWidth: '64px', maxWidth: '80px', verticalAlign: 'middle', textAlign: 'center', padding: '12px 8px' }}>
+  <div className="lugar-imagen">
+    {lugar.imagen ? (
+      <img 
+        src={lugar.imagen} 
+        alt={lugar.nombre}
+        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#fff', borderRadius: '6px', cursor: 'pointer' }}
+        onClick={() => setImagenModal({ visible: true, url: lugar.imagen, descripcion: lugar.descripcion })}
+        onError={(e) => {
+          e.target.style.display = 'none';
+          const fallback = document.createElement('div');
+          fallback.className = 'no-imagen';
+          fallback.innerHTML = '<svg width="28" height="28" fill="#adb5bd"><rect width="100%" height="100%" fill="#f8f9fa"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="18">?</text></svg>';
+          e.target.parentNode.appendChild(fallback);
+        }}
+      />
+    ) : (
+      <div className="no-imagen">
+        <FaImage />
+      </div>
+    )}
+  </div>
+</td>
+                  <td className="lugar-nombre">
+  <div className="lugar-info">
+    <h3 title={lugar.nombre}>{lugar.nombre}</h3>
+    <p title={lugar.descripcion}>{lugar.descripcion}</p>
+  </div>
+</td>
+                  <td style={{ minWidth: '150px' }}>
+                    <div className="lugar-info" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <FaMapMarkerAlt className="lugar-icon" style={{ color: '#6c757d', flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.9rem' }}>{lugar.ubicacion}</span>
                     </div>
                   </td>
-                  <td>
-                    <div className="lugar-info">
-                      <h3>{lugar.nombre}</h3>
-                      <p>{lugar.descripcion}</p>
-                    </div>
+                  <td className="lugar-categoria" style={{ minWidth: '120px' }}>
+                    <span style={{
+                      display: 'inline-block',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '50px',
+                      backgroundColor: '#e9ecef',
+                      color: '#495057',
+                      fontSize: '0.85rem',
+                      textAlign: 'center'
+                    }}>
+                      {lugar.categoria?.tipo || 'Sin categoría'}
+                    </span>
                   </td>
-                  <td>
-                    <div className="lugar-info">
-                      <FaMapMarkerAlt className="lugar-icon" />
-                      {lugar.ubicacion}
-                    </div>
-                  </td>
-                  <td>{lugar.categoria?.tipo || 'Sin categoría'}</td>
-                  <td>
-                    <div className="lugar-status-column">
-                      <span className={`lugar-status-badge ${lugar.estado ? 'active' : 'inactive'}`}>
+                  <td style={{ minWidth: '150px' }}>
+                    <div className="lugar-status-column" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span 
+                        className={`lugar-status-badge ${lugar.estado ? 'active' : 'inactive'}`}
+                        title={lugar.estado ? 'Activo' : 'Inactivo'}
+                      >
                         {lugar.estado ? 'Activo' : 'Inactivo'}
                       </span>
-                      <label className="lugar-switch">
+                      <label className="lugar-switch" style={{ margin: 0 }}>
                         <input
-                          type="checkbox"
-                          checked={lugar.estado}
-                          onChange={() => handleToggleEstado(lugar.id, lugar.estado)}
-                        />
+                        type="checkbox"
+                        checked={lugar.estado}
+                        onChange={() => handleToggleEstado(lugar)}
+                        aria-label={`Cambiar estado a ${lugar.estado ? 'inactivo' : 'activo'}`}
+                      />  
                         <span className="lugar-slider"></span>
                       </label>
                     </div>
                   </td>
                   <td>
-                    <span className={`lugar-status-badge ${lugar.aprobacion ? 'active' : 'inactive'}`}>
-                      {lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
-                    </span>
-                  </td>
-                  <td>
+  <div className="lugar-aprobacion-btns">
+    <span 
+      className={`lugar-status-badge ${lugar.aprobacion ? 'active' : 'inactive'}`}
+      title={lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
+      style={{ minWidth: 70 }}
+    >
+      {lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
+    </span>
+    <button
+      className="lugar-aprobacion-btn aprobar"
+      title="Aprobar"
+      style={{ opacity: lugar.aprobacion ? 0.5 : 1 }}
+      disabled={lugar.aprobacion}
+      onClick={() => handleToggleAprobacion(lugar.id, true)}
+    >
+      <FaCheck />
+    </button>
+    <button
+      className="lugar-aprobacion-btn noaprobar"
+      title="Rechazar"
+      style={{ opacity: !lugar.aprobacion ? 0.5 : 1 }}
+      disabled={!lugar.aprobacion}
+      onClick={() => handleToggleAprobacion(lugar.id, false)}
+    >
+      <FaTimes />
+    </button>
+  </div>
+</td>
+                  <td style={{ minWidth: '180px' }}>
                     <div className="lugares-actions">
                       <button
                         className="lugares-btn lugares-btn-secondary"
                         onClick={() => handleEdit(lugar)}
-                        data-tooltip="Editar lugar"
+                        title="Editar lugar"
+                        style={{
+                          padding: '0.4rem 0.8rem',
+                          fontSize: '0.85rem',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px'
+                        }}
                       >
-                        <FaEdit />
+                        <FaEdit /> <span>Editar</span>
                       </button>
                       <button
                         className="lugares-btn lugares-btn-danger"
                         onClick={() => handleDelete(lugar.id)}
-                        data-tooltip="Eliminar lugar"
+                        title="Eliminar lugar"
+                        style={{
+                          padding: '0.4rem 0.8rem',
+                          fontSize: '0.85rem',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px'
+                        }}
                       >
-                        <FaTrash />
+                        <FaTrash /> <span>Eliminar</span>
                       </button>
                     </div>
                   </td>
                 </tr>
               ))
             )}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {showModal && (
@@ -398,92 +493,94 @@ const LugaresSuper = () => {
           <div className="lugares-modal-content">
             <h2>{selectedLugar ? 'Editar Lugar' : 'Nuevo Lugar'}</h2>
             <form onSubmit={handleSubmit}>
-              <div className="lugares-form-group">
-                <label htmlFor="nombre">Nombre</label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="lugares-form-group">
-                <label htmlFor="descripcion">Descripción</label>
-                <textarea
-                  id="descripcion"
-                  name="descripcion"
-                  value={formData.descripcion}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="lugares-form-group">
-                <label htmlFor="ubicacion">Ubicación</label>
-                <input
-                  type="text"
-                  id="ubicacion"
-                  name="ubicacion"
-                  value={formData.ubicacion}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="lugares-form-group">
-                <label htmlFor="categoriaid">Categoría</label>
-                <select
-                  id="categoriaid"
-                  name="categoriaid"
-                  value={formData.categoriaid}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Seleccione una categoría</option>
-                  <option value="13">Canchas Sintéticas</option>
-                  <option value="14">Discotecas</option>
-                  <option value="15">Restaurantes</option>
-                  <option value="16">Comidas Rápidas</option>
-                  <option value="19">Acampar-Glamplig</option>
-                  <option value="22">Bares</option>
-                </select>
-              </div>
-              <div className="lugares-form-group">
-                <label htmlFor="imagen">Imagen</label>
-                <input
-                  type="file"
-                  id="imagen"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  required={!selectedLugar}
-                />
-                {previewUrl && (
-                  <div className="lugares-image-preview">
-                    <img src={previewUrl} alt="Preview" />
-                  </div>
-                )}
-              </div>
-              <div className="lugares-form-group">
-                <label>
+              <div className="form-scrollable">
+                <div className="lugares-form-group">
+                  <label htmlFor="nombre">Nombre</label>
                   <input
-                    type="checkbox"
-                    name="estado"
-                    checked={formData.estado}
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value={formData.nombre}
                     onChange={handleChange}
+                    required
                   />
-                  Activo
-                </label>
-              </div>
-              <div className="lugares-form-group">
-                <label>
+                </div>
+                <div className="lugares-form-group">
+                  <label htmlFor="descripcion">Descripción</label>
+                  <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    value={formData.descripcion}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="lugares-form-group">
+                  <label htmlFor="ubicacion">Ubicación</label>
                   <input
-                    type="checkbox"
-                    name="aprobacion"
-                    checked={formData.aprobacion}
+                    type="text"
+                    id="ubicacion"
+                    name="ubicacion"
+                    value={formData.ubicacion}
                     onChange={handleChange}
+                    required
                   />
-                  Aprobado
-                </label>
+                </div>
+                <div className="lugares-form-group">
+                  <label htmlFor="categoriaid">Categoría</label>
+                  <select
+                    id="categoriaid"
+                    name="categoriaid"
+                    value={formData.categoriaid}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccione una categoría</option>
+                    <option value="13">Canchas Sintéticas</option>
+                    <option value="14">Discotecas</option>
+                    <option value="15">Restaurantes</option>
+                    <option value="16">Comidas Rápidas</option>
+                    <option value="19">Acampar-Glamplig</option>
+                    <option value="22">Bares</option>
+                  </select>
+                </div>
+                <div className="lugares-form-group">
+                  <label htmlFor="imagen">Imagen</label>
+                  <input
+                    type="file"
+                    id="imagen"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    required={!selectedLugar}
+                  />
+                  {previewUrl && (
+                    <div className="lugares-image-preview">
+                      <img src={previewUrl} alt="Preview" />
+                    </div>
+                  )}
+                </div>
+                <div className="lugares-form-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="estado"
+                      checked={formData.estado}
+                      onChange={handleChange}
+                    />
+                    Activo
+                  </label>
+                </div>
+                <div className="lugares-form-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="aprobacion"
+                      checked={formData.aprobacion}
+                      onChange={handleChange}
+                    />
+                    Aprobado
+                  </label>
+                </div>
               </div>
               <div className="lugares-modal-actions">
                 <button
