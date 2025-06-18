@@ -2,7 +2,7 @@
 .app-container {
   display: flex;
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: #ffffff;
 }
 
 /* CONTENIDO PRINCIPAL */
@@ -25,7 +25,7 @@
   align-items: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eaeef2;
+  border-bottom: 1px solid #000000;
 }
 
 h2 {
@@ -43,7 +43,7 @@ h2 {
 }
 
 .estadistica-item {
-  background: #f8fafc;
+  background: #f0f0f0;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
@@ -60,12 +60,12 @@ h2 {
 .estadistica-valor {
   font-size: 32px;
   font-weight: 700;
-  color: #4a5568;
+  color: #000000;
   margin: 10px 0 5px;
 }
 
 .estadistica-label {
-  color: #718096;
+  color: #000000;
   font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
@@ -85,12 +85,13 @@ h2 {
 }
 
 .tabla-calificaciones thead {
-  background: #4a5568;
+  background: #ffffff;
+  border-bottom: 2px solid #000000;
 }
 
 .tabla-calificaciones th {
-  color: white;
-  font-weight: 600;
+  color: #000000;
+  font-weight: 700;
   padding: 16px 20px;
   text-align: left;
   font-size: 14px;
@@ -100,9 +101,10 @@ h2 {
 
 .tabla-calificaciones td {
   padding: 16px 20px;
-  border-bottom: 1px solid #edf2f7;
-  color: #4a5568;
+  border-bottom: 1px solid #000000;
+  color: #000000;
   vertical-align: middle;
+  background: #ffffff;
 }
 
 .tabla-calificaciones tbody tr:last-child td {
@@ -115,7 +117,7 @@ h2 {
 
 /* BOTONES */
 .btn-detalle {
-  background: #4a5568;
+  background: #000000;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -127,17 +129,20 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  text-decoration: none;
 }
 
 .btn-detalle:hover {
-  background: #2d3748;
+  background: #333333;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-decoration: none;
 }
 
 /* ESTRELLAS DE PUNTUACIÓN */
 .estrellas {
-  color: #f6ad55;
+  color: #000000;
   font-size: 1.1em;
   letter-spacing: 2px;
 }

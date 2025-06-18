@@ -291,9 +291,9 @@ const Calificaciones = () => {
               <table className="tabla-calificaciones">
                 <thead>
                   <tr>
-                    <th style={{ color: '#4a5568', fontWeight: '600', padding: '12px 16px', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>Usuario</th>
-                    <th style={{ color: '#4a5568', fontWeight: '600', padding: '12px 16px', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>Calificación</th>
-                    <th style={{ color: '#4a5568', fontWeight: '600', padding: '12px 16px', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>Acciones</th>
+                    <th style={{ color: '#000000', fontWeight: '700', padding: '16px 20px', backgroundColor: '#ffffff', borderBottom: '2px solid #000000' }}>Usuario</th>
+                    <th style={{ color: '#000000', fontWeight: '700', padding: '16px 20px', backgroundColor: '#ffffff', borderBottom: '2px solid #000000' }}>Calificación</th>
+                    <th style={{ color: '#000000', fontWeight: '700', padding: '16px 20px', backgroundColor: '#ffffff', borderBottom: '2px solid #000000' }}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
