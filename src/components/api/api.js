@@ -13,11 +13,7 @@ export const api = axios.create({
   baseURL,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-    'Access-Control-Allow-Origin': isDevelopment ? 'http://localhost:3000' : undefined,
-    'Access-Control-Allow-Credentials': 'true'
+    'Content-Type': 'application/json'
   },
   timeout: 10000 // 10 segundos de timeout
 });
