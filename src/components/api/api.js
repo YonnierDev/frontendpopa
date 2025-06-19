@@ -13,6 +13,17 @@ export const api = axios.create({
   timeout: 10000
 });
 
+// Interceptor para ajustar todas las rutas automáticamente
+api.interceptors.request.use(
+  (config) => {
+    // Si la ruta no empieza con /api/, agregarlo
+    if (config.url && !config.url.startsWith('/api/')) {
+      config.url = `/api/${config.url}`;
+    }
+    return config;
+  }
+);
+
 // Interceptor para añadir el token a las peticiones
 api.interceptors.request.use(
   (config) => {

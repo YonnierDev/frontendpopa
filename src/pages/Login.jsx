@@ -34,7 +34,7 @@ const Login = ({ setIsAuthenticated }) => {
     }
 
     try {
-      const response = await api.post("/api/login", {
+      const response = await api.post("/login", {
         correo: correo.trim(),
         contrasena: contrasena.trim(),
       });
