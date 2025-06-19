@@ -18,7 +18,9 @@ api.interceptors.request.use(
   (config) => {
     // Si la ruta no empieza con /api/, agregarlo
     if (config.url && !config.url.startsWith('/api/')) {
-      config.url = `/api/${config.url}`;
+      // Asegurarse de que no haya dobles slashes
+      const url = config.url.startsWith('/') ? config.url : '/' + config.url;
+      config.url = `/api${url}`;
     }
     return config;
   }
