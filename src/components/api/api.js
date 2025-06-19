@@ -1,54 +1,50 @@
 import axios from "axios";
 
-// Configuración de la URL base según el entorno
-const baseURL = import.meta.env.VITE_API_URL || 'https://popnocturna.vercel.app/api';
+// Configuración de entorno
+const isDevelopment = import.meta.env.DEV;
+const baseURL = isDevelopment 
+  ? '/api'  // Usa proxy en desarrollo
+  : 'https://popnocturna.vercel.app/api';  // URL directa en producción
 
-// Configuración de Axios
+// Crear instancia de Axios
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://popnocturna.vercel.app/api',
+  baseURL,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json'
-  },
-  timeout: 10000
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 });
 
-// Interceptor para ajustar todas las rutas automáticamente
+// Interceptor para añadir token a las peticiones
 api.interceptors.request.use(
-  (config) => {
-    // Si la ruta no empieza con /api/, agregarlo
-    if (config.url && !config.url.startsWith('/api/')) {
-      // Asegurarse de que no haya dobles slashes
-      const url = config.url.startsWith('/') ? config.url : '/' + config.url;
-      config.url = `/api${url}`;
-    }
-    return config;
-  }
-);
-
-// Interceptor para añadir el token a las peticiones
-api.interceptors.request.use(
-  (config) => {
+  config => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-  }
+  },
+  error => Promise.reject(error)
 );
 
-// Interceptor para manejar errores de autenticación
+// Interceptor para manejar errores
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  response => response,
+  error => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      localStorage.removeItem('usuario');
-      window.location.href = '/login';
+      const loginPath = isDevelopment 
+        ? '/login' 
+        : 'https://frontendpopa.vercel.app/login';
+      window.location.href = loginPath;
     }
     return Promise.reject(error);
   }
 );
 
-export const isApiRoute = (url) => url?.startsWith('/api');
-
+// Debug
+if (isDevelopment) {
+  console.log('API Config - Entorno:', isDevelopment ? 'Desarrollo' : 'Producción');
+  console.log('API Base URL:', baseURL);
+}
