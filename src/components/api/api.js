@@ -10,7 +10,12 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 10000
+  timeout: 10000,
+  // Eliminar headers automáticos que podrían causar problemas
+  transformRequest: [(data, headers) => {
+    delete headers.common['Cache-Control'];
+    return data;
+  }]
 });
 
 // Interceptor para ajustar todas las rutas automáticamente
