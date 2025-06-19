@@ -5,19 +5,12 @@ const baseURL = import.meta.env.VITE_API_URL || 'https://popnocturna.vercel.app/
 
 // Configuración de Axios
 export const api = axios.create({
-  baseURL,
+  baseURL: import.meta.env.VITE_API_URL || 'https://popnocturna.vercel.app/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 10000,
-  // Eliminar headers automáticos que podrían causar problemas
-  transformRequest: [(data, headers) => {
-    if (headers && headers.common) {
-      delete headers.common['Cache-Control'];
-    }
-    return data;
-  }]
+  timeout: 10000
 });
 
 // Interceptor para ajustar todas las rutas automáticamente
