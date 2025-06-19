@@ -13,7 +13,9 @@ export const api = axios.create({
   timeout: 10000,
   // Eliminar headers automáticos que podrían causar problemas
   transformRequest: [(data, headers) => {
-    delete headers.common['Cache-Control'];
+    if (headers && headers.common) {
+      delete headers.common['Cache-Control'];
+    }
     return data;
   }]
 });
