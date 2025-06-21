@@ -92,15 +92,17 @@ const DashboardPropietario = () => {
 
     try {
       // Usar la instancia de Axios configurada
-      await api.post('/propietario/lugar', formDataToSend, {
+      await api.post('/api/propietario/lugar', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      // Cerrar modal y recargar datos
+      // Mostrar mensaje de éxito
+      alert('¡Solicitud de creación de lugar enviada con éxito!\n\nTu lugar está en proceso de revisión. Recibirás una notificación una vez que sea aprobado por nuestro equipo de administradores.');
+      
+      // Cerrar modal
       setShowModal(false);
-      await cargarDatos();
       
       // Resetear formulario
       setFormData({
@@ -113,9 +115,17 @@ const DashboardPropietario = () => {
         carta_pdf: null
       });
       
+      // Limpiar inputs de archivo
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => {
+        input.value = '';
+      });
+      
     } catch (error) {
       console.error('Error al crear lugar:', error);
-      setError(error.response?.data?.message || 'Error al crear el lugar. Por favor, inténtalo de nuevo.');
+      const errorMessage = error.response?.data?.message || 'Error al crear el lugar. Por favor, inténtalo de nuevo.';
+      setError(errorMessage);
+      alert(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
