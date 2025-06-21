@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding, FaPlus, FaTimes } from 'react-icons/fa';
 import { api } from '../../components/api/api';
-import Notification from '../../components/ui/Notification';
 import './DashboardPropietario.css';
-import '../../components/ui/Notification.css';
 
 const DashboardPropietario = () => {
   const [lugares, setLugares] = useState([]);
@@ -13,7 +11,6 @@ const DashboardPropietario = () => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [categorias, setCategorias] = useState([]);
-  const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -95,21 +92,15 @@ const DashboardPropietario = () => {
 
     try {
       // Usar la instancia de Axios configurada
-      await api.post('/api/propietario/lugar', formDataToSend, {
+      await api.post('/propietario/lugar', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      // Mostrar notificación de éxito
-      setNotification({
-        show: true,
-        message: '¡Solicitud enviada!\nTu lugar está en revisión.\nAparecerá aquí cuando sea aprobado.',
-        type: 'success'
-      });
-      
-      // Cerrar modal
+      // Cerrar modal y recargar datos
       setShowModal(false);
+      await cargarDatos();
       
       // Resetear formulario
       setFormData({
@@ -122,21 +113,9 @@ const DashboardPropietario = () => {
         carta_pdf: null
       });
       
-      // Limpiar inputs de archivo
-      const fileInputs = document.querySelectorAll('input[type="file"]');
-      fileInputs.forEach(input => {
-        input.value = '';
-      });
-      
     } catch (error) {
       console.error('Error al crear lugar:', error);
-      const errorMessage = error.response?.data?.message || 'Error al crear el lugar. Por favor, inténtalo de nuevo.';
-      setError(errorMessage);
-      setNotification({
-        show: true,
-        message: errorMessage,
-        type: 'error'
-      });
+      setError(error.response?.data?.message || 'Error al crear el lugar. Por favor, inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -213,19 +192,8 @@ const DashboardPropietario = () => {
   const promedioCalificacion = lugares.length > 0
     ? (lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length).toFixed(1)
     : '0.0';
-  const closeNotification = () => {
-    setNotification(prev => ({ ...prev, show: false }));
-  };
-
   return (
     <div className="propietario-dashboard">
-      {notification.show && (
-        <Notification 
-          message={notification.message} 
-          type={notification.type} 
-          onClose={closeNotification} 
-        />
-      )}
       <div className="content-container">
         <div className="propietario-kpis-row">
            <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaBuilding /></div><div className="propietario-stat-content"><h3>Lugares Registrados</h3><p className="propietario-stat-value">{lugares.length}</p></div></div>
