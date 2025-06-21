@@ -159,21 +159,16 @@ const LugarDetalle = () => {
         setLoading(true);
         
         // Cargar datos del lugar
-        const lugarResponse = await api.get(`/lugar/${id}`);
+        const lugarResponse = await api.get(`/api/lugar/${id}`);
         console.log('Datos del lugar recibidos:', lugarResponse.data);
         setLugar(lugarResponse.data);
         
         // Cargar eventos del lugar específico (incluyendo inactivos)
         console.log('Solicitando eventos para el lugar ID:', id);
-        const eventosResponse = await api.get('/eventos', {
+        const eventosResponse = await api.get('/api/eventos', {
           params: {
             lugarId: id,
             soloActivos: false
-          },
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'Expires': '0'
           }
         });
         

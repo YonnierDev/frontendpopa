@@ -139,13 +139,10 @@ const Reservas = () => {
       console.log('Solicitando reservas con parámetros:', params.toString());
       
       // Hacer la petición al backend
-      const response = await api.get(`/reservas?${params.toString()}`, {
+      const response = await api.get(`/api/reservas?${params.toString()}`, {
         signal: controller.signal,
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       
@@ -260,15 +257,12 @@ const Reservas = () => {
       
       // 2. Hacer la petición al endpoint correcto
       const response = await api.patch(
-        `/reserva/aprobar/${numeroReserva}`,
+        `/api/reserva/aprobar/${numeroReserva}`,
         { aprobacion: accion },
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
+            'Content-Type': 'application/json'
           },
           timeout: 15000
         }

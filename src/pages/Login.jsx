@@ -32,11 +32,15 @@ const Login = ({ setIsAuthenticated }) => {
       setError("Por favor, ingresa un correo electrónico válido.");
       return;
     }
+    
+    // Limpiar cualquier token previo
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
     try {
-      const response = await api.post("/login", {
-        correo: correo.trim(),
-        contrasena: contrasena.trim(),
+      const response = await api.post("/api/login", {
+        correo: correo.trim().toLowerCase(),
+        contrasena: contrasena.trim()
       });
 
       console.log("Respuesta del servidor:", response.data);
@@ -123,7 +127,7 @@ const Login = ({ setIsAuthenticated }) => {
 
       <div className="auth-box">
         <div className="title" style={{ justifyContent: 'center', width: '100%' }}>
-          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0 }}>ACCESO</h2>
+          <h2 style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', fontSize: '2.2rem', margin: 0 }}>Login</h2>
         </div>
 
         {error && <div className="error-message">{error}</div>}

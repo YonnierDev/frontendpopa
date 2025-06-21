@@ -32,7 +32,7 @@ const Sidebar = ({ lugarId: propLugarId }) => {
     const obtenerLugares = async () => {
       try {
         setCargando(true);
-        const response = await api.get('/propietario/lugares');
+        const response = await api.get('/api/propietario/lugares');
         if (response.data && response.data.length > 0) {
           setLugares(response.data);
         } else {

@@ -86,7 +86,7 @@ const Eventos = () => {
     setLoading(true);
     try {
       // Cargar los lugares del propietario
-      const lugaresResponse = await api.get('/propietario/lugares');
+      const lugaresResponse = await api.get('/api/propietario/lugares');
       const lugaresData = lugaresResponse.data;
       const lugaresIds = lugaresData.map(lugar => lugar.id);
       
@@ -97,13 +97,8 @@ const Eventos = () => {
       }
       
       // Obtener los eventos del propietario, incluyendo inactivos
-      const eventosResponse = await api.get('/eventos', {
-        params: { soloActivos: false },
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
+      const eventosResponse = await api.get('/api/eventos', {
+        params: { soloActivos: false }
       });
       
       let eventosFiltrados = [];
@@ -155,7 +150,7 @@ const Eventos = () => {
 
   const cargarLugares = async () => {
     try {
-      const response = await api.get('/propietario/lugares');
+      const response = await api.get('/api/propietario/lugares');
       setLugares(Array.isArray(response.data) ? response.data : []);
       
       // Si hay un lugarId en la URL, seleccionarlo automáticamente
@@ -177,7 +172,7 @@ const Eventos = () => {
 
   const cargarComentariosEvento = async (eventoId) => {
     try {
-      const response = await api.get(`/evento/${eventoId}/comentarios`);
+      const response = await api.get(`/api/evento/${eventoId}/comentarios`);
       setComentariosEvento(prev => ({ ...prev, [eventoId]: response.data.datos || [] }));
       setEventoComentariosAbierto(eventoId);
     } catch (error) {

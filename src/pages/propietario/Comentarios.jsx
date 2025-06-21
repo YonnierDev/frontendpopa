@@ -92,7 +92,7 @@ const Comentarios = () => {
       setError('');
       
       // Obtener los comentarios del evento
-      const response = await api.get(`/comentarios/evento/${id}`);
+      const response = await api.get(`/api/comentarios/evento/${id}`);
       
       if (response.data && response.data.comentarios) {
         // Formatear los comentarios con valores por defecto
@@ -145,7 +145,7 @@ const Comentarios = () => {
       return toast.error('Escribe un motivo para el reporte');
     }
     try {
-      await api.post(`/comentario/${comentarioSeleccionado.id}/reportar`, {
+      await api.post(`/api/comentario/${comentarioSeleccionado.id}/reportar`, {
         motivo: motivoReporte,
       });
       toast.success('Reporte enviado');

@@ -24,7 +24,7 @@ const Register = () => {
     }
 
     try {
-      const response = await api.post("/registrar", {
+      const response = await api.post("/api/registrar", {
         nombre,
         apellido,
         correo,

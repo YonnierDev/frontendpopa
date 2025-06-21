@@ -27,7 +27,7 @@ const Calificaciones = () => {
   // Función para obtener el primer lugar del propietario
   const obtenerPrimerLugar = async () => {
     try {
-      const response = await api.get('/propietario/lugares');
+      const response = await api.get('/api/propietario/lugares');
       if (response.data && response.data.length > 0) {
         const primerLugar = response.data[0];
         return primerLugar.id;
@@ -107,7 +107,7 @@ const Calificaciones = () => {
       setError('');
       
       // Usa el lugarid de los parámetros de la URL
-      const response = await api.get(`/calificaciones/lugar/${lugarid}`);
+      const response = await api.get(`/api/calificaciones/lugar/${lugarid}`);
       const datos = response.data?.datos || {};
       const calificacionesArray = datos.calificaciones || [];
       
@@ -175,7 +175,7 @@ const Calificaciones = () => {
       }
       
       // Si no está en la lista, hacer la petición al servidor
-      const response = await api.get(`/calificacion/${id}`);
+      const response = await api.get(`/api/calificacion/${id}`);
       console.log('Respuesta de la API:', response);
       
       if (!response.data) {

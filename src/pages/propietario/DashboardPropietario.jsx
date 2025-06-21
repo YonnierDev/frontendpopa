@@ -26,7 +26,7 @@ const DashboardPropietario = () => {
 
   const cargarCategorias = async () => {
     try {
-      const response = await api.get('/categorias');
+      const response = await api.get('/api/categorias');
       setCategorias(response.data);
     } catch (error) {
       console.error('Error cargando categorías:', error);
@@ -129,8 +129,8 @@ const DashboardPropietario = () => {
       }
 
       const [lugaresRes, comentariosRes] = await Promise.all([
-        api.get('/propietario/lugares'),
-        api.get('/comentarios')
+        api.get('/api/propietario/lugares'),
+        api.get('/api/comentarios')
       ]);
 
       const lugaresData = Array.isArray(lugaresRes.data) ? lugaresRes.data : [];
@@ -226,12 +226,23 @@ const DashboardPropietario = () => {
                   >
                     <div className="image-container">
                       <img 
-                        src={lugar.imagen || 'https://via.placeholder.com/300x200?text=Sin+imagen'} 
+                        src={lugar.imagen ? `${lugar.imagen}?${new Date().getTime()}` : '/placeholder-image.svg'} 
                         alt={lugar.nombre} 
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/300x200?text=Error+imagen';
+                          e.target.src = '/placeholder-image.svg';
+                          e.target.style.objectFit = 'contain';
+                          e.target.style.padding = '1rem';
+                          e.target.style.backgroundColor = '#f5f5f5';
                         }}
+                        style={{
+                          width: '100%',
+                          height: '200px',
+                          objectFit: 'cover',
+                          borderRadius: '8px 8px 0 0',
+                          backgroundColor: '#f5f5f5'
+                        }}
+                        loading="lazy"
                       />
                     </div>
                     
@@ -256,12 +267,23 @@ const DashboardPropietario = () => {
                       {lugar.fotos_lugar && lugar.fotos_lugar.slice(0, 3).map((foto, index) => (
                         <div key={index} className="thumbnail">
                           <img 
-                            src={foto} 
+                            src={`${foto}?${new Date().getTime()}`} 
                             alt={`Foto ${index + 1}`}
                             onError={(e) => {
                               e.target.onerror = null;
-                              e.target.src = 'https://via.placeholder.com/50x50?text=Imagen';
+                              e.target.src = '/placeholder-thumbnail.svg';
+                              e.target.style.objectFit = 'contain';
+                              e.target.style.padding = '0.25rem';
+                              e.target.style.backgroundColor = '#f5f5f5';
                             }}
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              objectFit: 'cover',
+                              borderRadius: '4px',
+                              backgroundColor: '#f5f5f5'
+                            }}
+                            loading="lazy"
                           />
                         </div>
                       ))}

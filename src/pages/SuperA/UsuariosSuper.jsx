@@ -35,7 +35,7 @@ const UsuariosSuper = () => {
 
   const fetchRoles = async () => {
     try {
-      const response = await api.get('/roles');
+      const response = await api.get('/api/roles');
       setRoles(response.data);
     } catch (error) {
       console.error('Error al cargar roles:', error);
@@ -45,7 +45,7 @@ const UsuariosSuper = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const response = await api.get('/usuarios');
+      const response = await api.get('/api/usuarios');
       setUsuarios(response.data);
       setLoading(false);
     } catch (error) {
@@ -101,7 +101,7 @@ const UsuariosSuper = () => {
 
   const confirmDelete = async () => {
     try {
-      await api.delete(`/usuario/${selectedUser.id}`);
+      await api.delete(`/api/usuario/${selectedUser.id}`);
       toast.success('Usuario eliminado correctamente');
       setShowDeleteModal(false);
       fetchUsuarios();
@@ -197,7 +197,7 @@ const UsuariosSuper = () => {
         }
 
         console.log('Datos a actualizar:', datosActualizados);
-        response = await api.put(`/usuario/${selectedUser.id}`, datosActualizados);
+        response = await api.put(`/api/usuario/${selectedUser.id}`, datosActualizados);
         console.log('Respuesta de actualización:', response.status, response.data);
         
         if (response.status === 200) {
