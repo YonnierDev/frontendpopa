@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaStar, FaComments, FaBuilding, FaPlus, FaTimes } from 'react-icons/fa';
 import { api } from '../../components/api/api';
+import Notification from '../../components/ui/Notification';
 import './DashboardPropietario.css';
+import '../../components/ui/Notification.css';
 
 const DashboardPropietario = () => {
   const [lugares, setLugares] = useState([]);
@@ -11,6 +13,7 @@ const DashboardPropietario = () => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [categorias, setCategorias] = useState([]);
+  const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -98,8 +101,12 @@ const DashboardPropietario = () => {
         }
       });
 
-      // Mostrar mensaje de éxito
-      alert('¡Solicitud de creación de lugar enviada con éxito!\n\nTu lugar está en proceso de revisión. Recibirás una notificación una vez que sea aprobado por nuestro equipo de administradores.');
+      // Mostrar notificación de éxito
+      setNotification({
+        show: true,
+        message: '¡Solicitud enviada!\nTu lugar está en revisión.\nAparecerá aquí cuando sea aprobado.',
+        type: 'success'
+      });
       
       // Cerrar modal
       setShowModal(false);
@@ -125,7 +132,11 @@ const DashboardPropietario = () => {
       console.error('Error al crear lugar:', error);
       const errorMessage = error.response?.data?.message || 'Error al crear el lugar. Por favor, inténtalo de nuevo.';
       setError(errorMessage);
-      alert(`Error: ${errorMessage}`);
+      setNotification({
+        show: true,
+        message: errorMessage,
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -202,8 +213,19 @@ const DashboardPropietario = () => {
   const promedioCalificacion = lugares.length > 0
     ? (lugares.reduce((acc, lugar) => acc + (lugar.calificacion_promedio || 0), 0) / lugares.length).toFixed(1)
     : '0.0';
+  const closeNotification = () => {
+    setNotification(prev => ({ ...prev, show: false }));
+  };
+
   return (
     <div className="propietario-dashboard">
+      {notification.show && (
+        <Notification 
+          message={notification.message} 
+          type={notification.type} 
+          onClose={closeNotification} 
+        />
+      )}
       <div className="content-container">
         <div className="propietario-kpis-row">
            <div className="propietario-stat-box"><div className="propietario-stat-icon"><FaBuilding /></div><div className="propietario-stat-content"><h3>Lugares Registrados</h3><p className="propietario-stat-value">{lugares.length}</p></div></div>
