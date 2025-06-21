@@ -87,7 +87,7 @@ const Eventos = () => {
     try {
       // Cargar los lugares del propietario
       const lugaresResponse = await api.get('/api/propietario/lugares');
-      const lugaresData = lugaresResponse.data;
+      const lugaresData = Array.isArray(lugaresResponse.data) ? lugaresResponse.data : [];
       const lugaresIds = lugaresData.map(lugar => lugar.id);
       
       if (lugaresIds.length === 0) {
@@ -96,53 +96,66 @@ const Eventos = () => {
         return [];
       }
       
-      // Obtener los eventos del propietario, incluyendo inactivos
-      const eventosResponse = await api.get('/api/eventos', {
-        params: { soloActivos: false }
-      });
-      
+      // Inicializar array vacío para los eventos
       let eventosFiltrados = [];
       
-      // Filtrar los eventos que pertenecen al propietario
-      if (eventosResponse.data.datos && Array.isArray(eventosResponse.data.datos)) {
-        // Filtrar por lugares del propietario
-        eventosFiltrados = eventosResponse.data.datos.filter(evento => {
-          const eventoLugarId = evento.lugarid || (evento.lugar ? evento.lugar.id : null) || evento.lugarId;
-          return eventoLugarId && lugaresIds.includes(parseInt(eventoLugarId, 10));
-        });
-
-        // Si hay un lugarId en la URL, filtrar por ese lugar específico
+      try {
+        // Construir la URL base para la petición
+        const url = '/api/eventos';
+        const params = {};
+        
+        // Si hay un lugarId, filtrar por ese lugar
         if (lugarId) {
-          const lugarIdNum = parseInt(lugarId, 10);
-          console.log('Filtrando eventos para el lugar específico:', lugarIdNum);
-          
+          params.lugarid = lugarId;
+        }
+        
+        console.log('Obteniendo eventos de:', url, 'con parámetros:', params);
+        
+        // Hacer la petición al backend
+        const response = await api.get(url, { params });
+        console.log('Respuesta de la API de eventos:', response);
+        
+        // Procesar la respuesta según el formato esperado
+        if (Array.isArray(response.data)) {
+          eventosFiltrados = response.data;
+        } else if (response.data && Array.isArray(response.data.datos)) {
+          eventosFiltrados = response.data.datos;
+        } else if (response.data && response.data.mensaje) {
+          console.log('Mensaje del servidor:', response.data.mensaje);
+        }
+        
+        // Si no se proporcionó un lugarId, filtrar por los lugares del propietario
+        if (!lugarId && eventosFiltrados.length > 0) {
           eventosFiltrados = eventosFiltrados.filter(evento => {
             const eventoLugarId = evento.lugarid || (evento.lugar ? evento.lugar.id : null) || evento.lugarId;
-            const idLugarEvento = eventoLugarId ? parseInt(eventoLugarId, 10) : null;
-            
-            const incluir = idLugarEvento === lugarIdNum;
-            
-            console.log('Evento:', evento.id, 
-                        'lugarId:', idLugarEvento, 
-                        'tipo:', typeof idLugarEvento, 
-                        'coincide con filtro:', incluir);
-                        
-            return incluir;
+            return eventoLugarId && lugaresIds.includes(parseInt(eventoLugarId, 10));
           });
         }
+        
+        console.log(`Se encontraron ${eventosFiltrados.length} eventos`);
+        
+        // Actualizar el estado con los eventos filtrados
+        setEventos(eventosFiltrados);
+        
+        // Mostrar mensaje apropiado
+        if (eventosFiltrados.length === 0) {
+          setMensaje('No se encontraron eventos para mostrar.');
+        } else {
+          setMensaje('');
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('Error al cargar eventos:', error);
+        setMensaje('Error al cargar los eventos. Intenta recargar la página.');
+        setEventos([]);
+        return false;
       }
-      
-      console.log('Eventos cargados y filtrados:', eventosFiltrados);
-      
-      // Actualizar el estado con los eventos filtrados
-      setEventos(eventosFiltrados);
-      setMensaje(eventosFiltrados.length === 0 ? 'No se encontraron eventos para este lugar' : '');
-      
-      return true;
     } catch (error) {
-      console.error('Error al cargar eventos:', error);
-      setMensaje('Error al cargar los eventos: ' + error.message);
+      console.error('Error al cargar lugares:', error);
+      setMensaje('Error al cargar los lugares. Intenta recargar la página.');
       setEventos([]);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -182,99 +195,88 @@ const Eventos = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      // Usar el lugarId de la URL si está disponible, de lo contrario usar el seleccionado en el formulario
-      const lugarIdFinal = lugarId || nuevoEvento.lugarid;
-      
-      if (!lugarIdFinal) {
-        setMensaje('Debes seleccionar un lugar.');
+      // Validar campos requeridos
+      if (!nuevoEvento.nombre || !nuevoEvento.descripcion || !nuevoEvento.fecha_hora) {
+        toast.error('Por favor completa todos los campos requeridos');
         return;
       }
-      
-      // Validar que se hayan seleccionado imágenes
+
       if (imagenesSeleccionadas.length === 0) {
-        setMensaje('Debes seleccionar al menos una imagen de portada');
+        toast.error('Por favor selecciona al menos una imagen');
         return;
       }
-      
+
+      // Crear FormData
       const formData = new FormData();
       
-      // Asegurarnos de que el lugarId sea un número
-      const lugarIdNumero = parseInt(lugarIdFinal, 10);
+      // Agregar campos del formulario
+      formData.append('nombre', nuevoEvento.nombre);
+      formData.append('descripcion', nuevoEvento.descripcion);
+      formData.append('capacidad', nuevoEvento.capacidad || '50');
+      formData.append('precio', nuevoEvento.precio || '0');
+      formData.append('fecha_hora', nuevoEvento.fecha_hora);
       
-      // Crear un objeto con todos los datos del evento
-      const datosEvento = {
-        nombre: nuevoEvento.nombre || '',
-        descripcion: nuevoEvento.descripcion || '',
-        capacidad: nuevoEvento.capacidad || '1',
-        precio: nuevoEvento.precio || '0',
-        fecha_hora: nuevoEvento.fecha_hora || new Date().toISOString(),
-        lugarid: lugarIdNumero,
-        estado: false // Los eventos nuevos se crean como inactivos por defecto
-      };
-      
-      // Agregar cada campo individualmente al formData
-      Object.entries(datosEvento).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-      
-      console.log('Datos del formulario a enviar:', {
-        ...datosEvento,
-        tipoLugarId: typeof lugarIdNumero,
-        imagenes: `${imagenesSeleccionadas.length} imágenes`
-      });
-      
-      // Agregar imágenes seleccionadas
-      imagenesSeleccionadas.forEach((imagen) => {
+      // Usar el lugarId de la URL o del formulario
+      const lugarIdFinal = lugarId || nuevoEvento.lugarid;
+      if (!lugarIdFinal) {
+        toast.error('No se ha seleccionado un lugar');
+        return;
+      }
+      formData.append('lugarid', lugarIdFinal);
+
+      // Agregar imágenes
+      imagenesSeleccionadas.forEach(imagen => {
         formData.append('portada', imagen);
       });
-      
-      // Configurar headers para FormData
-      const config = {
+
+      console.log('Enviando datos del evento:', {
+        nombre: nuevoEvento.nombre,
+        lugarid: lugarIdFinal,
+        imagenes: imagenesSeleccionadas.length
+      });
+
+      // Enviar la petición con prefijo /api
+      const response = await api.post('/api/evento', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      };
-      
-      console.log('Enviando solicitud POST a /evento con datos:', {
-        lugarid: lugarIdNumero,
-        imagenes: imagenesSeleccionadas.length
       });
-      
-      // Usamos la ruta estándar para crear el evento
-      const response = await api.post("/evento", formData, config);
+
       console.log('Respuesta del servidor:', response.data);
-      
-      if (response.data && (response.data.mensaje === 'Evento creado correctamente' || response.data.datos)) {
-        // Mostrar mensaje de éxito
-        toast.success('Evento creado exitosamente. Está pendiente de aprobación.');
+
+      if (response.data && response.data.mensaje === 'Evento creado correctamente') {
+        toast.success('Evento creado exitosamente');
         
         // Limpiar el formulario
-        setNuevoEvento({ 
-          nombre: '', 
-          lugarid: lugarId || '', 
-          capacidad: '', 
-          precio: '', 
-          descripcion: '', 
+        setNuevoEvento({
+          nombre: '',
+          lugarid: lugarId || '',
+          capacidad: '',
+          precio: '',
+          descripcion: '',
           fecha_hora: ''
         });
         setImagenesSeleccionadas([]);
         
         // Cerrar el modal si está abierto
-        setShowModal(false);
-        const modal = document.getElementById('modalNuevoEvento');
-        if (modal) {
-          const modalBootstrap = bootstrap.Modal.getInstance(modal);
-          if (modalBootstrap) modalBootstrap.hide();
+        if (window.bootstrap) {
+          const modal = document.getElementById('modalNuevoEvento');
+          if (modal) {
+            const modalBootstrap = window.bootstrap.Modal.getInstance(modal);
+            if (modalBootstrap) modalBootstrap.hide();
+          }
         }
         
         // Recargar la lista de eventos
         await cargarEventos();
       } else {
-        throw new Error(response.data?.mensaje || 'Error al crear el evento');
+        throw new Error('No se pudo crear el evento');
       }
     } catch (error) {
-      setMensaje('Error al procesar el evento: ' + (error.response?.data?.mensaje || error.message));
+      console.error('Error al crear el evento:', error);
+      toast.error(error.response?.data?.mensaje || 'Error al crear el evento');
     }
   };
 
