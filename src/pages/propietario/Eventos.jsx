@@ -479,8 +479,11 @@ const Eventos = () => {
             if (modalInstance) modalInstance.hide();
           }
           
-          // Recargar la lista de eventos
-          await cargarEventos();
+          // Recargar la lista de eventos y lugares
+          const [lugaresActualizados] = await Promise.all([
+            cargarLugares(),
+            cargarEventos()
+          ]);
           
           // Mostrar mensaje de éxito
           toast.success(response.data.mensaje || (eventoEditar ? 'Evento actualizado exitosamente' : 'Evento creado exitosamente'));
@@ -534,13 +537,56 @@ const Eventos = () => {
   };
 
   const handleEliminar = async (eventoId) => {
-    if (!window.confirm('¿Estás seguro de que deseas eliminar este evento?')) return;
+    if (!window.confirm('¿Estás seguro de que deseas desactivar este evento? Esto lo ocultará de la vista pública.')) return;
+    
     try {
-      await api.delete(`/evento/${eventoId}`);
-      setMensaje('Evento eliminado correctamente');
-      cargarEventos();
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No se encontró el token de autenticación');
+      }
+
+      // Usar la URL completa para la actualización
+      const apiUrl = `${import.meta.env.VITE_API_URL || ''}/api/evento/${eventoId}`.replace(/([^:]\/)\/+/g, '$1');
+      
+      // Enviar una solicitud PUT para actualizar el estado del evento
+      const response = await axios({
+        method: 'put',
+        url: apiUrl,
+        data: { estado: false }, // Desactivar el evento
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        withCredentials: true
+      });
+
+      if (response.status === 200) {
+        toast.success('Evento desactivado correctamente');
+        // Recargar la lista de eventos
+        await cargarEventos();
+      } else {
+        throw new Error(`Error inesperado: ${response.status} ${response.statusText}`);
+      }
     } catch (error) {
-      setMensaje('Error al eliminar el evento: ' + (error.response?.data?.mensaje || error.message));
+      console.error('Error al desactivar el evento:', error);
+      let errorMessage = 'Error al desactivar el evento';
+      
+      if (error.response) {
+        // El servidor respondió con un estado de error
+        const responseData = error.response.data || {};
+        errorMessage = responseData.mensaje || 
+                     responseData.message || 
+                     `Error ${error.response.status}: ${error.response.statusText}`;
+      } else if (error.request) {
+        // La solicitud fue hecha pero no se recibió respuesta
+        errorMessage = 'No se recibió respuesta del servidor. Verifica tu conexión.';
+      } else {
+        // Algo sucedió en la configuración de la solicitud
+        errorMessage = error.message || 'Error al realizar la petición';
+      }
+      
+      toast.error(errorMessage);
     }
   };
 
@@ -571,37 +617,54 @@ const Eventos = () => {
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    
-    // Validar cantidad de imágenes (máximo 3)
-    if (imagenesSeleccionadas.length + files.length > 3) {
-      toast.error('Solo puedes subir un máximo de 3 imágenes');
-      return;
+    try {
+      const files = Array.from(e.target.files || []);
+      
+      // Validar que se hayan seleccionado archivos
+      if (files.length === 0) {
+        return;
+      }
+      
+      // Validar cantidad de imágenes (máximo 3)
+      if (imagenesSeleccionadas.length + files.length > 3) {
+        toast.error('Solo puedes subir un máximo de 3 imágenes');
+        return;
+      }
+      
+      // Validar tipos de archivo
+      const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const archivosValidos = files.filter(file => {
+        const tipoValido = tiposPermitidos.includes(file.type.toLowerCase());
+        if (!tipoValido) {
+          console.warn(`Archivo no permitido: ${file.name} - Tipo: ${file.type}`);
+          return false;
+        }
+        return true;
+      });
+      
+      if (archivosValidos.length === 0) {
+        toast.error('Solo se permiten imágenes en formato JPG, JPEG, PNG o WebP');
+        return;
+      }
+      
+      // Validar tamaño de archivo (máximo 5MB por imagen)
+      const tamanoMaximo = 5 * 1024 * 1024; // 5MB
+      const archivosDemasiadoGrandes = archivosValidos.some(file => file.size > tamanoMaximo);
+      
+      if (archivosDemasiadoGrandes) {
+        toast.error('Cada imagen debe pesar menos de 5MB');
+        return;
+      }
+      
+      // Si todo está bien, agregar las imágenes válidas
+      setImagenesSeleccionadas(prev => [...prev, ...archivosValidos]);
+      
+      // Limpiar el input para permitir seleccionar la misma imagen otra vez
+      e.target.value = null;
+    } catch (error) {
+      console.error('Error al procesar las imágenes:', error);
+      toast.error('Ocurrió un error al procesar las imágenes');
     }
-    
-    // Validar tipos de archivo
-    const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png'];
-    const archivosInvalidos = files.some(file => !tiposPermitidos.includes(file.type));
-    
-    if (archivosInvalidos) {
-      toast.error('Solo se permiten imágenes en formato JPG, JPEG o PNG');
-      return;
-    }
-    
-    // Validar tamaño de archivo (máximo 5MB por imagen)
-    const tamanoMaximo = 5 * 1024 * 1024; // 5MB
-    const archivosDemasiadoGrandes = files.some(file => file.size > tamanoMaximo);
-    
-    if (archivosDemasiadoGrandes) {
-      toast.error('Cada imagen debe pesar menos de 5MB');
-      return;
-    }
-    
-    // Si todo está bien, agregar las imágenes
-    setImagenesSeleccionadas(prev => [...prev, ...files]);
-    
-    // Limpiar el input para permitir seleccionar la misma imagen otra vez
-    e.target.value = null;
   };
 
   const verImagen = (url) => {
@@ -758,22 +821,43 @@ const Eventos = () => {
                 className="input-imagen"
               />
               <div className="vista-previa">
-                {imagenesSeleccionadas.map((imagen, index) => (
-                  <div key={index} className="imagen-contenedor">
-                    <img 
-                      src={URL.createObjectURL(imagen)} 
-                      alt={`Portada ${index + 1}`}
-                      className="imagen-miniatura"
-                    />
-                    <button 
-                      type="button" 
-                      onClick={() => eliminarImagen(index)}
-                      className="btn-eliminar-imagen"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+                {imagenesSeleccionadas.map((imagen, index) => {
+                  // Verificar si es un objeto File/Blob (nueva imagen) o una URL (imagen existente)
+                  const src = imagen instanceof File || imagen instanceof Blob 
+                    ? URL.createObjectURL(imagen)
+                    : typeof imagen === 'string' && (imagen.startsWith('http') || imagen.startsWith('blob:') || imagen.startsWith('data:'))
+                      ? imagen
+                      : null;
+                  
+                  if (!src) {
+                    console.warn('Tipo de imagen no soportado:', imagen);
+                    return null;
+                  }
+                  
+                  return (
+                    <div key={index} className="imagen-contenedor">
+                      <img 
+                        src={src}
+                        alt={`Portada ${index + 1}`}
+                        className="imagen-miniatura"
+                        onLoad={(e) => {
+                          // Limpiar el objeto URL cuando la imagen se carga para evitar fugas de memoria
+                          if (imagen instanceof File || imagen instanceof Blob) {
+                            URL.revokeObjectURL(src);
+                          }
+                        }}
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => eliminarImagen(index)}
+                        className="btn-eliminar-imagen"
+                        aria-label="Eliminar imagen"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             
@@ -867,13 +951,27 @@ const Eventos = () => {
                     if (busqueda && !evento.nombre.toLowerCase().includes(busqueda.toLowerCase())) return false;
                     return true;
                   })
-                  .map((evento) => (
-                    <div key={evento.id} className={`item-card ${!evento.estado ? 'inactivo' : ''}`}>
-                      <div className="item-header">
-                        <strong>{getNombreEventoResaltado(evento.nombre)}</strong>
-                        <span className={`estado-badge ${evento.estado ? 'activo' : 'inactivo'}`}>{evento.estado ? 'Activo' : 'Inactivo'}</span>
-                        <span>{new Date(evento.fecha_hora).toLocaleString()}</span>
-                      </div>
+                  .map((evento) => {
+                    // Obtener el nombre del lugar del evento o buscarlo en la lista de lugares
+                    const obtenerNombreLugar = () => {
+                      // Si el evento ya tiene lugar con nombre, usarlo
+                      if (evento.lugar?.nombre) return evento.lugar.nombre;
+                      
+                      // Si solo tiene lugarid, buscarlo en la lista de lugares
+                      if (evento.lugarid) {
+                        const lugar = lugares.find(l => l.id === evento.lugarid || l.id === parseInt(evento.lugarid));
+                        return lugar?.nombre || 'Lugar no encontrado';
+                      }
+                      
+                      return 'No especificado';
+                    };
+                    
+                    return (
+                      <div key={evento.id} className={`item-card ${!evento.estado ? 'inactivo' : ''}`}>
+                        <div className="item-header">
+                          <strong>{getNombreEventoResaltado(evento.nombre)}</strong>
+                          <span>{new Date(evento.fecha_hora).toLocaleString()}</span>
+                        </div>
                       <div className="item-content">
                         {/* Mostrar imágenes de portada si existen */}
                         {(() => {
@@ -920,7 +1018,6 @@ const Eventos = () => {
                         })()}
                         <p>{evento.descripcion}</p>
                         <div className="item-details">
-                          <span>Lugar: {evento.lugar?.nombre || 'No especificado'}</span>
                           <span>Fecha: {new Date(evento.fecha_hora).toLocaleString()}</span>
                           <span>Estado: 
                             <span className={`estado-badge ${evento.estado ? 'activo' : 'inactivo'}`}>
@@ -929,12 +1026,13 @@ const Eventos = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="item-footer">
-                        <button onClick={() => handleEditar(evento)} className="btn-editar">Editar</button>
-                        <button onClick={() => handleEliminar(evento.id)} className="btn-eliminar">Eliminar</button>
+                        <div className="item-footer">
+                          <button onClick={() => handleEditar(evento)} className="btn-editar">Editar</button>
+                          <button onClick={() => handleEliminar(evento.id)} className="btn-eliminar">Eliminar</button>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
               )}
             </div>
           )}
