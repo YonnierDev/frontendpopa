@@ -110,20 +110,20 @@ const DashboardPropietario = () => {
         }
       });
 
-      // Actualizar el estado con el nuevo lugar
-      setLugares([...lugares, response.data.lugar]);
+      // Cerrar el modal y limpiar el formulario
       setShowModal(false);
-      
-      // Resetear el formulario
       setFormData({
         nombre: '',
         descripcion: '',
         ubicacion: '',
         categoriaid: '',
         imagen: null,
-        fotos_lugar: [],
-
+        fotos_lugar: []
       });
+      
+      // Recargar los datos para asegurarnos de tener la lista más reciente
+      // Esto garantiza que solo se muestren los lugares aprobados
+      await cargarDatos();
       
       // Mostrar mensaje de éxito
       setShowSuccess(true);
@@ -154,7 +154,11 @@ const DashboardPropietario = () => {
         api.get('/api/comentarios')
       ]);
 
-      const lugaresData = Array.isArray(lugaresRes.data) ? lugaresRes.data : [];
+      // Filtrar solo los lugares que estén aprobados (aprobacion = true)
+      const lugaresData = Array.isArray(lugaresRes.data) 
+        ? lugaresRes.data.filter(lugar => lugar.aprobacion === true) 
+        : [];
+      
       const comentariosData = Array.isArray(comentariosRes.data) ? comentariosRes.data : [];
       
       setLugares(lugaresData);
