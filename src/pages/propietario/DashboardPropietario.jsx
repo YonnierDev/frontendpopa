@@ -331,18 +331,6 @@ const DashboardPropietario = () => {
                         <div className="more-images">+{lugar.fotos_lugar.length - 3}</div>
                       )}
                     </div>
-                    
-                    {lugar.carta_pdf && (
-                      <a 
-                        href={lugar.carta_pdf} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="pdf-link"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Ver PDF
-                      </a>
-                    )}
                   </div>
                 </div>
               ))
