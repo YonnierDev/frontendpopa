@@ -519,6 +519,82 @@ html, body {
 }
 
 /* Contenedor de la imagen */
+/* Estilos para el mensaje de éxito */
+.propietario-success {
+  background-color: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  animation: slideIn 0.3s ease-out;
+}
+
+.success-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.success-icon {
+  background-color: #22c55e;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.propietario-success h3 {
+  margin: 0 0 0.25rem 0;
+  color: #166534;
+  font-size: 1.1rem;
+}
+
+.propietario-success p {
+  margin: 0;
+  color: #166534;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.close-success {
+  background: none;
+  border: none;
+  color: #166534;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.close-success:hover {
+  opacity: 1;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .propietario-place-image {
   position: relative;
   width: 100%;

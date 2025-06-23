@@ -10,6 +10,7 @@ const DashboardPropietario = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [categorias, setCategorias] = useState([]);
   const [formData, setFormData] = useState({
     nombre: '',
@@ -17,8 +18,7 @@ const DashboardPropietario = () => {
     ubicacion: '',
     categoriaid: '',
     imagen: null,
-    fotos_lugar: [],
-    carta_pdf: null
+    fotos_lugar: []
   });
 
   const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -51,11 +51,7 @@ const DashboardPropietario = () => {
     }
   };
 
-  const handlePdfChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, carta_pdf: e.target.files[0] });
-    }
-  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,34 +71,50 @@ const DashboardPropietario = () => {
       return;
     }
 
-    const formDataToSend = new FormData();
-    
-    // Agregar campos al FormData
-    Object.keys(formData).forEach(key => {
-      if (key === 'fotos_lugar' && formData[key].length > 0) {
-        // Para múltiples archivos en fotos_lugar
-        formData[key].forEach(file => {
-          formDataToSend.append('fotos_lugar', file);
-        });
-      } else if (formData[key] !== null && formData[key] !== '') {
-        // Para campos simples
-        formDataToSend.append(key, formData[key]);
-      }
-    });
-
     try {
-      // Usar la instancia de Axios configurada
-      await api.post('/propietario/lugar', formDataToSend, {
+      const formDataToSend = new FormData();
+      
+      // Agregar campos básicos
+      formDataToSend.append('nombre', formData.nombre);
+      formDataToSend.append('descripcion', formData.descripcion);
+      formDataToSend.append('ubicacion', formData.ubicacion);
+      formDataToSend.append('categoriaid', formData.categoriaid);
+      
+      // Agregar imagen principal
+      if (formData.imagen) {
+        formDataToSend.append('imagen', formData.imagen);
+      }
+      
+      // Agregar fotos adicionales
+      if (formData.fotos_lugar && formData.fotos_lugar.length > 0) {
+        formData.fotos_lugar.forEach((foto) => {
+          formDataToSend.append('fotos_lugar', foto);
+        });
+      }
+      
+
+
+      // Enviar la solicitud con el token de autenticación
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No se encontró el token de autenticación');
+        setLoading(false);
+        navigate('/login');
+        return;
+      }
+
+      const response = await api.post('/api/propietario/lugar', formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
         }
       });
 
-      // Cerrar modal y recargar datos
+      // Actualizar el estado con el nuevo lugar
+      setLugares([...lugares, response.data.lugar]);
       setShowModal(false);
-      await cargarDatos();
       
-      // Resetear formulario
+      // Resetear el formulario
       setFormData({
         nombre: '',
         descripcion: '',
@@ -110,12 +122,21 @@ const DashboardPropietario = () => {
         categoriaid: '',
         imagen: null,
         fotos_lugar: [],
-        carta_pdf: null
+
       });
       
+      // Mostrar mensaje de éxito
+      setShowSuccess(true);
+      // Ocultar el mensaje después de 5 segundos
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 5000);
+      
     } catch (error) {
-      console.error('Error al crear lugar:', error);
-      setError(error.response?.data?.message || 'Error al crear el lugar. Por favor, inténtalo de nuevo.');
+      console.error('Error al crear el lugar:', error);
+      const errorMessage = error.response?.data?.error || error.response?.data?.mensaje || 'Error al crear el lugar';
+      setError(errorMessage);
+      alert(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -205,6 +226,21 @@ const DashboardPropietario = () => {
         </div>
 
         {error && <div className="propietario-error">{error}</div>}
+        {showSuccess && (
+          <div className="propietario-success">
+            <div className="success-content">
+              <div className="success-icon">✓</div>
+              <p>¡Listo! Tu lugar estará visible cuando sea aprobado.</p>
+            </div>
+            <button 
+              className="close-success" 
+              onClick={() => setShowSuccess(false)}
+              aria-label="Cerrar mensaje"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         <div className="propietario-places">
           <div className="propietario-places-header">
@@ -370,17 +406,6 @@ const DashboardPropietario = () => {
         <small>{formData.fotos_lugar.length} archivo(s) seleccionado(s)</small>
       </div>
     )}
-  </div>
-
-  <div className="form-group">
-    <label htmlFor="carta_pdf">Carta de Presentación (PDF)</label>
-    <input 
-      type="file" 
-      id="carta_pdf" 
-      accept=".pdf" 
-      onChange={handlePdfChange} 
-    />
-    <small className="form-text">Documento PDF con información adicional (opcional)</small>
   </div>
 
   <div className="form-botones-modal">
