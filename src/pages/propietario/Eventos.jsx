@@ -6,67 +6,192 @@ import './Eventos.css';
 import { toast } from 'react-toastify';
 
 const Eventos = () => {
+  // Hooks
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const lugarId = searchParams.get('lugarId');
+  
+  // States
   const [eventos, setEventos] = useState([]);
   const [comentariosEvento, setComentariosEvento] = useState({});
   const [eventoComentariosAbierto, setEventoComentariosAbierto] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const [loading, setLoading] = useState(true);
   const [lugares, setLugares] = useState([]);
-  const [nuevoEvento, setNuevoEvento] = useState({
+  const [imagenModal, setImagenModal] = useState({ mostrar: false, url: '' });
+  const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]);
+  const [eventoEditar, setEventoEditar] = useState(null);
+  const [busqueda, setBusqueda] = useState('');
+  
+  // Initialize nuevoEvento with lugarId if available
+  const [nuevoEvento, setNuevoEvento] = useState(() => ({
     nombre: '',
-    lugarid: '',
+    lugarid: lugarId || '',
     capacidad: '',
     precio: '',
     descripcion: '',
     fecha_hora: '',
     portada: []
-  });
-  const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]);
-  const [eventoEditar, setEventoEditar] = useState(null);
-  const [busqueda, setBusqueda] = useState('');
-  const [filtroEstado, setFiltroEstado] = useState('todos');
-  const [fechaInicio, setFechaInicio] = useState('');
-  const [fechaFin, setFechaFin] = useState('');
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const lugarId = searchParams.get('lugarId');
-  const [imagenModal, setImagenModal] = useState({
-    mostrar: false,
-    url: ''
-  });
+  }));
+  
+  // Función para procesar las imágenes de portada de los eventos
+  const procesarImagenesPortada = (portada) => {
+    // URL de imagen por defecto (SVG en base64)
+    const IMAGEN_POR_DEFECTO = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiBmaWxsPSIjZWVlZWVlIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojZmZmZmZmIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZWVlZWVlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PUFyaWFsIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiM5OTkiPk5vIGhheSBpbWFnZW48L3RleHQ+PC9zdmc+';
+    
+    // Si no hay portada o es inválida, devolver la imagen por defecto
+    if (!portada || portada === 'null' || portada === 'undefined' || portada === '[]') {
+      return [IMAGEN_POR_DEFECTO];
+    }
+    
+    try {
+      // Si es un string, procesarlo
+      if (typeof portada === 'string') {
+        // Si es un string vacío o solo espacios, devolver imagen por defecto
+        if (portada.trim() === '') return [IMAGEN_POR_DEFECTO];
+        
+        // Si es un string JSON, intentar parsearlo
+        if ((portada.startsWith('[') && portada.endsWith(']')) || 
+            (portada.startsWith('{') && portada.endsWith('}'))) {
+          try {
+            portada = JSON.parse(portada);
+          } catch (e) {
+            console.warn('No se pudo parsear el JSON de la imagen:', portada);
+            return [IMAGEN_POR_DEFECTO];
+          }
+        } else {
+          // Si es una URL directa o data URL, validarla
+          if (portada.startsWith('http') || portada.startsWith('blob:') || portada.startsWith('data:image')) {
+            return [portada];
+          }
+          // Si parece ser un nombre de archivo, construir la URL de Cloudinary
+          if (portada.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            // Verificar si ya tiene el prefijo de Cloudinary
+            if (!portada.includes('res.cloudinary.com')) {
+              // Eliminar barras iniciales si las hay
+              const cleanPath = portada.replace(/^[\\/]+/, '');
+              return [`https://res.cloudinary.com/popaimagen/image/upload/${cleanPath}`];
+            }
+            return [portada];
+          }
+          return [IMAGEN_POR_DEFECTO];
+        }
+      }
+      
+      // Si es un array, procesar cada elemento
+      if (Array.isArray(portada)) {
+        if (portada.length === 0) return [IMAGEN_POR_DEFECTO];
+        
+        const imagenesProcesadas = [];
+        
+        for (const img of portada) {
+          if (!img) continue;
+          
+          if (typeof img === 'string' && img.trim() !== '') {
+            if (img.startsWith('http') || img.startsWith('blob:') || img.startsWith('data:image')) {
+              imagenesProcesadas.push(img);
+            } else if (img.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+              const cleanPath = img.replace(/^[\\/]+/, '');
+              imagenesProcesadas.push(`https://res.cloudinary.com/popaimagen/image/upload/${cleanPath}`);
+            }
+          } else if (typeof img === 'object' && img !== null) {
+            // Si es un objeto, buscar propiedades que puedan contener URLs
+            const urls = Object.values(img)
+              .filter(val => typeof val === 'string' && val.trim() !== '')
+              .filter(val => val.match(/^(http|blob:|data:image|\.*?\.(jpg|jpeg|png|gif|webp))/i));
+              
+            urls.forEach(url => {
+              if (url.match(/\.(jpg|jpeg|png|gif|webp)$/i) && !url.startsWith('http')) {
+                const cleanPath = url.replace(/^[\\/]+/, '');
+                imagenesProcesadas.push(`https://res.cloudinary.com/popaimagen/image/upload/${cleanPath}`);
+              } else {
+                imagenesProcesadas.push(url);
+              }
+            });
+          }
+          
+          // Limitar a 3 imágenes como máximo
+          if (imagenesProcesadas.length >= 3) break;
+        }
+        
+        return imagenesProcesadas.length > 0 ? imagenesProcesadas : [IMAGEN_POR_DEFECTO];
+      }
+      
+      // Si es un objeto, buscar URLs de imagen en sus propiedades
+      if (typeof portada === 'object' && portada !== null) {
+        const urls = [];
+        
+        // Buscar en las propiedades del objeto
+        for (const val of Object.values(portada)) {
+          if (typeof val === 'string' && val.trim() !== '') {
+            if (val.match(/^(http|blob:|data:image|\.*?\.(jpg|jpeg|png|gif|webp))/i)) {
+              if (val.match(/\.(jpg|jpeg|png|gif|webp)$/i) && !val.startsWith('http')) {
+                const cleanPath = val.replace(/^[\\/]+/, '');
+                urls.push(`https://res.cloudinary.com/popaimagen/image/upload/${cleanPath}`);
+              } else {
+                urls.push(val);
+              }
+            }
+          }
+        }
+        
+        return urls.length > 0 ? urls : [IMAGEN_POR_DEFECTO];
+      }
+      
+      // Si no coincide con ningún formato conocido, devolver imagen por defecto
+      return [IMAGEN_POR_DEFECTO];
+      
+    } catch (error) {
+      console.error('Error procesando imágenes de portada:', error);
+      return [IMAGEN_POR_DEFECTO];
+    }
+  };
 
-  // Verificar autenticación al cargar el componente
+  // URL de imagen de respaldo segura
+  const defaultImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIj48cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTYiIHg9IjIiIHk9IjQiIHJ4PSIyIi8+PGNpcmNsZSBjeD0iOC41IiBjeT0iMTAuNSIgcj0iMi41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEgMTUgMTYgMTAgNSAyMSIvPjwvc3ZnPg==';
+
+  // Cargar datos iniciales
   useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    const token = localStorage.getItem('token');
+    const cargarDatosIniciales = async () => {
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      const token = localStorage.getItem('token');
+      
+      if (!usuario || !token) {
+        console.log('No hay usuario o token, redirigiendo a login');
+        toast.error('Debes iniciar sesión para acceder a esta página');
+        navigate('/login');
+        return;
+      }
+      
+      // Verificar si el rol es el correcto
+      if (parseInt(usuario.rol) !== 3) {
+        console.log('Rol no autorizado, redirigiendo a dashboard');
+        toast.error('No tienes permiso para acceder a esta sección');
+        navigate('/propietario/dashboard');
+        return;
+      }
+      
+      // Cargar datos
+      try {
+        // Establecer el lugarId en el estado si está disponible
+        if (lugarId) {
+          setNuevoEvento(prev => ({
+            ...prev,
+            lugarid: lugarId
+          }));
+        }
+        
+        await Promise.all([
+          cargarLugares(),
+          cargarEventos()
+        ]);
+      } catch (error) {
+        console.error('Error al cargar datos iniciales:', error);
+      }
+    };
     
-    if (!usuario || !token) {
-      console.log('No hay usuario o token, redirigiendo a login');
-      toast.error('Debes iniciar sesión para acceder a esta página');
-      navigate('/login');
-      return;
-    }
-    
-    // Verificar si el rol es el correcto
-    if (parseInt(usuario.rol) !== 3) {
-      console.log('Rol no autorizado, redirigiendo a login');
-      toast.error('No tienes permiso para acceder a esta sección');
-      navigate('/propietario/dashboard');
-      return;
-    }
-    
-    // Si hay un lugarId en la URL, establecerlo como valor por defecto
-    if (lugarId) {
-      setNuevoEvento(prev => ({
-        ...prev,
-        lugarid: lugarId
-      }));
-    }
-    
-    // Si todo está bien, cargar los datos
-    cargarEventos();
-    cargarLugares();
-  }, [navigate, lugarId]);
+    cargarDatosIniciales();
+  }, [navigate]); // Eliminamos lugarId de las dependencias para evitar bucles
 
   useEffect(() => {
     function updateNavbarHeight() {
@@ -85,77 +210,94 @@ const Eventos = () => {
   const cargarEventos = async () => {
     setLoading(true);
     try {
-      // Cargar los lugares del propietario
-      const lugaresResponse = await api.get('/api/propietario/lugares');
-      const lugaresData = Array.isArray(lugaresResponse.data) ? lugaresResponse.data : [];
-      const lugaresIds = lugaresData.map(lugar => lugar.id);
-      
-      if (lugaresIds.length === 0) {
-        setEventos([]);
-        setMensaje('No tienes lugares registrados');
-        return [];
+      // Si ya tenemos el lugarId, cargar solo los eventos de ese lugar
+      if (lugarId) {
+        try {
+          console.log(`Obteniendo eventos activos para el lugar: ${lugarId}`);
+          const response = await api.get(`/api/propietario/lugares/${lugarId}/eventos-activos`);
+          
+          // Verificar si la respuesta es exitosa y tiene eventos
+          if (response.data?.success) {
+            const eventos = Array.isArray(response.data.eventos) ? response.data.eventos : [];
+            console.log(`✅ Eventos encontrados: ${eventos.length}`);
+            
+            // Procesar las imágenes de portada
+            const eventosProcesados = eventos.map(evento => ({
+              ...evento,
+              // Asegurarse de que portada sea un array
+              portada: procesarImagenesPortada(evento.portada)
+            }));
+            
+            setEventos(eventosProcesados);
+            setMensaje(eventosProcesados.length === 0 ? 'No hay eventos activos para este lugar' : '');
+          } else {
+            console.log('No se encontraron eventos para este lugar');
+            setEventos([]);
+            setMensaje(response.data?.mensaje || 'No hay eventos activos para este lugar');
+          }
+        } catch (error) {
+          console.error('Error al cargar eventos del lugar:', error);
+          const errorMessage = error.response?.data?.mensaje || 'Error al cargar los eventos. Intenta de nuevo más tarde.';
+          setMensaje(errorMessage);
+          setEventos([]);
+        } finally {
+          setLoading(false);
+        }
+        return;
       }
       
-      // Inicializar array vacío para los eventos
-      let eventosFiltrados = [];
-      
+      // Si no hay lugarId, cargar todos los lugares y luego sus eventos
       try {
-        // Construir la URL base para la petición
-        const url = '/api/eventos';
-        const params = {};
+        const lugaresResponse = await api.get('/api/propietario/lugares');
+        const lugaresData = Array.isArray(lugaresResponse.data) ? lugaresResponse.data : [];
         
-        // Si hay un lugarId, filtrar por ese lugar
-        if (lugarId) {
-          params.lugarid = lugarId;
+        if (lugaresData.length === 0) {
+          setEventos([]);
+          setMensaje('No tienes lugares registrados');
+          setLoading(false);
+          return;
         }
         
-        console.log('Obteniendo eventos de:', url, 'con parámetros:', params);
+        // Cargar eventos para todos los lugares en paralelo
+        const eventosPromises = lugaresData.map(lugar => 
+          api.get(`/api/propietario/lugares/${lugar.id}/eventos-activos`)
+            .then(res => ({
+              ...lugar,
+              eventos: Array.isArray(res.data?.eventos) ? res.data.eventos.map(evento => ({
+                ...evento,
+                portada: procesarImagenesPortada(evento.portada)
+              })) : []
+            }))
+            .catch(error => {
+              console.error(`Error cargando eventos para lugar ${lugar.id}:`, error);
+              return {
+                ...lugar,
+                eventos: []
+              };
+            })
+        );
         
-        // Hacer la petición al backend
-        const response = await api.get(url, { params });
-        console.log('Respuesta de la API de eventos:', response);
+        const lugaresConEventos = await Promise.all(eventosPromises);
+        const todosLosEventos = lugaresConEventos.flatMap(lugar => 
+          lugar.eventos.map(evento => ({
+            ...evento,
+            lugarNombre: lugar.nombre
+          }))
+        );
         
-        // Procesar la respuesta según el formato esperado
-        if (Array.isArray(response.data)) {
-          eventosFiltrados = response.data;
-        } else if (response.data && Array.isArray(response.data.datos)) {
-          eventosFiltrados = response.data.datos;
-        } else if (response.data && response.data.mensaje) {
-          console.log('Mensaje del servidor:', response.data.mensaje);
-        }
-        
-        // Si no se proporcionó un lugarId, filtrar por los lugares del propietario
-        if (!lugarId && eventosFiltrados.length > 0) {
-          eventosFiltrados = eventosFiltrados.filter(evento => {
-            const eventoLugarId = evento.lugarid || (evento.lugar ? evento.lugar.id : null) || evento.lugarId;
-            return eventoLugarId && lugaresIds.includes(parseInt(eventoLugarId, 10));
-          });
-        }
-        
-        console.log(`Se encontraron ${eventosFiltrados.length} eventos`);
-        
-        // Actualizar el estado con los eventos filtrados
-        setEventos(eventosFiltrados);
-        
-        // Mostrar mensaje apropiado
-        if (eventosFiltrados.length === 0) {
-          setMensaje('No se encontraron eventos para mostrar.');
-        } else {
-          setMensaje('');
-        }
-        
-        return true;
+        console.log(`✅ Total de eventos encontrados: ${todosLosEventos.length}`);
+        setEventos(todosLosEventos);
+        setMensaje(todosLosEventos.length === 0 ? 'No se encontraron eventos para mostrar.' : '');
       } catch (error) {
-        console.error('Error al cargar eventos:', error);
-        setMensaje('Error al cargar los eventos. Intenta recargar la página.');
+        console.error('Error al cargar lugares:', error);
+        const errorMessage = error.response?.data?.mensaje || 'Error al cargar los lugares. Intenta recargar la página.';
+        setMensaje(errorMessage);
         setEventos([]);
-        return false;
       }
     } catch (error) {
-      console.error('Error al cargar lugares:', error);
-      setMensaje('Error al cargar los lugares. Intenta recargar la página.');
+      console.error('Error inesperado al cargar eventos:', error);
+      setMensaje('Ocurrió un error inesperado. Por favor, recarga la página.');
       setEventos([]);
-      return false;
     } finally {
       setLoading(false);
     }
@@ -164,22 +306,36 @@ const Eventos = () => {
   const cargarLugares = async () => {
     try {
       const response = await api.get('/api/propietario/lugares');
-      setLugares(Array.isArray(response.data) ? response.data : []);
+      const lugaresData = Array.isArray(response.data) ? response.data : [];
+      setLugares(lugaresData);
       
-      // Si hay un lugarId en la URL, seleccionarlo automáticamente
+      // Si hay un lugarId en la URL, verificar que exista en la lista de lugares
       if (lugarId) {
-        const lugarSeleccionado = response.data.find(lugar => lugar.id === parseInt(lugarId, 10));
+        const lugarSeleccionado = lugaresData.find(lugar => lugar.id === parseInt(lugarId, 10));
         if (lugarSeleccionado) {
           setNuevoEvento(prev => ({
             ...prev,
             lugarid: lugarSeleccionado.id
           }));
+        } else {
+          console.warn(`El lugar con ID ${lugarId} no fue encontrado en la lista de lugares del propietario`);
         }
+      } 
+      // Si no hay lugarId y hay lugares disponibles, seleccionar el primero por defecto
+      else if (lugaresData.length > 0) {
+        setNuevoEvento(prev => ({
+          ...prev,
+          lugarid: lugaresData[0].id
+        }));
       }
+      
+      return lugaresData;
     } catch (error) {
       console.error('Error al cargar lugares:', error);
-      setMensaje('Error al cargar los lugares: ' + (error.response?.data?.mensaje || error.message));
+      const errorMessage = error.response?.data?.mensaje || error.message || 'Error desconocido';
+      setMensaje('Error al cargar los lugares: ' + errorMessage);
       setLugares([]);
+      return [];
     }
   };
 
@@ -198,85 +354,155 @@ const Eventos = () => {
     
     try {
       // Validar campos requeridos
-      if (!nuevoEvento.nombre || !nuevoEvento.descripcion || !nuevoEvento.fecha_hora) {
-        toast.error('Por favor completa todos los campos requeridos');
+      const camposRequeridos = {
+        nombre: 'Nombre del evento',
+        descripcion: 'Descripción',
+        fecha_hora: 'Fecha y hora',
+        lugarid: 'Lugar'
+      };
+      
+      const camposFaltantes = Object.entries(camposRequeridos)
+        .filter(([key]) => !nuevoEvento[key])
+        .map(([_, label]) => label);
+      
+      if (camposFaltantes.length > 0) {
+        toast.error(`Por favor completa los siguientes campos: ${camposFaltantes.join(', ')}`);
         return;
       }
 
-      if (imagenesSeleccionadas.length === 0) {
+      // Validar imágenes (1-3) solo para creación
+      if (!eventoEditar && imagenesSeleccionadas.length === 0) {
         toast.error('Por favor selecciona al menos una imagen');
         return;
       }
 
-      // Crear FormData
-      const formData = new FormData();
-      
-      // Agregar campos del formulario
-      formData.append('nombre', nuevoEvento.nombre);
-      formData.append('descripcion', nuevoEvento.descripcion);
-      formData.append('capacidad', nuevoEvento.capacidad || '50');
-      formData.append('precio', nuevoEvento.precio || '0');
-      formData.append('fecha_hora', nuevoEvento.fecha_hora);
-      
-      // Usar el lugarId de la URL o del formulario
-      const lugarIdFinal = lugarId || nuevoEvento.lugarid;
-      if (!lugarIdFinal) {
-        toast.error('No se ha seleccionado un lugar');
+      if (imagenesSeleccionadas.length > 3) {
+        toast.error('Máximo se permiten 3 imágenes');
         return;
       }
-      formData.append('lugarid', lugarIdFinal);
 
-      // Agregar imágenes
-      imagenesSeleccionadas.forEach(imagen => {
-        formData.append('portada', imagen);
-      });
+      // Validar fecha futura
+      const fechaEvento = new Date(nuevoEvento.fecha_hora);
+      const ahora = new Date();
+      ahora.setMinutes(ahora.getMinutes() - 5); // Margen de 5 minutos
+      
+      if (fechaEvento <= ahora) {
+        toast.error('La fecha del evento debe ser futura');
+        return;
+      }
 
-      console.log('Enviando datos del evento:', {
-        nombre: nuevoEvento.nombre,
-        lugarid: lugarIdFinal,
-        imagenes: imagenesSeleccionadas.length
-      });
+      setLoading(true);
 
-      // Enviar la petición con prefijo /api
-      const response = await api.post('/api/evento', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      console.log('Respuesta del servidor:', response.data);
-
-      if (response.data && response.data.mensaje === 'Evento creado correctamente') {
-        toast.success('Evento creado exitosamente');
+      try {
+        // Crear FormData
+        const formData = new FormData();
         
-        // Limpiar el formulario
-        setNuevoEvento({
-          nombre: '',
-          lugarid: lugarId || '',
-          capacidad: '',
-          precio: '',
-          descripcion: '',
-          fecha_hora: ''
+        // Agregar campos del formulario
+        formData.append('nombre', nuevoEvento.nombre.trim());
+        formData.append('descripcion', nuevoEvento.descripcion.trim());
+        formData.append('lugarid', nuevoEvento.lugarid);
+        formData.append('capacidad', nuevoEvento.capacidad || '0');
+        formData.append('precio', nuevoEvento.precio || '0');
+        
+        // Formatear fecha en formato ISO sin milisegundos
+        const fechaISO = fechaEvento.toISOString().replace(/\.\d+/, '');
+        formData.append('fecha_hora', fechaISO);
+        
+        console.log('Enviando datos:', {
+          nombre: nuevoEvento.nombre.trim(),
+          lugarid: nuevoEvento.lugarid,
+          capacidad: nuevoEvento.capacidad || '0',
+          precio: nuevoEvento.precio || '0',
+          fecha_hora: fechaISO
         });
-        setImagenesSeleccionadas([]);
         
-        // Cerrar el modal si está abierto
-        if (window.bootstrap) {
-          const modal = document.getElementById('modalNuevoEvento');
-          if (modal) {
-            const modalBootstrap = window.bootstrap.Modal.getInstance(modal);
-            if (modalBootstrap) modalBootstrap.hide();
-          }
+        // Agregar imágenes (el campo debe llamarse 'portada' según el backend)
+        if (imagenesSeleccionadas.length > 0) {
+          imagenesSeleccionadas.forEach((imagen, index) => {
+            // Asegurarse de que sea un archivo válido
+            if (imagen instanceof File) {
+              formData.append('portada', imagen, imagen.name || `imagen-${index + 1}.jpg`);
+            }
+          });
+        } else if (eventoEditar && nuevoEvento.portada) {
+          // Si estamos editando y no hay imágenes nuevas, mantener las existentes
+          const portadasExistentes = Array.isArray(nuevoEvento.portada) ? 
+            nuevoEvento.portada : 
+            JSON.parse(nuevoEvento.portada || '[]');
+          
+          portadasExistentes.forEach(url => {
+            if (url) formData.append('portada', url);
+          });
+        }
+
+        let response;
+        
+        // Determinar si es una actualización o creación
+        if (eventoEditar) {
+          console.log('Actualizando evento...');
+          response = await api.put(`/api/evento/${eventoEditar.id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+        } else {
+          console.log('Creando nuevo evento...');
+          response = await api.post('/api/evento', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
         }
         
-        // Recargar la lista de eventos
-        await cargarEventos();
-      } else {
-        throw new Error('No se pudo crear el evento');
+        console.log('Respuesta del servidor:', response.data);
+        
+        // Verificar respuesta exitosa
+        if (response.data && response.data.success !== false) {
+          // Limpiar el formulario
+          setNuevoEvento({
+            nombre: '',
+            lugarid: lugarId || '',
+            capacidad: '',
+            precio: '',
+            descripcion: '',
+            fecha_hora: ''
+          });
+          setImagenesSeleccionadas([]);
+          setEventoEditar(null);
+          
+          // Cerrar el modal si está abierto
+          const modal = document.getElementById('eventoModal');
+          if (modal) {
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) modalInstance.hide();
+          }
+          
+          // Recargar la lista de eventos
+          await cargarEventos();
+          
+          // Mostrar mensaje de éxito
+          toast.success(response.data.mensaje || (eventoEditar ? 'Evento actualizado exitosamente' : 'Evento creado exitosamente'));
+        } else {
+          throw new Error(response.data?.error || (eventoEditar ? 'No se pudo actualizar el evento' : 'No se pudo crear el evento'));
+        }
+      } catch (error) {
+        console.error('Error en la petición:', error);
+        const errorMessage = error.response?.data?.error || 
+                           error.response?.data?.message || 
+                           error.message || 
+                           (eventoEditar ? 'Error al actualizar el evento' : 'Error al crear el evento');
+        toast.error(errorMessage);
       }
     } catch (error) {
-      console.error('Error al crear el evento:', error);
-      toast.error(error.response?.data?.mensaje || 'Error al crear el evento');
+      console.error('Error al procesar el formulario:', error);
+      const errorMessage = error.response?.data?.error || 
+                         error.response?.data?.message || 
+                         (eventoEditar ? 'Error al actualizar el evento' : 'Error al crear el evento');
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -288,8 +514,23 @@ const Eventos = () => {
       capacidad: evento.capacidad,
       precio: evento.precio,
       descripcion: evento.descripcion,
-      fecha_hora: evento.fecha_hora ? evento.fecha_hora.slice(0, 16) : ''
+      fecha_hora: evento.fecha_hora ? evento.fecha_hora.slice(0, 16) : '',
+      portada: evento.portada || []
     });
+    
+    // Si el evento tiene imágenes, procesarlas para mostrarlas
+    if (evento.portada) {
+      const imagenesProcesadas = procesarImagenesPortada(evento.portada);
+      setImagenesSeleccionadas(imagenesProcesadas);
+    } else {
+      setImagenesSeleccionadas([]);
+    }
+    
+    // Desplazarse al formulario
+    const formElement = document.getElementById('formularioEvento');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleEliminar = async (eventoId) => {
@@ -364,10 +605,77 @@ const Eventos = () => {
   };
 
   const verImagen = (url) => {
-    setImagenModal({
-      mostrar: true,
-      url: url
-    });
+    // URL de imagen por defecto (puedes reemplazarla con una imagen por defecto de tu elección)
+    const IMAGEN_POR_DEFECTO = 'https://res.cloudinary.com/popaimagen/image/upload/v1620000000/placeholder.jpg';
+    
+    // Verificar si la URL es válida antes de mostrarla
+    if (!url || typeof url !== 'string' || url.trim() === '') {
+      toast.warning('No hay imagen disponible para este evento');
+      setImagenModal({
+        mostrar: true,
+        url: IMAGEN_POR_DEFECTO
+      });
+      return;
+    }
+    
+    // Asegurarse de que la URL sea absoluta
+    let imageUrl = url;
+    if (!url.startsWith('http') && !url.startsWith('data:')) {
+      // Verificar si la URL ya tiene el prefijo de Cloudinary
+      if (!url.includes('res.cloudinary.com')) {
+        // Asegurarse de que la URL no tenga barras al inicio
+        const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+        imageUrl = `https://res.cloudinary.com/popaimagen/image/upload/${cleanUrl}`;
+      } else {
+        imageUrl = url;
+      }
+    }
+    
+    // Crear una imagen temporal para verificar si existe
+    const img = new Image();
+    
+    // Establecer un tiempo de espera para la carga de la imagen
+    const timeout = setTimeout(() => {
+      if (!img.complete) {
+        console.warn('Tiempo de espera agotado para cargar la imagen:', imageUrl);
+        setImagenModal({
+          mostrar: true,
+          url: IMAGEN_POR_DEFECTO
+        });
+        toast.warning('La imagen está tardando demasiado en cargar');
+      }
+    }, 5000); // 5 segundos de tiempo de espera
+    
+    img.onload = () => {
+      clearTimeout(timeout);
+      // Verificar si la imagen se cargó correctamente (ancho y alto mayores a 0)
+      if (img.width > 0 && img.height > 0) {
+        setImagenModal({
+          mostrar: true,
+          url: imageUrl
+        });
+      } else {
+        console.error('Imagen inválida (ancho o alto = 0):', imageUrl);
+        setImagenModal({
+          mostrar: true,
+          url: IMAGEN_POR_DEFECTO
+        });
+      }
+    };
+    
+    img.onerror = () => {
+      clearTimeout(timeout);
+      console.error('Error al cargar la imagen. URL:', imageUrl);
+      // Mostrar imagen por defecto en lugar de solo mostrar un error
+      setImagenModal({
+        mostrar: true,
+        url: IMAGEN_POR_DEFECTO
+      });
+      toast.warning('No se pudo cargar la imagen del evento');
+    };
+    
+    // Iniciar la carga de la imagen
+    img.src = imageUrl;
   };
 
   const cerrarModalImagen = () => {
@@ -376,6 +684,8 @@ const Eventos = () => {
       url: ''
     });
   };
+
+  // Rest of the component's logic...
 
   return (
     <>
@@ -388,7 +698,7 @@ const Eventos = () => {
               : 'Mis Eventos'}
           </h2>
           {mensaje && <div className="mensaje">{mensaje}</div>}
-          <form onSubmit={handleSubmit} className="form-container">
+          <form id="formularioEvento" onSubmit={handleSubmit} className="form-container">
             <div className="form-group">
               <input
                 type="text"
@@ -467,45 +777,77 @@ const Eventos = () => {
               </div>
             </div>
             
-            <button type="submit" className="btn-crear">
-              {eventoEditar ? 'Actualizar' : 'Crear'} Evento
-            </button>
-            {eventoEditar && (
-              <button type="button" onClick={() => { setEventoEditar(null); setNuevoEvento({ nombre: '', lugarid: '', capacidad: '', precio: '', descripcion: '', fecha_hora: '' }); }}>
-                Cancelar
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Procesando...
+                  </>
+                ) : eventoEditar ? (
+                  'Actualizar Evento'
+                ) : (
+                  'Crear Evento'
+                )}
               </button>
-            )}
-          </form>
-          {/* Filtros y búsqueda */}
-          <div className="filtros-eventos">
-            <input
-              type="text"
-              placeholder="Buscar por nombre..."
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-            />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)} style={{ marginBottom: 0 }}>
-                <option value="todos">Todos</option>
-                <option value="activos">Activos</option>
-                <option value="inactivos">Inactivos</option>
-              </select>
-              <span style={{ fontSize: '0.75rem', color: '#aaa', marginTop: '2px', marginLeft: 0, display: 'block' }}>
-                Estado: todos/activos/inactivos
-              </span>
+              {eventoEditar && (
+                <button 
+                  type="button" 
+                  className="btn btn-secondary ms-2"
+                  onClick={() => {
+                    setEventoEditar(null);
+                    setNuevoEvento({
+                      nombre: '',
+                      lugarid: lugarId || '',
+                      capacidad: '',
+                      precio: '',
+                      descripcion: '',
+                      fecha_hora: '',
+                      portada: []
+                    });
+                    setImagenesSeleccionadas([]);
+                  }}
+                >
+                  Cancelar Edición
+                </button>
+              )}
             </div>
-            <input
-              type="date"
-              value={fechaInicio}
-              onChange={e => setFechaInicio(e.target.value)}
-              title="Fecha inicial"
-            />
-            <input
-              type="date"
-              value={fechaFin}
-              onChange={e => setFechaFin(e.target.value)}
-              title="Fecha final"
-            />
+          </form>
+          
+          {/* Búsqueda mejorada */}
+          <div className="busqueda-container">
+            <div className="busqueda-input-container">
+              <svg className="busqueda-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                type="text"
+                className="busqueda-input"
+                placeholder="Buscar eventos por nombre..."
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+                aria-label="Buscar eventos"
+              />
+              {busqueda && (
+                <button 
+                  type="button" 
+                  className="limpiar-busqueda"
+                  onClick={() => setBusqueda('')}
+                  aria-label="Limpiar búsqueda"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              )}
+            </div>
+            {busqueda && (
+              <div className="resultados-busqueda">
+                Mostrando {eventos.filter(e => e.nombre.toLowerCase().includes(busqueda.toLowerCase())).length} resultados
+              </div>
+            )}
           </div>
           {loading ? (
             <div className="cargando">Cargando eventos...</div>
@@ -515,12 +857,6 @@ const Eventos = () => {
                 .filter(evento => {
                   // Filtro por nombre
                   if (busqueda && !evento.nombre.toLowerCase().includes(busqueda.toLowerCase())) return false;
-                  // Filtro por estado
-                  if (filtroEstado === 'activos' && !evento.estado) return false;
-                  if (filtroEstado === 'inactivos' && evento.estado) return false;
-                  // Filtro por fecha
-                  if (fechaInicio && new Date(evento.fecha_hora) < new Date(fechaInicio)) return false;
-                  if (fechaFin && new Date(evento.fecha_hora) > new Date(fechaFin + 'T23:59:59')) return false;
                   return true;
                 })
                 .length === 0 ? (
@@ -529,10 +865,6 @@ const Eventos = () => {
                 eventos
                   .filter(evento => {
                     if (busqueda && !evento.nombre.toLowerCase().includes(busqueda.toLowerCase())) return false;
-                    if (filtroEstado === 'activos' && !evento.estado) return false;
-                    if (filtroEstado === 'inactivos' && evento.estado) return false;
-                    if (fechaInicio && new Date(evento.fecha_hora) < new Date(fechaInicio)) return false;
-                    if (fechaFin && new Date(evento.fecha_hora) > new Date(fechaFin + 'T23:59:59')) return false;
                     return true;
                   })
                   .map((evento) => (
@@ -544,28 +876,48 @@ const Eventos = () => {
                       </div>
                       <div className="item-content">
                         {/* Mostrar imágenes de portada si existen */}
-                        {evento.portada && evento.portada.length > 0 && (
-                          <div className="portada-preview">
-                            <div className="portada-grid">
-                              {evento.portada.slice(0, 3).map((imagen, idx) => (
-                                <div 
-                                  key={idx} 
-                                  className="portada-item" 
-                                  onClick={() => verImagen(imagen)}
-                                >
-                                  <img 
-                                    src={imagen} 
-                                    alt={`Portada ${idx + 1}`} 
-                                    className="portada-imagen"
-                                  />
-                                  {evento.portada.length > 3 && idx === 2 && (
-                                    <div className="mas-imagenes">+{evento.portada.length - 3}</div>
-                                  )}
+                        {(() => {
+                          try {
+                            const imagenes = procesarImagenesPortada(evento.portada);
+                            if (!imagenes || imagenes.length === 0) return null;
+                            
+                            // Filtrar URLs vacías o inválidas
+                            const imagenesValidas = imagenes.filter(url => url && typeof url === 'string' && url.trim() !== '');
+                            if (imagenesValidas.length === 0) return null;
+                            
+                            return (
+                              <div className="portada-preview">
+                                <div className="portada-grid">
+                                  {imagenesValidas.slice(0, 3).map((imagen, idx) => (
+                                    <div 
+                                      key={idx} 
+                                      className="portada-item" 
+                                      onClick={() => verImagen(imagen)}
+                                    >
+                                      <img 
+                                        src={imagen} 
+                                        alt={`Portada ${idx + 1}`} 
+                                        className="portada-imagen"
+                                        onError={(e) => {
+                                          e.target.onerror = null;
+                                          e.target.src = defaultImage;
+                                          e.target.style.objectFit = 'contain';
+                                          e.target.style.padding = '8px';
+                                        }}
+                                      />
+                                      {imagenesValidas.length > 3 && idx === 2 && (
+                                        <div className="mas-imagenes">+{imagenesValidas.length - 3}</div>
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                              </div>
+                            );
+                          } catch (error) {
+                            console.error('Error al mostrar las imágenes:', error);
+                            return null;
+                          }
+                        })()}
                         <p>{evento.descripcion}</p>
                         <div className="item-details">
                           <span>Lugar: {evento.lugar?.nombre || 'No especificado'}</span>
