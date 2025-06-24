@@ -42,6 +42,17 @@ const LugarDetalle = () => {
   const [showLightbox, setShowLightbox] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const sliderRef = useRef(null);
+  
+  // Obtener todas las imágenes del lugar (imagen principal + fotos adicionales)
+  const allImages = React.useMemo(() => {
+    if (!lugar) return [];
+    return [
+      lugar.imagen,
+      ...(lugar.fotos_lugar || []).map(foto => 
+        typeof foto === 'string' ? foto : foto.url || foto.imagen
+      )
+    ].filter(Boolean);
+  }, [lugar]);
 
   // Componentes personalizados para las flechas de navegación
   const NextArrow = ({ onClick }) => (
@@ -105,6 +116,7 @@ const LugarDetalle = () => {
   // Función para abrir el lightbox
   const openLightbox = (index) => {
     setLightboxIndex(index);
+    setCurrentSlide(index); // Sincronizar el slide actual con el lightbox
     setShowLightbox(true);
     document.body.style.overflow = 'hidden';
   };
@@ -115,24 +127,84 @@ const LugarDetalle = () => {
     document.body.style.overflow = 'auto';
   };
 
-  // Función para navegar en el lightbox
-  const goToSlide = (index) => {
-    setLightboxIndex(index);
-    if (sliderRef.current) {
-      sliderRef.current.slickGoTo(index);
-    }
+
+
+  // Manejar teclado en el lightbox
+  useEffect(() => {
+    if (!showLightbox) return;
+
+    const handleKeyDown = (e) => {
+      if (!allImages || !allImages.length) return;
+      
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowRight') {
+        goToNextImage();
+      } else if (e.key === 'ArrowLeft') {
+        goToPrevImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showLightbox, lightboxIndex, allImages?.length]);
+
+  // Navegación entre imágenes
+  const nextImage = () => {
+    if (!allImages || !allImages.length) return;
+    setCurrentSlide(prev => (prev + 1) % allImages.length);
   };
 
-  // Obtener todas las imágenes del lugar (imagen principal + fotos adicionales)
-  const allImages = React.useMemo(() => {
-    if (!lugar) return [];
-    return [
-      lugar.imagen,
-      ...(lugar.fotos_lugar || []).map(foto => 
-        typeof foto === 'string' ? foto : foto.url || foto.imagen
-      )
-    ].filter(Boolean);
-  }, [lugar]);
+  const prevImage = () => {
+    if (!allImages || !allImages.length) return;
+    setCurrentSlide(prev => (prev - 1 + allImages.length) % allImages.length);
+  };
+
+  // Navegación en el lightbox
+  const goToNextImage = () => {
+    if (!allImages || !allImages.length) return;
+    const nextIndex = (lightboxIndex + 1) % allImages.length;
+    setLightboxIndex(nextIndex);
+    setCurrentSlide(nextIndex);
+  };
+
+  const goToPrevImage = () => {
+    if (!allImages || !allImages.length) return;
+    const prevIndex = (lightboxIndex - 1 + allImages.length) % allImages.length;
+    setLightboxIndex(prevIndex);
+    setCurrentSlide(prevIndex);
+  };
+
+  // Manejar gestos táctiles
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    
+    const diff = touchStartX - touchEndX;
+    const swipeThreshold = 50; // Mínimo de píxeles para considerar un swipe
+    
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        goToNextImage(); // Swipe izquierda
+      } else {
+        goToPrevImage(); // Swipe derecha
+      }
+    }
+    
+    // Resetear los valores
+    setTouchStartX(0);
+    setTouchEndX(0);
+  };
 
   // Ordenar eventos por fecha (más recientes primero)
   const eventosLugar = React.useMemo(() => {
@@ -142,15 +214,6 @@ const LugarDetalle = () => {
       new Date(b.fecha_hora) - new Date(a.fecha_hora)
     );
   }, [eventos]);
-
-  // Navegación entre imágenes
-  const nextImage = () => {
-    setCurrentSlide(prev => (prev + 1) % allImages.length);
-  };
-
-  const prevImage = () => {
-    setCurrentSlide(prev => (prev - 1 + allImages.length) % allImages.length);
-  };
 
   // Cargar datos del lugar y eventos
   useEffect(() => {
@@ -246,11 +309,20 @@ const LugarDetalle = () => {
             <h3 className="lugar-detalle-place-title">{lugar?.nombre || 'Detalles del Lugar'}</h3>
             {allImages.length > 0 && (
               <div className="image-slider-container">
-                <img 
-                  src={allImages[currentSlide]} 
-                  alt={`${lugar.nombre} - Imagen ${currentSlide + 1}`} 
-                  style={imageSize} 
-                />
+                <div 
+                  className="main-image-container"
+                  onClick={() => openLightbox(currentSlide)}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
+                  <img 
+                    src={allImages[currentSlide]} 
+                    alt={`${lugar.nombre} - Imagen ${currentSlide + 1}`} 
+                    style={imageSize}
+                    className="main-image"
+                  />
+                </div>
                 {allImages.length > 1 && (
                   <>
                     <button 
@@ -363,6 +435,47 @@ const LugarDetalle = () => {
           </div>
         </div>
       </div>
+      
+      {/* Lightbox */}
+      {showLightbox && (
+        <div className="lightbox-overlay" onClick={closeLightbox}>
+          <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+            <button className="lightbox-close" onClick={closeLightbox} aria-label="Cerrar">
+              &times;
+            </button>
+            <div className="lightbox-image-container">
+              <img 
+                src={allImages[lightboxIndex]} 
+                alt={`${lugar.nombre} - Imagen ${lightboxIndex + 1}`}
+                className="lightbox-image"
+              />
+              <button 
+                className="lightbox-nav prev" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToPrevImage();
+                }}
+                aria-label="Imagen anterior"
+              >
+                <FaChevronLeft />
+              </button>
+              <button 
+                className="lightbox-nav next" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToNextImage();
+                }}
+                aria-label="Siguiente imagen"
+              >
+                <FaChevronRight />
+              </button>
+              <div className="lightbox-counter">
+                {lightboxIndex + 1} / {allImages.length}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
