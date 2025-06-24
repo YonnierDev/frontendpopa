@@ -509,85 +509,69 @@ const Eventos = () => {
     }
   };
 
+  const handleEliminarImagen = (index) => {
+    setImagenesSeleccionadas(prev => {
+      const nuevasImagenes = [...prev];
+      nuevasImagenes.splice(index, 1);
+      return nuevasImagenes;
+    });
+    
+    // Si estamos editando, actualizar también el estado del evento
+    if (eventoEditar) {
+      setNuevoEvento(prev => ({
+        ...prev,
+        portada: [...prev.portada].filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const handleEliminar = async (eventoId) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Hacer la petición DELETE al endpoint del servidor
+      await api.delete(`/api/evento/${eventoId}`);
+      
+      // Actualizar la lista de eventos eliminando el evento eliminado
+      setEventos(prevEventos => prevEventos.filter(evento => evento.id !== eventoId));
+      
+      // Mostrar mensaje de éxito
+      toast.success('Evento eliminado correctamente');
+    } catch (error) {
+      console.error('Error al eliminar el evento:', error);
+      // Mostrar mensaje de error específico del servidor o uno genérico
+      const errorMessage = error.response?.data?.mensaje || 'Error al eliminar el evento. Intenta de nuevo más tarde.';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditar = (evento) => {
     setEventoEditar(evento);
     setNuevoEvento({
       nombre: evento.nombre,
-      lugarid: evento.lugarid || (evento.lugar && evento.lugar.id) || '',
+      lugarid: evento.lugarid,
       capacidad: evento.capacidad,
       precio: evento.precio,
       descripcion: evento.descripcion,
-      fecha_hora: evento.fecha_hora ? evento.fecha_hora.slice(0, 16) : '',
+      fecha_hora: new Date(evento.fecha_hora).toISOString().slice(0, 16),
       portada: evento.portada || []
     });
     
-    // Si el evento tiene imágenes, procesarlas para mostrarlas
-    if (evento.portada) {
-      const imagenesProcesadas = procesarImagenesPortada(evento.portada);
-      setImagenesSeleccionadas(imagenesProcesadas);
+    // Si hay imágenes existentes, convertirlas a un formato que pueda mostrarse en la vista previa
+    if (evento.portada && evento.portada.length > 0) {
+      const imagenes = procesarImagenesPortada(evento.portada);
+      setImagenesSeleccionadas(imagenes);
     } else {
       setImagenesSeleccionadas([]);
     }
     
     // Desplazarse al formulario
-    const formElement = document.getElementById('formularioEvento');
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleEliminar = async (eventoId) => {
-    if (!window.confirm('¿Estás seguro de que deseas desactivar este evento? Esto lo ocultará de la vista pública.')) return;
-    
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No se encontró el token de autenticación');
-      }
-
-      // Usar la URL completa para la actualización
-      const apiUrl = `${import.meta.env.VITE_API_URL || ''}/api/evento/${eventoId}`.replace(/([^:]\/)\/+/g, '$1');
-      
-      // Enviar una solicitud PUT para actualizar el estado del evento
-      const response = await axios({
-        method: 'put',
-        url: apiUrl,
-        data: { estado: false }, // Desactivar el evento
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        withCredentials: true
-      });
-
-      if (response.status === 200) {
-        toast.success('Evento desactivado correctamente');
-        // Recargar la lista de eventos
-        await cargarEventos();
-      } else {
-        throw new Error(`Error inesperado: ${response.status} ${response.statusText}`);
-      }
-    } catch (error) {
-      console.error('Error al desactivar el evento:', error);
-      let errorMessage = 'Error al desactivar el evento';
-      
-      if (error.response) {
-        // El servidor respondió con un estado de error
-        const responseData = error.response.data || {};
-        errorMessage = responseData.mensaje || 
-                     responseData.message || 
-                     `Error ${error.response.status}: ${error.response.statusText}`;
-      } else if (error.request) {
-        // La solicitud fue hecha pero no se recibió respuesta
-        errorMessage = 'No se recibió respuesta del servidor. Verifica tu conexión.';
-      } else {
-        // Algo sucedió en la configuración de la solicitud
-        errorMessage = error.message || 'Error al realizar la petición';
-      }
-      
-      toast.error(errorMessage);
-    }
+    document.getElementById('formulario-evento')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Función para resaltar coincidencias en el nombre del evento
@@ -849,9 +833,13 @@ const Eventos = () => {
                       />
                       <button 
                         type="button" 
-                        onClick={() => eliminarImagen(index)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEliminarImagen(index);
+                        }}
                         className="btn-eliminar-imagen"
                         aria-label="Eliminar imagen"
+                        title="Eliminar imagen"
                       >
                         ×
                       </button>
