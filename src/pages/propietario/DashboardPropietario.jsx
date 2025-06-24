@@ -33,6 +33,7 @@ const DashboardPropietario = () => {
   const [categorias, setCategorias] = useState([]);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
     nombre: '',

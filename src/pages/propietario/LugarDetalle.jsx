@@ -223,8 +223,20 @@ const LugarDetalle = () => {
         
         // Cargar datos del lugar
         const lugarResponse = await api.get(`/api/lugar/${id}`);
-        console.log('Datos del lugar recibidos:', lugarResponse.data);
-        setLugar(lugarResponse.data);
+        console.log('Datos completos del lugar recibidos:', lugarResponse);
+        
+        // Obtener las categorías disponibles
+        const categoriasResponse = await api.get('/api/categorias');
+        console.log('Categorías disponibles:', categoriasResponse.data);
+        
+        // Encontrar la categoría correspondiente
+        const lugarConCategoria = {
+          ...lugarResponse.data,
+          categoria: categoriasResponse.data.find(cat => cat.id === lugarResponse.data.categoriaid)
+        };
+        
+        console.log('Datos del lugar con categoría:', lugarConCategoria);
+        setLugar(lugarConCategoria);
         
         // Cargar eventos del lugar específico (incluyendo inactivos)
         console.log('Solicitando eventos para el lugar ID:', id);
@@ -368,7 +380,13 @@ const LugarDetalle = () => {
           
           <div className="info-card">
             <h2>Categoría</h2>
-            <p>{lugar.categoria?.tipo || 'No especificada'}</p>
+            <p>{
+              lugar.categoria?.tipo || 
+              (lugar.categoriaid ? `ID: ${lugar.categoriaid}` : 'No especificada')
+            }</p>
+            {lugar.categoriaid && !lugar.categoria?.tipo && (
+              <p className="text-muted small">Detalles de la categoría no disponibles</p>
+            )}
           </div>
 
           <div className="info-card">
