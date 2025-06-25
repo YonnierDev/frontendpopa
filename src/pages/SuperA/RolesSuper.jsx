@@ -108,7 +108,7 @@ const RolesSuper = () => {
   if (error) return <div className="super-alert super-alert-error">{error}</div>;
 
   return (
-    <div className="super-container">
+    <div className="container-roles">
       <ToastContainer position="top-right" autoClose={3000} />
       
       <div className="super-header">
@@ -144,8 +144,9 @@ const RolesSuper = () => {
             <tr>
               <th>Nombre</th>
               <th>Usuarios</th>
-              <th>Estado</th>
+              {/* <th>Estado</th> */}
               <th>Acciones</th>
+               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -162,7 +163,7 @@ const RolesSuper = () => {
                     {rol.usuarios?.length || 0} usuarios
                   </span>
                 </td>
-                <td>
+                {/* <td>
                   <label className="switch">
                     <input
                       type="checkbox"
@@ -174,7 +175,7 @@ const RolesSuper = () => {
                   <span className={`status-badge ${rol.estado ? 'active' : 'inactive'}`}>
                     {rol.estado ? 'Activo' : 'Inactivo'}
                   </span>
-                </td>
+                </td> */}
                 <td>
                   <div className="action-buttons">
                     <button 

@@ -11,18 +11,19 @@ const LugaresSuper = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedLugar, setSelectedLugar] = useState(null);
+  const [categorias, setCategorias] = useState([]);
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
     ubicacion: '',
     categoriaid: '',
     usuarioid: '',
-    estado: false,
-    aprobacion: false
+    estado: 1,
+    aprobacion: 0
   });
   const [imagen, setImagen] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
-const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descripcion: '' });
+  const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descripcion: '' });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,7 +41,30 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
     }));
 
     fetchLugares();
+    fetchCategorias();
   }, []);
+
+  const fetchCategorias = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('https://popnocturna.vercel.app/api/categorias', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data && Array.isArray(response.data)) {
+        setCategorias(response.data);
+      } else {
+        console.error('Formato de categorías inválido');
+      }
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+    }
+  };
+
+
 
   const fetchLugares = async () => {
     try {
@@ -49,7 +73,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
       console.log('Token:', token);
 
       const response = await axios.get('https://popnocturna.vercel.app/api/lugares', {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
@@ -91,8 +115,8 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
       ubicacion: lugar.ubicacion || '',
       categoriaid: lugar.categoriaid || '',
       usuarioid: lugar.usuarioid || '',
-      estado: lugar.estado,
-      aprobacion: lugar.aprobacion
+      estado: lugar.estado === 1 || lugar.estado === true ? 1 : 0,
+      aprobacion: lugar.aprobacion === 1 || lugar.aprobacion === true ? 1 : 0
     });
     setPreviewUrl(lugar.imagen || '');
     setShowModal(true);
@@ -105,7 +129,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
         console.log('Eliminando lugar:', id);
 
         const response = await axios.delete(`https://popnocturna.vercel.app/api/lugar/${id}`, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
@@ -147,7 +171,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
       console.log('Usuario actual:', usuario);
 
       const formDataToSend = new FormData();
-      
+
       // Asegurarnos de que todos los campos necesarios estén presentes
       const dataToSend = {
         ...formData,
@@ -169,7 +193,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
       if (selectedLugar) {
         console.log('Actualizando lugar:', selectedLugar.id);
         response = await axios.put(`https://popnocturna.vercel.app/api/lugar/${selectedLugar.id}`, formDataToSend, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
@@ -179,7 +203,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
       } else {
         console.log('Creando nuevo lugar');
         response = await axios.post('https://popnocturna.vercel.app/api/lugar', formDataToSend, {
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
@@ -215,14 +239,14 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value
     }));
   };
 
   const handleToggleEstado = async (lugar) => {
-    const nuevoEstado = !lugar.estado;
+    const nuevoEstado = lugar.estado === 1 ? 0 : 1;
 
-    // Optimistic UI update for a faster user experience
+    // Optimistic UI update
     const originalLugares = [...lugares];
     setLugares(prevLugares =>
       prevLugares.map(l =>
@@ -241,31 +265,33 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
           }
         }
       );
-      toast.success(`Estado del lugar actualizado a ${nuevoEstado ? 'Activo' : 'Inactivo'}.`);
+      toast.success(`Estado del lugar actualizado a ${nuevoEstado === 1 ? 'Activo' : 'Inactivo'}.`);
     } catch (error) {
-      // Revert the state on error
+      // Revert on error
       setLugares(originalLugares);
-      console.error('Error al actualizar el estado:', error.response?.data?.mensaje || error.message);
       toast.error('Error al actualizar el estado del lugar.');
     }
   };
 
 
 
-  const handleToggleAprobacion = async (lugar, aprobacion) => {
+  const handleToggleAprobacion = async (lugarId, aprobacion) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.patch(`https://popnocturna.vercel.app/api/lugar/aprobacion/${lugar.id}`, {
-        aprobacion: aprobacion
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await axios.patch(
+        `https://popnocturna.vercel.app/api/lugar/aprobacion/${lugarId}`,
+        { aprobacion: aprobacion ? 1 : 0 },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
+
       if (response.data && response.data.lugar) {
         setLugares(prevLugares => prevLugares.map(lugar =>
-          lugar.id === lugar.id ? { ...lugar, aprobacion: aprobacion } : lugar
+          lugar.id === lugarId ? { ...lugar, aprobacion: aprobacion ? 1 : 0 } : lugar
         ));
         toast.success(aprobacion ? 'Lugar aprobado' : 'Lugar marcado como pendiente');
       }
@@ -273,7 +299,6 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
       toast.error('No se pudo cambiar la aprobación');
     }
   };
-
   if (loading) return <div className="super-loading">Cargando lugares...</div>;
   if (error) return <div className="super-alert super-alert-error">{error}</div>;
 
@@ -282,7 +307,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
       <div className="lugares-header">
         <h1 className="lugares-title" title="Gestión de Lugares">Gestión de Lugares</h1>
         <div className="lugares-header-actions">
-          <button 
+          <button
             className="lugares-btn lugares-btn-primary"
             onClick={() => {
               setSelectedLugar(null);
@@ -292,8 +317,8 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
                 ubicacion: '',
                 categoriaid: '',
                 usuarioid: JSON.parse(localStorage.getItem('usuario')).id,
-                estado: false,
-                aprobacion: false
+                estado: 1,
+                aprobacion: 1
               });
               setImagen(null);
               setPreviewUrl('');
@@ -333,7 +358,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
           <table className="lugares-table">
             <thead>
               <tr>
-                <th style={{ width: '70px', minWidth: '64px', maxWidth: '80px', verticalAlign: 'middle', padding: '12px 8px' }}>Imagen</th>
+                <th style={{ width: '70px', minWidth: '64px', maxWidth: '80px', verticalAlign: 'middle', padding: '12px 8px' }}>Foto</th>
                 <th>Nombre</th>
                 <th>Ubicación</th>
                 <th>Categoría</th>
@@ -342,147 +367,147 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
                 <th>Acciones</th>
               </tr>
             </thead>
-          <tbody>
-            {filteredLugares.length === 0 ? (
-              <tr>
-                <td colSpan="7" className="lugares-no-data">
-                  No hay lugares disponibles
-                </td>
-              </tr>
-            ) : (
-              filteredLugares.map(lugar => (
-                <tr key={lugar.id}>
-                  <td style={{ width: '70px', minWidth: '64px', maxWidth: '80px', verticalAlign: 'middle', textAlign: 'center', padding: '12px 8px' }}>
-  <div className="lugar-imagen">
-    {lugar.imagen ? (
-      <img 
-        src={lugar.imagen} 
-        alt={lugar.nombre}
-        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#fff', borderRadius: '6px', cursor: 'pointer' }}
-        onClick={() => setImagenModal({ visible: true, url: lugar.imagen, descripcion: lugar.descripcion })}
-        onError={(e) => {
-          e.target.style.display = 'none';
-          const fallback = document.createElement('div');
-          fallback.className = 'no-imagen';
-          fallback.innerHTML = '<svg width="28" height="28" fill="#adb5bd"><rect width="100%" height="100%" fill="#f8f9fa"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="18">?</text></svg>';
-          e.target.parentNode.appendChild(fallback);
-        }}
-      />
-    ) : (
-      <div className="no-imagen">
-        <FaImage />
-      </div>
-    )}
-  </div>
-</td>
-                  <td className="lugar-nombre">
-  <div className="lugar-info">
-    <h3 title={lugar.nombre}>{lugar.nombre}</h3>
-    <p title={lugar.descripcion}>{lugar.descripcion}</p>
-  </div>
-</td>
-                  <td style={{ minWidth: '150px' }}>
-                    <div className="lugar-info" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <FaMapMarkerAlt className="lugar-icon" style={{ color: '#6c757d', flexShrink: 0 }} />
-                      <span style={{ fontSize: '0.9rem' }}>{lugar.ubicacion}</span>
-                    </div>
-                  </td>
-                  <td className="lugar-categoria" style={{ minWidth: '120px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '0.35rem 0.75rem',
-                      borderRadius: '50px',
-                      backgroundColor: '#e9ecef',
-                      color: '#495057',
-                      fontSize: '0.85rem',
-                      textAlign: 'center'
-                    }}>
-                      {lugar.categoria?.tipo || 'Sin categoría'}
-                    </span>
-                  </td>
-                  <td style={{ minWidth: '150px' }}>
-                    <div className="lugar-status-column" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span 
-                        className={`lugar-status-badge ${lugar.estado ? 'active' : 'inactive'}`}
-                        title={lugar.estado ? 'Activo' : 'Inactivo'}
-                      >
-                        {lugar.estado ? 'Activo' : 'Inactivo'}
-                      </span>
-                      <label className="lugar-switch" style={{ margin: 0 }}>
-                        <input
-                        type="checkbox"
-                        checked={lugar.estado}
-                        onChange={() => handleToggleEstado(lugar)}
-                        aria-label={`Cambiar estado a ${lugar.estado ? 'inactivo' : 'activo'}`}
-                      />  
-                        <span className="lugar-slider"></span>
-                      </label>
-                    </div>
-                  </td>
-                  <td>
-  <div className="lugar-aprobacion-btns">
-    <span 
-      className={`lugar-status-badge ${lugar.aprobacion ? 'active' : 'inactive'}`}
-      title={lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
-      style={{ minWidth: 70 }}
-    >
-      {lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
-    </span>
-    <button
-      className="lugar-aprobacion-btn aprobar"
-      title="Aprobar"
-      style={{ opacity: lugar.aprobacion ? 0.5 : 1 }}
-      disabled={lugar.aprobacion}
-      onClick={() => handleToggleAprobacion(lugar.id, true)}
-    >
-      <FaCheck />
-    </button>
-    <button
-      className="lugar-aprobacion-btn noaprobar"
-      title="Rechazar"
-      style={{ opacity: !lugar.aprobacion ? 0.5 : 1 }}
-      disabled={!lugar.aprobacion}
-      onClick={() => handleToggleAprobacion(lugar.id, false)}
-    >
-      <FaTimes />
-    </button>
-  </div>
-</td>
-                  <td style={{ minWidth: '180px' }}>
-                    <div className="lugares-actions">
-                      <button
-                        className="lugares-btn lugares-btn-secondary"
-                        onClick={() => handleEdit(lugar)}
-                        title="Editar lugar"
-                        style={{
-                          padding: '0.4rem 0.8rem',
-                          fontSize: '0.85rem',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '5px'
-                        }}
-                      >
-                        <FaEdit /> <span>Editar</span>
-                      </button>
-                      <button
-                        className="lugares-btn lugares-btn-danger"
-                        onClick={() => handleDelete(lugar.id)}
-                        title="Eliminar lugar"
-                        style={{
-                          padding: '0.4rem 0.8rem',
-                          fontSize: '0.85rem',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '5px'
-                        }}
-                      >
-                        <FaTrash /> <span>Eliminar</span>
-                      </button>
-                    </div>
+            <tbody>
+              {filteredLugares.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="lugares-no-data">
+                    No hay lugares disponibles
                   </td>
                 </tr>
-              ))
-            )}
+              ) : (
+                filteredLugares.map(lugar => (
+                  <tr key={lugar.id}>
+                    <td style={{ width: '70px', minWidth: '64px', maxWidth: '80px', verticalAlign: 'middle', textAlign: 'center', padding: '12px 8px' }}>
+                      <div className="lugar-imagen">
+                        {lugar.imagen ? (
+                          <img
+                            src={lugar.imagen}
+                            alt={lugar.nombre}
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#fff', borderRadius: '6px', cursor: 'pointer' }}
+                            onClick={() => setImagenModal({ visible: true, url: lugar.imagen, descripcion: lugar.descripcion })}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              const fallback = document.createElement('div');
+                              fallback.className = 'no-imagen';
+                              fallback.innerHTML = '<svg width="28" height="28" fill="#adb5bd"><rect width="100%" height="100%" fill="#f8f9fa"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="18">?</text></svg>';
+                              e.target.parentNode.appendChild(fallback);
+                            }}
+                          />
+                        ) : (
+                          <div className="no-imagen">
+                            <FaImage />
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="lugar-nombre">
+                      <div className="lugar-info">
+                        <h3 title={lugar.nombre}>{lugar.nombre}</h3>
+                        <p title={lugar.descripcion}>{lugar.descripcion}</p>
+                      </div>
+                    </td>
+                    <td style={{ minWidth: '150px' }}>
+                      <div className="lugar-info" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <FaMapMarkerAlt className="lugar-icon" style={{ color: '#6c757d', flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.9rem', color: '#6c757d' }}>{lugar.ubicacion}</span>
+                      </div>
+                    </td>
+                    <td className="lugar-categoria" style={{ minWidth: '120px' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '0.35rem 0.75rem',
+                        borderRadius: '50px',
+                        backgroundColor: '#e9ecef',
+                        color: '#495057',
+                        fontSize: '0.85rem',
+                        textAlign: 'center'
+                      }}>
+                        {lugar.categoria?.tipo || 'Sin categoría'}
+                      </span>
+                    </td>
+                    <td style={{ minWidth: '150px' }}>
+                      <div className="lugar-status-column" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span
+                          className={`lugar-status-badge ${lugar.estado ? 'active' : 'inactive'}`}
+                          title={lugar.estado ? 'Activo' : 'Inactivo'}
+                        >
+                          {lugar.estado ? 'Activo' : 'Inactivo'}
+                        </span>
+                        <label className="lugar-switch" style={{ margin: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={lugar.estado}
+                            onChange={() => handleToggleEstado(lugar)}
+                            aria-label={`Cambiar estado a ${lugar.estado ? 'inactivo' : 'activo'}`}
+                          />
+                          <span className="lugar-slider"></span>
+                        </label>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="lugar-aprobacion-btns">
+                        <span
+                          className={`lugar-status-badge ${lugar.aprobacion ? 'active' : 'inactive'}`}
+                          title={lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
+                          style={{ minWidth: 70 }}
+                        >
+                          {lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
+                        </span>
+                        <button
+                          className="lugar-aprobacion-btn aprobar"
+                          title="Aprobar"
+                          style={{ opacity: lugar.aprobacion ? 0.5 : 1 }}
+                          disabled={lugar.aprobacion}
+                          onClick={() => handleToggleAprobacion(lugar.id, true)}
+                        >
+                          <FaCheck />
+                        </button>
+                        <button
+                          className="lugar-aprobacion-btn noaprobar"
+                          title="Rechazar"
+                          style={{ opacity: !lugar.aprobacion ? 0.5 : 1 }}
+                          disabled={!lugar.aprobacion}
+                          onClick={() => handleToggleAprobacion(lugar.id, false)}
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    </td>
+                    <td style={{ minWidth: '180px' }}>
+                      <div className="lugares-actions">
+                        <button
+                          className="lugares-btn lugares-btn-secondary"
+                          onClick={() => handleEdit(lugar)}
+                          title="Editar lugar"
+                          style={{
+                            padding: '0.4rem 0.8rem',
+                            fontSize: '0.85rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
+                        >
+                          <FaEdit /> <span>Editar</span>
+                        </button>
+                        <button
+                          className="lugares-btn lugares-btn-danger"
+                          onClick={() => handleDelete(lugar.id)}
+                          title="Eliminar lugar"
+                          style={{
+                            padding: '0.4rem 0.8rem',
+                            fontSize: '0.85rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
+                        >
+                          <FaTrash /> <span>Eliminar</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -536,12 +561,11 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
                     required
                   >
                     <option value="">Seleccione una categoría</option>
-                    <option value="13">Canchas Sintéticas</option>
-                    <option value="14">Discotecas</option>
-                    <option value="15">Restaurantes</option>
-                    <option value="16">Comidas Rápidas</option>
-                    <option value="19">Acampar-Glamplig</option>
-                    <option value="22">Bares</option>
+                    {categorias.map(categoria => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.tipo}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="lugares-form-group">
@@ -564,7 +588,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
                     <input
                       type="checkbox"
                       name="estado"
-                      checked={formData.estado}
+                      checked={formData.estado === 1}
                       onChange={handleChange}
                     />
                     Activo
@@ -575,7 +599,7 @@ const [imagenModal, setImagenModal] = useState({ visible: false, url: '', descri
                     <input
                       type="checkbox"
                       name="aprobacion"
-                      checked={formData.aprobacion}
+                      checked={formData.aprobacion === 1}
                       onChange={handleChange}
                     />
                     Aprobado
