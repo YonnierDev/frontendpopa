@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaComment, FaStar, FaClipboardList, 
-         FaBell, FaBars, FaSignOutAlt, FaHome, FaTags, FaUserShield, FaUser, FaChevronDown } from 'react-icons/fa';
+         FaBell, FaBars, FaSignOutAlt, FaHome, FaTags, FaUserShield, FaUser, FaChevronDown, 
+         FaBook} from 'react-icons/fa';
 import { api } from '../../../components/api/api';
 import '../styles/SuperAdminLayout.css';
 
@@ -15,7 +16,8 @@ import LugaresSuper from '../LugaresSuper';
 import ComentariosSuper from '../ComentariosSuper';
 import PendientesSuper from '../PendientesSuper';
 import RolesSuper from '../RolesSuper';
-import SuperAdminStats from './SuperAdminStats';
+ import SuperAdminStats from './SuperAdminStats';
+import ReportCometPageSuper from '../ReportCometPageSuper';
 
 const SidebarSuper = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -89,7 +91,9 @@ const SidebarSuper = () => {
     { icon: <FaStar />, label: 'Calificaciones', seccion: 'calificaciones' },
     { icon: <FaClipboardList />, label: 'Reservas', seccion: 'reservas' },
     { icon: <FaTags />, label: 'Categorías', seccion: 'categorias' },
+    { icon: <FaBook />, label: 'Reportes', seccion: 'reportes' },
     { icon: <FaBell />, label: `Solicitudes (${cantidadSolicitudes})`, seccion: 'solicitudes' }
+
   ];
 
   return (
@@ -146,6 +150,7 @@ const SidebarSuper = () => {
               {mostrarSeccion === "reservas" && <ReservasSuper />}
               {mostrarSeccion === "calificaciones" && <CalificacionesSuper />}
               {mostrarSeccion === "solicitudes" && <PendientesSuper />}
+              {mostrarSeccion === "reportes" && <ReportCometPageSuper />}
             </div>
           </div>
         </div>

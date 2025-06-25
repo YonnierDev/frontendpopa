@@ -147,12 +147,12 @@ const UsuariosSuper = () => {
 
     console.log('Validando contraseña:', formData.contrasena);
     // Validar contraseña (8-20 caracteres, 1 mayúscula, 1 número, 1 símbolo)
-    const contrasenaRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*\-])[A-Za-z\d!@#$%^&*\-]{8,20}$/;
-    if (!contrasenaRegex.test(formData.contrasena)) {
-      console.log('Error: contraseña no cumple requisitos');
-      toast.error('La contraseña debe tener entre 8 y 20 caracteres, incluir al menos una mayúscula, un número y un símbolo');
-      return;
-    }
+    // const contrasenaRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*\-])[A-Za-z\d!@#$%^&*\-]{8,20}$/;
+    // if (!contrasenaRegex.test(formData.contrasena)) {
+    //   console.log('Error: contraseña no cumple requisitos');
+    //   toast.error('La contraseña debe tener entre 8 y 20 caracteres, incluir al menos una mayúscula, un número y un símbolo');
+    //   return;
+    // }
 
     // Validar fecha de nacimiento (edad mínima 16 años)
     const fechaNacimiento = new Date(formData.fecha_nacimiento);
@@ -198,6 +198,9 @@ const UsuariosSuper = () => {
 
         console.log('Datos a actualizar:', datosActualizados);
         response = await api.put(`/usuario/${selectedUser.id}`, datosActualizados);
+
+
+        console.table(datosActualizados)
         console.log('Respuesta de actualización:', response.status, response.data);
         
         if (response.status === 200) {
@@ -337,7 +340,8 @@ const UsuariosSuper = () => {
         </div>
         <div className="super-filter">
           <FaFilter className="filter-icon" />
-          <select value={filterRole} onChange={handleFilter} className="super-form-select">
+          <select value={filterRole} onChange={handleFilter}
+           className="super-form-select">
             <option value="all">Todos los roles</option>
             {roles.map(rol => (
               <option key={rol.id} value={rol.id}>

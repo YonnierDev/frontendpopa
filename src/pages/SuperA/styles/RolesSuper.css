@@ -274,7 +274,7 @@ input:checked + .slider:before {
 }
 
 .super-modal-content h2 {
-  color: #000000;
+  color: white;
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
   font-weight: 600;

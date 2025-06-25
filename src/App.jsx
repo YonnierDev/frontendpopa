@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
@@ -43,6 +45,7 @@ import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
 import Perfil from "./pages/propietario/Perfil";
 import Lugares from "./pages/propietario/Lugares";
+import ReportCometPageSuper from "./pages/SuperA/ReportCometPageSuper";
 
 // Mostrar u ocultar Navbar
 const NavbarWrapper = ({ isAuthenticated, rol }) => {
@@ -143,6 +146,7 @@ function App() {
             <Route path="/superadmin/eventos" element={<EventosSuper />} />
             <Route path="/superadmin/reservas" element={<ReservasSuper />} />
             <Route path="/superadmin/lugares" element={<LugaresSuper />} />
+            <Route path="/superadmin/reportes" element={<ReportCometPageSuper/>} />
           </Route>
 
           {/* Rutas protegidas - ADMIN (rol: 2) */}

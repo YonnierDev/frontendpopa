@@ -121,13 +121,12 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
-  background-color: white;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .super-form-select:focus {
-  border-color: #3498db;
+  border-color: white;
   box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
   outline: none;
 }

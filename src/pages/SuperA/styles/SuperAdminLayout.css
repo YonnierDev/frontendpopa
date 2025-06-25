@@ -57,10 +57,10 @@
 }
 
 .superadmin-main-wrapper {
-  width: 992px;
+  width: 992px; 
   height: 982px;
   margin: 0;
-  margin-left: 492px;
+  margin-left: 450px; 
   padding: 14px;
   background-color: white;
   display: flex;
@@ -78,7 +78,7 @@
 
 .superadmin-bienvenida-message h2 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: white;
   font-size: 28px;
   font-weight: 600;
 }
@@ -303,7 +303,7 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: black;
+  background-color: transparent;
   color: white;
   display: flex;
   align-items: center;
