@@ -21,6 +21,11 @@
   width: 100%;
 }
 
+.descripcion-categoria {
+  color: #000000;
+  font-weight: 500;
+  padding: 8px;
+}
 .categorias-title {
   font-size: 2rem;
   color: #ffffff;
