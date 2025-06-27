@@ -75,6 +75,7 @@
   margin-top: 5px;
 }
 
+
 /* Filtros */
 .reservas-filters {
   flex: 1 1 0;
@@ -738,3 +739,96 @@
   }
 }
   
+/* ===== Encabezado de tabla amarillo ===== */
+.super-reservas-table th {
+  background-color: #FFC107 !important; /* Amarillo fuerte */
+  color: #3E2723 !important;            /* Marrón oscuro para contraste */
+  font-weight: bold;
+  border-bottom: 2px solid #FFA000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Botones más bordeados y definidos ===== */
+.super-reservas-btn {
+  border-radius: 8px !important; /* Más redondeado */
+  border: 2px solid rgb(255, 204, 0) !important; /* Borde amarillo por defecto */
+  background-color: #FFF8E1 !important;
+  color: #3E2723 !important;
+  font-weight: 600;
+  padding: 6px 14px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+}
+
+.super-reservas-btn:hover {
+  background-color: rgb(255, 204, 0) !important;
+  color: #fff !important;
+  border-color: #FFA000 !important;
+}
+
+.super-reservas-btn.view {
+  border-color: #2196F3 !important;
+  background-color: #E3F2FD !important;
+  color: #0D47A1 !important;
+}
+
+.super-reservas-btn.view:hover {
+  background-color: #2196F3 !important;
+  color: #fff !important;
+}
+
+.super-reservas-btn.approve {
+  border-color: #4CAF50 !important;
+  background-color: #E8F5E9 !important;
+  color: #1B5E20 !important;
+}
+
+.super-reservas-btn.approve:hover {
+  background-color: #4CAF50 !important;
+  color: white !important;
+}
+
+.super-reservas-btn.reject {
+  border-color: #f44336 !important;
+  background-color: #FFEBEE !important;
+  color: #B71C1C !important;
+}
+
+.super-reservas-btn.reject:hover {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.super-reservas-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start !important;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 20px;  
+}
+
+.super-reservas-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start !important;
+  justify-content: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+
+.super-reservas-title {
+  text-align: left;
+  align-self: flex-start;
+}
+
+.super-reservas-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start !important;
+  align-items: flex-start;
+  gap: 10px;
+}
+
