@@ -317,6 +317,22 @@
   animation: fadeIn 0.3s ease;
 }
 
+.title-comments{
+    font-size: 34px;
+    padding: 20px;
+    background-color: black;
+    border-radius: 10px;
+    border: 1px solid #ffcc00;
+    text-align: center;
+    color: #ffffff;
+    font-weight: 600;
+    margin: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    
+  
+}
+
 .comentarios-modal-content {
   background: #ffffff;
   padding: 2.5rem;
@@ -331,13 +347,8 @@
 }
 
 .comentarios-modal-content h2 {
-  color: #000000;
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
-  font-weight: 700;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: white;
+
 }
 
 .comentarios-form-group {
