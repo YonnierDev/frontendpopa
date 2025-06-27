@@ -248,7 +248,7 @@ const RolesSuper = () => {
         <div className="super-modal">
           <div className="super-modal-content">
             <h2>Confirmar Eliminación</h2>
-            <p>¿Estás seguro de que deseas eliminar el rol {selectedRole?.nombre}?</p>
+            <p className='warning-text'>¿Estás seguro de que deseas eliminar el rol {selectedRole?.nombre}?</p>
             <p className="warning-text">
               {selectedRole?.usuarios?.length > 0 
                 ? `¡Advertencia! Este rol tiene ${selectedRole.usuarios.length} usuarios asignados.`
