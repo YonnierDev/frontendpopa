@@ -555,7 +555,7 @@ const UsuariosSuper = () => {
         <div className="super-modal">
           <div className="super-modal-content">
             <h2>Confirmar Eliminación</h2>
-            <p>¿Estás seguro de que deseas eliminar al usuario {selectedUser?.nombre}?</p>
+            <p className='warning-txt'>¿Estás seguro de que deseas eliminar al usuario {selectedUser?.nombre}?</p>
             <div className="super-modal-actions">
               <button 
                 className="super-btn super-btn-danger"
