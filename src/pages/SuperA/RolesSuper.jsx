@@ -144,9 +144,7 @@ const RolesSuper = () => {
             <tr>
               <th>Nombre</th>
               <th>Usuarios</th>
-              {/* <th>Estado</th> */}
               <th>Acciones</th>
-               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -246,7 +244,6 @@ const RolesSuper = () => {
         </div>
       )}
 
-      {/* Modal de Confirmación de Eliminación */}
       {showDeleteModal && (
         <div className="super-modal">
           <div className="super-modal-content">
