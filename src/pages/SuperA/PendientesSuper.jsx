@@ -165,12 +165,12 @@ const PendientesSuper = ({ actualizarContador }) => {
                   >
                     Aceptar
                   </button>
-                  <button
+                  {/* <button
                     className="pendientes-super-btn pendientes-super-btn-reject"
                     onClick={() => actualizarEstado(solicitud.id, false)}
                   >
                     Rechazar
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

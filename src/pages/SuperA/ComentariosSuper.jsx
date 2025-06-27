@@ -248,7 +248,7 @@ const ComentariosSuper = () => {
       {showModal && selectedComment && (
         <div className="comentarios-modal">
           <div className="comentarios-modal-content">
-            <h2>Detalles del Comentario</h2>
+            <h2 className='title-comments'>Detalles del Comentario</h2>
             <div className="comentarios-form-group">
               <label>Usuario</label>
               <p>{selectedComment.usuario?.nombre || 'No disponible'}</p>
@@ -272,30 +272,7 @@ const ComentariosSuper = () => {
               </p>
             </div>
             <div className="comentarios-modal-actions">
-              <button
-                className="comentarios-btn comentarios-btn-primary"
-                onClick={() => handleStatusChange(selectedComment.id, 'aceptado')}
-                title="Aprobar comentario"
-              >
-                <FaThumbsUp /> Aprobar
-              </button>
-              <button
-                className="comentarios-btn comentarios-btn-danger"
-                onClick={() => handleStatusChange(selectedComment.id, 'rechazado')}
-                title="Rechazar comentario"
-              >
-                <FaThumbsDown /> Rechazar
-              </button>
-              <button
-                className="comentarios-btn comentarios-btn-danger"
-                onClick={() => {
-                  handleDelete(selectedComment.id);
-                  setShowModal(false);
-                }}
-                title="Eliminar comentario"
-              >
-                <FaTrash /> Eliminar
-              </button>
+             
               <button
                 className="comentarios-btn comentarios-btn-secondary"
                 onClick={() => setShowModal(false)}

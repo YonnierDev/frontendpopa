@@ -244,10 +244,9 @@ const LugaresSuper = () => {
   };
 
   const handleToggleEstado = async (lugar) => {
-    const nuevoEstado = lugar.estado === 1 ? 0 : 1;
-
-    // Optimistic UI update
+    const nuevoEstado = !lugar.estado; // Invertimos el valor booleano actual
     const originalLugares = [...lugares];
+    
     setLugares(prevLugares =>
       prevLugares.map(l =>
         l.id === lugar.id ? { ...l, estado: nuevoEstado } : l
@@ -256,7 +255,8 @@ const LugaresSuper = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`https://popnocturna.vercel.app/api/lugar/${lugar.id}/estado`,
+      await axios.patch(
+        `https://popnocturna.vercel.app/api/lugar/estado/${lugar.id}`,
         { estado: nuevoEstado },
         {
           headers: {
@@ -265,14 +265,14 @@ const LugaresSuper = () => {
           }
         }
       );
-      toast.success(`Estado del lugar actualizado a ${nuevoEstado === 1 ? 'Activo' : 'Inactivo'}.`);
+      toast.success(`Estado del lugar actualizado a ${nuevoEstado ? 'Activo' : 'Inactivo'}.`);
     } catch (error) {
-      // Revert on error
+      // Revertir en caso de error
       setLugares(originalLugares);
       toast.error('Error al actualizar el estado del lugar.');
+      console.error('Error detallado:', error.response?.data);
     }
-  };
-
+};
 
 
   const handleToggleAprobacion = async (lugarId, aprobacion) => {
@@ -453,7 +453,7 @@ const LugaresSuper = () => {
                         >
                           {lugar.aprobacion ? 'Aprobado' : 'Pendiente'}
                         </span>
-                        <button
+                        {/* <button
                           className="lugar-aprobacion-btn aprobar"
                           title="Aprobar"
                           style={{ opacity: lugar.aprobacion ? 0.5 : 1 }}
@@ -461,8 +461,8 @@ const LugaresSuper = () => {
                           onClick={() => handleToggleAprobacion(lugar.id, true)}
                         >
                           <FaCheck />
-                        </button>
-                        <button
+                        </button> */}
+                        {/* <button
                           className="lugar-aprobacion-btn noaprobar"
                           title="Rechazar"
                           style={{ opacity: !lugar.aprobacion ? 0.5 : 1 }}
@@ -470,7 +470,7 @@ const LugaresSuper = () => {
                           onClick={() => handleToggleAprobacion(lugar.id, false)}
                         >
                           <FaTimes />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                     <td style={{ minWidth: '180px' }}>
