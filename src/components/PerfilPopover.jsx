@@ -22,81 +22,64 @@ const PerfilPopover = () => {
         setShow(false);
       }
     }
-    if (show) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [show]);
+  }, []);
 
   if (!usuario) return null;
 
+  const getRolName = () => {
+    switch(usuario.rol.toString()) {
+      case '3': return 'Propietario';
+      case '2': return 'Administrador';
+      case '1': return 'Usuario';
+      default: return usuario.rol;
+    }
+  };
+
   return (
     <div className="perfil-popover-container" ref={popoverRef}>
-      <div className="user-info" onClick={() => setShow(!show)} style={{ cursor: 'pointer' }}>
-        <span className="user-icon">👤</span>
+      <button 
+        className="user-info-button" 
+        onClick={() => setShow(!show)}
+        aria-expanded={show}
+        aria-label="Menú de perfil"
+      >
+        <span className="user-icon" aria-hidden="true">👤</span>
         <span className="user-name">{usuario.nombre || 'Usuario'}</span>
-      </div>
+        <span className={`dropdown-arrow ${show ? 'open' : ''}`} aria-hidden="true">▼</span>
+      </button>
+      
       {show && (
-        <div className="perfil-popover">
+        <div className="perfil-popover" role="menu">
           <div className="perfil-info">
             <p><strong>Nombre:</strong> {usuario.nombre}</p>
             <p><strong>Correo:</strong> {usuario.correo}</p>
-            <p><strong>Rol:</strong> {usuario.rol === 3 || usuario.rol === '3' ? 'Propietario' : usuario.rol}</p>
+            <p><strong>Rol:</strong> {getRolName()}</p>
           </div>
+          
           <button 
-            className="cambiar-contrasena-btn" 
-            onClick={() => setShowChangePassword(true)}
-            style={{
-              background: '#2d2d2d',
-              color: '#fff',
-              border: 'none',
-              padding: '0.65rem 0',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              width: '100%',
-              marginTop: '1rem',
-              fontWeight: '600',
-              fontSize: '1rem',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
+            className="popover-action-button cambiar-contrasena-btn" 
+            onClick={() => {
+              setShowChangePassword(true);
+              setShow(false);
             }}
-            onMouseOver={(e) => e.target.style.background = '#3d3d3d'}
-            onMouseOut={(e) => e.target.style.background = '#2d2d2d'}
+            role="menuitem"
           >
-            <span>🔒</span> Cambiar Contraseña
+            <span aria-hidden="true">🔒</span> Cambiar Contraseña
           </button>
+          
           <button 
-            className="cerrar-sesion-btn" 
+            className="popover-action-button cerrar-sesion-btn" 
             onClick={handleLogout}
-            style={{
-              background: '#000',
-              color: '#fff',
-              border: 'none',
-              padding: '0.65rem 0',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              width: '100%',
-              marginTop: '0.75rem',
-              fontWeight: '600',
-              fontSize: '1rem',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}
-            onMouseOver={(e) => e.target.style.opacity = '0.9'}
-            onMouseOut={(e) => e.target.style.opacity = '1'}
+            role="menuitem"
           >
-            <span>🚪</span> Cerrar Sesión
+            <span aria-hidden="true">🚪</span> Cerrar Sesión
           </button>
         </div>
       )}
+      
       <ChangePasswordModal
         isOpen={showChangePassword}
         onClose={() => setShowChangePassword(false)}

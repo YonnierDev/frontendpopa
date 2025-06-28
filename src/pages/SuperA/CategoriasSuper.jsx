@@ -247,7 +247,9 @@ const CategoriasSuper = () => {
                       <h3>{categoria.tipo}</h3>
                     </div>
                   </td>
-                  <td>{categoria.descripcion || 'Sin descripción'}</td>
+                      
+
+                  <td className='descripcion-categoria'>{categoria.descripcion || 'Sin descripción'}</td>
                   <td>
                     <div className="categoria-status-column">
                       <span className={`categoria-status-badge ${categoria.estado ? 'active' : 'inactive'}`}>

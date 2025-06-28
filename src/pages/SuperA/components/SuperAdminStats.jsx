@@ -31,7 +31,8 @@ const SuperAdminStats = ({ onSectionChange }) => {
     lugares: 0,
     categorias: 0,
     comentarios: null,
-    calificaciones: 0
+    calificaciones: 0,
+    reportes: 0
   });
   const [loading, setLoading] = useState(true);
   const [permiso, setPermiso] = useState({ eventos: true, reservas: true, comentarios: true, calificaciones: true });
