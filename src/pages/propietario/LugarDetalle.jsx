@@ -54,64 +54,73 @@ const LugarDetalle = () => {
     ].filter(Boolean);
   }, [lugar]);
 
-  // Componentes personalizados para las flechas de navegación
-  const NextArrow = ({ onClick }) => (
-    <div 
-      className="slick-arrow next-arrow" 
-      onClick={onClick}
-      style={{
-        right: '25px',
-        zIndex: 1
-      }}
-    >
-      <FaChevronRight />
-    </div>
-  );
-
-  const PrevArrow = ({ onClick }) => (
-    <div 
-      className="slick-arrow prev-arrow" 
-      onClick={onClick}
-      style={{
-        left: '25px',
-        zIndex: 1
-      }}
-    >
-      <FaChevronLeft />
-    </div>
-  );
-
-  // Configuración del carrusel
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    beforeChange: (current, next) => setCurrentSlide(next),
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    appendDots: dots => (
-      <div>
-        <ul style={{ margin: '0px', padding: '10px 0' }}>{dots}</ul>
-      </div>
-    ),
-    customPaging: i => (
-      <div
+  // Componente de flecha de navegación simplificado
+  const NavArrow = React.memo(({ direction, onClick }) => {
+    const isLeft = direction === 'left';
+    
+    const handleClick = (e) => {
+      // Prevenir el comportamiento por defecto
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Llamar al manejador original
+      if (onClick) {
+        onClick(e);
+      }
+    };
+    
+    const handleTouch = (e) => {
+      // Prevenir el comportamiento táctil por defecto
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Llamar al manejador de clic
+      handleClick(e);
+    };
+    
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        onTouchStart={handleTouch}
+        aria-label={`${isLeft ? 'Anterior' : 'Siguiente'} imagen`}
         style={{
-          width: '8px',
-          height: '8px',
+          position: 'absolute',
+          [isLeft ? 'left' : 'right']: '10px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          background: 'rgba(0,0,0,0.5)',
+          color: 'white',
+          border: 'none',
           borderRadius: '50%',
-          backgroundColor: i === currentSlide ? '#ffcc00' : '#ccc',
-          margin: '0 4px',
+          width: '40px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           cursor: 'pointer',
-          transition: 'all 0.3s ease'
+          zIndex: 10,
+          outline: 'none',
+          padding: 0,
+          userSelect: 'none',
+          WebkitTapHighlightColor: 'transparent',
+          pointerEvents: 'auto',
+          // Asegurar que el botón no tenga estilos por defecto
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          appearance: 'none',
+          // Asegurar que el botón sea visible
+          opacity: 1,
+          // Asegurar que el botón sea interactivo
+          touchAction: 'manipulation'
         }}
-      />
-    )
-  };
+      >
+        {isLeft ? <FaChevronLeft /> : <FaChevronRight />}
+      </button>
+    );
+  });
+  
+  NavArrow.displayName = 'NavArrow';
 
   // Función para abrir el lightbox
   const openLightbox = (index) => {
@@ -149,16 +158,62 @@ const LugarDetalle = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showLightbox, lightboxIndex, allImages?.length]);
 
-  // Navegación entre imágenes
-  const nextImage = () => {
-    if (!allImages || !allImages.length) return;
-    setCurrentSlide(prev => (prev + 1) % allImages.length);
+  // Prevenir comportamiento por defecto en el contenedor del carrusel
+  const handleSliderContainerClick = (e) => {
+    // Solo prevenir el comportamiento por defecto si el clic es en el contenedor
+    if (e.target === e.currentTarget) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
-  const prevImage = () => {
-    if (!allImages || !allImages.length) return;
-    setCurrentSlide(prev => (prev - 1 + allImages.length) % allImages.length);
-  };
+  // Navegación entre imágenes
+  const navigateImage = React.useCallback((direction) => {
+    return (e) => {
+      if (e) {
+        // Prevenir el comportamiento por defecto del navegador
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Prevenir el desplazamiento táctil
+        if (e.type === 'touchstart') {
+          e.stopImmediatePropagation();
+        }
+      }
+      
+      if (!allImages || !allImages.length) return;
+      
+      // Usar requestAnimationFrame para asegurar que el estado se actualice en el siguiente frame
+      requestAnimationFrame(() => {
+        setCurrentSlide(prev => {
+          if (direction === 'next') {
+            return (prev + 1) % allImages.length;
+          } else {
+            return (prev - 1 + allImages.length) % allImages.length;
+          }
+        });
+      });
+      
+      // Devolver false para prevenir cualquier acción adicional
+      return false;
+    };
+  }, [allImages]);
+  
+  const nextImage = navigateImage('next');
+  const prevImage = navigateImage('prev');
+  
+  // Efecto para manejar el scroll al cambiar de imagen
+  useEffect(() => {
+    // No hacer nada si no hay imágenes o solo hay una
+    if (!allImages || allImages.length <= 1) return;
+    
+    // Obtener el contenedor principal
+    const container = document.querySelector('.image-slider-container');
+    if (container) {
+      // Hacer scroll suave al contenedor de la imagen
+      container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [currentSlide, allImages]);
 
   // Navegación en el lightbox
   const goToNextImage = () => {
@@ -320,10 +375,31 @@ const LugarDetalle = () => {
           <div className="lugar-imagen-container" style={{position: 'relative'}}>
             <h3 className="lugar-detalle-place-title">{lugar?.nombre || 'Detalles del Lugar'}</h3>
             {allImages.length > 0 && (
-              <div className="image-slider-container">
+              <div 
+                className="image-slider-container"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'hidden',
+                  borderRadius: '8px',
+                  backgroundColor: '#f5f5f5',
+                  // Deshabilitar el desplazamiento táctil en este contenedor
+                  touchAction: 'none',
+                  // Asegurar que el contenedor tenga un tamaño definido
+                  minHeight: '300px',
+                  // Asegurar que el contenedor sea un contexto de apilamiento
+                  zIndex: 1
+                }}
+                // Prevenir el comportamiento de arrastre por defecto
+                onDragStart={(e) => e.preventDefault()}
+              >
                 <div 
                   className="main-image-container"
-                  onClick={() => openLightbox(currentSlide)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openLightbox(currentSlide);
+                  }}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
@@ -337,20 +413,8 @@ const LugarDetalle = () => {
                 </div>
                 {allImages.length > 1 && (
                   <>
-                    <button 
-                      className="nav-arrow left-arrow" 
-                      onClick={prevImage}
-                      aria-label="Imagen anterior"
-                    >
-                      <FaChevronLeft />
-                    </button>
-                    <button 
-                      className="nav-arrow right-arrow" 
-                      onClick={nextImage}
-                      aria-label="Siguiente imagen"
-                    >
-                      <FaChevronRight />
-                    </button>
+                    <NavArrow direction="left" onClick={prevImage} />
+                    <NavArrow direction="right" onClick={nextImage} />
                     <div className="image-counter">
                       {currentSlide + 1} / {allImages.length}
                     </div>
