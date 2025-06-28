@@ -18,6 +18,7 @@ import PendientesSuper from '../PendientesSuper';
 import RolesSuper from '../RolesSuper';
  import SuperAdminStats from './SuperAdminStats';
 import ReportCometPageSuper from '../ReportCometPageSuper';
+import SolicitudesColaborador from '../SolicitudesColaborador';
 
 const SidebarSuper = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -92,6 +93,7 @@ const SidebarSuper = () => {
     { icon: <FaClipboardList />, label: 'Reservas', seccion: 'reservas' },
     { icon: <FaTags />, label: 'Categorías', seccion: 'categorias' },
     { icon: <FaBook />, label: 'Reportes', seccion: 'reportes' },
+    { icon: <FaBook />, label: 'Solicitudes Colaborador', seccion: 'solicitudes_colaborador' },
     { icon: <FaBell />, label: `Solicitudes (${cantidadSolicitudes})`, seccion: 'solicitudes' }
 
   ];
@@ -151,6 +153,7 @@ const SidebarSuper = () => {
               {mostrarSeccion === "calificaciones" && <CalificacionesSuper />}
               {mostrarSeccion === "solicitudes" && <PendientesSuper />}
               {mostrarSeccion === "reportes" && <ReportCometPageSuper />}
+              {mostrarSeccion === "solicitudes_colaborador" && <SolicitudesColaborador />}
             </div>
           </div>
         </div>
