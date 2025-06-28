@@ -1,0 +1,213 @@
+/* Contenedor principal */
+.solicitudes-container {
+  padding: 2rem;
+  background-color: #ffffff;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: -274px;
+}
+
+/* Header */
+.solicitudes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #000000;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.solicitudes-title {
+  font-size: 2rem;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.solicitudes-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Búsqueda */
+.solicitudes-search {
+  position: relative;
+  max-width: 500px;
+  width: 100%;
+}
+
+.solicitudes-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666666;
+  font-size: 1.1rem;
+}
+
+.solicitudes-search-input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.solicitudes-search-input:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 4px 12px rgba(255,204,0,0.15);
+  outline: none;
+}
+
+/* Tabla */
+.solicitudes-table-container {
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.solicitudes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.solicitudes-table th,
+.solicitudes-table td {
+  color: #000000;
+  padding: 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.solicitudes-table th {
+  background: #000000;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.solicitudes-table tr:hover {
+  background: #f8f9fa;
+}
+
+/* Estado */
+.solicitudes-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+.solicitudes-badge.aceptado {
+  background-color: #00cc66;
+  color: white;
+}
+
+.solicitudes-badge.rechazado {
+  background-color: #ff3300;
+  color: white;
+}
+
+.solicitudes-badge.pendiente {
+  background-color: #ffcc00;
+  color: #000000;
+}
+
+/* Botones */
+.solicitudes-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.solicitudes-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.solicitudes-btn-success {
+  background-color: #00cc66;
+  color: white;
+}
+
+.solicitudes-btn-success:hover {
+  background-color: #00994d;
+}
+
+.solicitudes-btn-warning {
+  background-color: #ffcc00;
+  color: #000000;
+}
+
+.solicitudes-btn-warning:hover {
+  background-color: #e6b800;
+}
+
+.solicitudes-btn-danger {
+  background-color: #ff3300;
+  color: white;
+}
+
+.solicitudes-btn-danger:hover {
+  background-color: #cc2900;
+}
+
+/* Sin datos */
+.solicitudes-no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #999999;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .solicitudes-container {
+    padding: 1rem;
+  }
+
+  .solicitudes-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.2rem;
+  }
+
+  .solicitudes-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .solicitudes-table th,
+  .solicitudes-table td {
+    padding: 1rem;
+  }
+
+  .solicitudes-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
