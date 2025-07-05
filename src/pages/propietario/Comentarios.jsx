@@ -17,6 +17,7 @@ const Comentarios = () => {
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [busqueda, setBusqueda] = useState('');
   const navigate = useNavigate();
 
   // Función para obtener el primer lugar del propietario
@@ -91,29 +92,33 @@ const Comentarios = () => {
       setCargando(true);
       setError('');
       
-      // Obtener los comentarios del evento
-      const response = await api.get(`/api/comentarios/evento/${id}`);
+      // Obtener los comentarios del lugar específico del propietario
+      const response = await api.get(`/api/propietario/lugar/${id}/comentarios`);
       
-      if (response.data && response.data.comentarios) {
-        // Formatear los comentarios con valores por defecto
-        const comentariosFormateados = response.data.comentarios.map(comentario => ({
-          ...comentario,
-          usuario: comentario.usuario || { nombre: 'Usuario anónimo', correo: '' },
-          lugar: comentario.evento?.lugar || { id: 0, nombre: 'Lugar no disponible' },
-          evento: {
-            id: comentario.eventoid,
-            nombre: comentario.evento?.nombre || 'Evento sin nombre',
-            fecha_hora: comentario.evento?.fecha_hora || new Date().toISOString()
-          },
-          fecha: comentario.fecha_hora || new Date().toISOString(),
-          estado: comentario.estado ? 'activo' : 'inactivo',
-          contenido: comentario.contenido || 'Sin contenido',
-          id: comentario.id
-        }));
+      if (response.data) {
+        // Formatear los comentarios con la estructura esperada
+        const comentariosFormateados = Array.isArray(response.data) 
+          ? response.data.map(comentario => ({
+              ...comentario,
+              usuario: comentario.usuario || { 
+                nombre: 'Usuario anónimo', 
+                correo: comentario.usuario?.correo || '' 
+              },
+              evento: {
+                id: comentario.evento?.id || 0,
+                nombre: comentario.evento?.nombre || 'Evento sin nombre',
+                lugarid: id
+              },
+              fecha: comentario.fecha_hora || new Date().toISOString(),
+              estado: true, // Asumir activo si viene del backend
+              contenido: comentario.contenido || 'Sin contenido',
+              id: comentario.id
+            }))
+          : [];
         
         setComentarios(comentariosFormateados);
       } else {
-        console.log('No hay comentarios para este evento');
+        console.log('No hay comentarios para este lugar');
         setComentarios([]);
       }
     } catch (error) {
@@ -141,19 +146,105 @@ const Comentarios = () => {
   };
 
   const enviarReporte = async () => {
-    if (!motivoReporte.trim()) {
-      return toast.error('Escribe un motivo para el reporte');
+    if (!comentarioSeleccionado || !motivoReporte.trim()) {
+      toast.warning('Por favor, selecciona un motivo para el reporte');
+      return;
     }
+
     try {
-      await api.post(`/api/comentario/${comentarioSeleccionado.id}/reportar`, {
-        motivo: motivoReporte,
-      });
-      toast.success('Reporte enviado');
+      console.log('Enviando reporte para comentario:', comentarioSeleccionado.id);
+      console.log('Motivo del reporte:', motivoReporte);
+      
+      // Usar el endpoint de reporte del backend con el formato correcto
+      const response = await api.post(
+        `/api/propietario/comentario/${comentarioSeleccionado.id}/reporte`,
+        { motivo_reporte: motivoReporte }
+      );
+
+      // Si llegamos aquí, el reporte se creó exitosamente
+      toast.success('Reporte enviado correctamente. El comentario será revisado por nuestro equipo.');
+      
+      // Actualizar el estado del comentario como reportado
+      setComentarios(comentarios.map(com => 
+        com.id === comentarioSeleccionado.id 
+          ? { 
+              ...com, 
+              reportado: true,
+              estado: 'inactivo',
+              motivo_reporte: motivoReporte
+            } 
+          : com
+      ));
+      
+      // Cerrar el modal y limpiar
       cerrarModal();
-      cargarComentarios();
-    } catch (err) {
-      console.error('Error al enviar el reporte – detalles del servidor:', err.response?.data);
-      toast.error(err.response?.data?.mensaje || 'Error al enviar el reporte');
+      setMotivoReporte('');
+      
+    } catch (error) {
+      console.error('Error al enviar el reporte:', error);
+      
+      // Manejo de errores específicos
+      if (error.response) {
+        // El servidor respondió con un estado de error
+        if (error.response.status === 400) {
+          // Si el comentario ya fue reportado, marcarlo como tal en la interfaz
+          if (error.response.data.error?.includes('ya ha sido reportado')) {
+            setComentarios(comentarios.map(com => 
+              com.id === comentarioSeleccionado.id 
+                ? { ...com, reportado: true, estado: 'pendiente' } 
+                : com
+            ));
+            toast.info('Este comentario ya ha sido reportado y está pendiente de revisión');
+          } else {
+            toast.error(error.response.data.error || 'No se pudo procesar la solicitud');
+          }
+        } else if (error.response.status === 401) {
+          toast.error('No estás autorizado para realizar esta acción');
+        } else if (error.response.status === 404) {
+          toast.error('No se encontró el comentario');
+        } else {
+          toast.error('Ocurrió un error al procesar tu solicitud');
+        }
+      } else if (error.request) {
+        // La petición fue hecha pero no se recibió respuesta
+        toast.error('No se pudo conectar con el servidor. Intenta de nuevo más tarde.');
+      } else {
+        // Error al configurar la petición
+        toast.error('Error al enviar el reporte');
+      }
+      if (error.response) {
+        const { status, data } = error.response;
+        const errorMsg = data.message || data.error || 'Error al procesar el reporte';
+        
+        if (status === 400) {
+          // Manejar diferentes tipos de errores 400
+          if (errorMsg.includes('ya ha sido reportado')) {
+            toast.warning('Este comentario ya ha sido reportado y está pendiente de revisión.');
+            // Actualizar el estado del comentario como reportado
+            setComentarios(comentarios.map(com => 
+              com.id === comentarioSeleccionado.id 
+                ? { ...com, reportado: true } 
+                : com
+            ));
+            // Cerrar el modal ya que no es necesario mantenerlo abierto
+            cerrarModal();
+          } else {
+            toast.warning(errorMsg || 'Datos inválidos en la solicitud');
+          }
+        } else if (status === 403) {
+          toast.error('No tienes permiso para realizar esta acción');
+        } else if (status === 404) {
+          toast.error('El comentario no fue encontrado');
+        } else {
+          toast.error(`Error ${status}: ${errorMsg}`);
+        }
+      } else if (error.request) {
+        // La solicitud fue hecha pero no se recibió respuesta
+        toast.error('No se recibió respuesta del servidor. Por favor, verifica tu conexión.');
+      } else {
+        // Error al configurar la solicitud
+        toast.error('Error al configurar la solicitud: ' + error.message);
+      }
     }
   };
 
@@ -183,6 +274,26 @@ const Comentarios = () => {
     };
     return new Date(fechaString).toLocaleDateString('es-ES', opciones);
   };
+  
+  // Función auxiliar para obtener el estado del comentario
+  const obtenerEstadoComentario = (comentario) => {
+    if (comentario.aprobacion === 0) return 'pendiente';
+    if (comentario.aprobacion === 1) return 'aprobado';
+    if (comentario.reportado || comentario.estado === 'inactivo') return 'reportado';
+    return 'sin_reporte';
+  };
+
+  // La función getClaseTarjeta ha sido eliminada ya que ahora manejamos los estilos directamente en el JSX
+
+  // Filtrar comentarios por búsqueda
+  const comentariosFiltrados = comentarios.filter(comentario => {
+    if (busqueda) {
+      const textoBusqueda = busqueda.toLowerCase();
+      const textoComentario = `${comentario.usuario?.nombre || ''} ${comentario.contenido || ''}`.toLowerCase();
+      return textoComentario.includes(textoBusqueda);
+    }
+    return true;
+  });
 
   // Función para renderizar las estrellas de calificación (deshabilitada)
   const renderEstrellas = () => {
@@ -200,6 +311,45 @@ const Comentarios = () => {
       .substring(0, 2);
   };
 
+  // Función para manejar la eliminación de un comentario
+  const handleEliminarComentario = async (comentarioId) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este comentario?')) {
+      try {
+        // Usar el endpoint de comentarios estándar para eliminar
+        await api.delete(`/comentario/${comentarioId}`);
+        toast.success('Comentario eliminado correctamente');
+        cargarComentarios();
+      } catch (error) {
+        console.error('Error al eliminar el comentario:', error);
+        const errorMsg = error.response?.data?.error || 'Error al eliminar el comentario';
+        toast.error(errorMsg);
+      }
+    }
+  };
+
+  // Función para manejar la edición de un comentario
+  const handleEditarComentario = async (comentarioId, nuevoContenido) => {
+    if (!nuevoContenido.trim()) {
+      return toast.error('El comentario no puede estar vacío');
+    }
+    
+    try {
+      // Usar el endpoint de comentarios estándar para actualizar
+      await api.patch(`/comentario/${comentarioId}`, {
+        contenido: nuevoContenido
+      });
+      
+      toast.success('Comentario actualizado correctamente');
+      cargarComentarios();
+      return true;
+    } catch (error) {
+      console.error('Error al actualizar el comentario:', error);
+      const errorMsg = error.response?.data?.error || 'Error al actualizar el comentario';
+      toast.error(errorMsg);
+      return false;
+    }
+  };
+
   if (cargando) {
     return (
       <div className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
@@ -215,77 +365,122 @@ const Comentarios = () => {
     <div className="dashboard">
       <Sidebar />
       <div className="content-container">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <h1 className="mb-2">
-              <i className="bi bi-chat-square-quote-fill me-2 text-primary"></i>
-              Comentarios
-            </h1>
-            <div className="d-flex align-items-center">
-              <nav aria-label="breadcrumb" className="me-3">
-                <ol className="breadcrumb mb-0">
-                  <li className="breadcrumb-item">
-                    <a href="/propietario/dashboard" className="text-decoration-none">Inicio</a>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">Comentarios</li>
-                </ol>
-              </nav>
-              {comentarios.length > 0 && (
-                <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
-                  {comentarios.length} {comentarios.length === 1 ? 'comentario' : 'comentarios'}
-                </span>
-              )}
-            </div>
+        <div className="mb-4">
+          <h1 className="h4 fw-bold mb-3">
+            <i className="bi bi-chat-text me-2 text-primary"></i>
+            Comentarios
+            <span className="badge bg-primary bg-opacity-10 text-primary ms-2">
+              {comentarios.length}
+            </span>
+          </h1>
+        </div>
+        
+        {/* Barra de búsqueda */}
+        <div className="mb-4">
+          <div className="input-group">
+            <span className="input-group-text bg-white">
+              <i className="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Buscar comentarios..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+            {busqueda && (
+              <button 
+                className="btn btn-outline-secondary"
+                onClick={() => setBusqueda('')}
+                type="button"
+              >
+                <i className="bi bi-x"></i>
+              </button>
+            )}
           </div>
         </div>
 
+        {/* Lista de comentarios */}
         <div className="comments-container">
-          {comentarios.length > 0 ? (
-            <div className="row g-4">
-              {comentarios.map((comentario) => (
-                <div key={comentario.id} className="col-12 mb-4">
-                  <div className="comment-card">
-                    <div className="card h-100 border-0">
-                      <div className="card-body p-4">
-                        {/* Header del comentario */}
-                        <div className="d-flex align-items-start mb-3">
-                          <div 
-                            className="avatar bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
-                            style={{ width: '48px', height: '48px', fontSize: '1.1rem', fontWeight: '600' }}
-                          >
-                            {getIniciales(comentario.usuario?.nombre || 'U')}
-                          </div>
-                          <div className="flex-grow-1">
-                            <div className="d-flex justify-content-between align-items-start">
-                              <div>
-                                <h5 className="card-title mb-0 fw-semibold">
-                                  {comentario.usuario?.nombre || 'Usuario anónimo'}
-                                </h5>
-                                <p className="text-muted small mb-0">
-                                  {formatearFecha(comentario.fecha)}
-                                </p>
-                              </div>
-                              <div className="d-flex align-items-center">
-                                {/* Sección de calificación eliminada */}
-                              </div>
-                            </div>
-                            
-                            <div className="mt-3">
-                              <p className="card-text">{comentario.contenido}</p>
-                            </div>
-                            
-                            <div className="mt-3 d-flex justify-content-end">
-                              <button 
-                                className="btn btn-outline-danger btn-sm"
-                                onClick={() => abrirModalReporte(comentario)}
-                              >
-                                <FaFlag className="me-1" />
-                                Reportar
-                              </button>
-                            </div>
-                          </div>
-                        </div>
+          {comentariosFiltrados.length > 0 ? (
+            <div className="list-group">
+              {comentariosFiltrados.map((comentario) => (
+                <div 
+                  key={comentario.id} 
+                  className={`list-group-item list-group-item-action border-0 p-4 ${
+                    obtenerEstadoComentario(comentario) === 'reportado' ? 'border-start border-3 border-danger' :
+                    obtenerEstadoComentario(comentario) === 'pendiente' ? 'border-start border-3 border-warning' :
+                    'border-start border-3 border-success'
+                  }`}
+                >
+                  <div className="d-flex">
+                    <div className="flex-shrink-0 me-3">
+                      <div 
+                        className="avatar d-flex align-items-center justify-content-center rounded-circle ${
+                          obtenerEstadoComentario(comentario) === 'reportado' ? 'bg-danger bg-opacity-10 text-danger' :
+                          obtenerEstadoComentario(comentario) === 'pendiente' ? 'bg-warning bg-opacity-10 text-warning' :
+                          'bg-primary bg-opacity-10 text-primary'
+                        }"
+                        style={{ width: '42px', height: '42px', fontSize: '1rem' }}
+                      >
+                        {getIniciales(comentario.usuario?.nombre || 'U')}
                       </div>
+                    </div>
+                    <div className="flex-grow-1">
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                          <h6 className="mb-0 fw-bold">
+                            {comentario.usuario?.nombre || 'Usuario anónimo'}
+                            {obtenerEstadoComentario(comentario) === 'reportado' && (
+                              <span className="badge bg-danger text-white ms-2">
+                                <i className="bi bi-flag-fill me-1"></i>
+                                Reportado
+                              </span>
+                            )}
+                            {obtenerEstadoComentario(comentario) === 'pendiente' && (
+                              <span className="badge bg-warning text-dark ms-2">
+                                <i className="bi bi-hourglass-split me-1"></i>
+                                En Revisión
+                              </span>
+                            )}
+                            {obtenerEstadoComentario(comentario) === 'aprobado' && (
+                              <span className="badge bg-success text-white ms-2">
+                                <i className="bi bi-check-circle-fill me-1"></i>
+                                Aprobado
+                              </span>
+                            )}
+                          </h6>
+                          <small className="text-muted">
+                            {formatearFecha(comentario.fecha)}
+                            {comentario.motivo_reporte && (
+                              <span className="ms-2 text-danger">
+                                <i className="bi bi-info-circle me-1"></i>
+                                {comentario.motivo_reporte}
+                              </span>
+                            )}
+                          </small>
+                        </div>
+                        {obtenerEstadoComentario(comentario) === 'sin_reporte' && (
+                          <button 
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => abrirModalReporte(comentario)}
+                          >
+                            <FaFlag className="me-1" />
+                            Reportar
+                          </button>
+                        )}
+                      </div>
+                      
+                      <p className="mb-3">{comentario.contenido}</p>
+                      
+                      {comentario.evento?.nombre && (
+                        <div className="mt-2">
+                          <span className="badge bg-light text-dark border">
+                            <i className="bi bi-calendar-event me-1"></i>
+                            {comentario.evento.nombre}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -296,14 +491,22 @@ const Comentarios = () => {
               <div className="mb-3">
                 <i className="bi bi-chat-square-text" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
               </div>
-              <h4 className="text-muted">No hay comentarios aún</h4>
-              <p className="text-muted">Este lugar no tiene comentarios. Los comentarios aparecerán aquí cuando los usuarios los dejen.</p>
+              <h4 className="text-muted">
+                {busqueda 
+                  ? 'No se encontraron comentarios que coincidan con tu búsqueda'
+                  : 'No hay comentarios aún'}
+              </h4>
+              <p className="text-muted">
+                {busqueda
+                  ? 'Intenta con otros términos de búsqueda.'
+                  : 'Los comentarios aparecerán aquí cuando los usuarios los dejen.'}
+              </p>
             </div>
           )}
         </div>
 
         {/* Modal de Reporte */}
-        {showModal && (
+        {showModal && comentarioSeleccionado && (
           <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content border-0 shadow">
@@ -315,37 +518,44 @@ const Comentarios = () => {
                   <button
                     type="button"
                     className="btn-close"
-                    onClick={() => {
-                      setShowModal(false);
-                      setComentarioSeleccionado(null);
-                      setMotivoReporte('');
-                      setMensaje('');
-                    }}
+                    onClick={cerrarModal}
                     aria-label="Cerrar"
                   ></button>
                 </div>
                 <div className="modal-body">
-                  <div className="alert alert-light">
-                    <div className="d-flex">
-                      <div className="flex-shrink-0 me-3">
-                        <div className="avatar bg-light text-primary rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
-                          {comentarioSeleccionado?.usuario?.nombre ? getIniciales(comentarioSeleccionado.usuario.nombre) : '??'}
+                  <div className="alert alert-warning mb-3">
+                    <strong>Importante:</strong> Los reportes son revisados por nuestro equipo. El uso indebido de esta función puede resultar en sanciones.
+                  </div>
+                  
+                  <div className="card mb-3">
+                    <div className="card-body">
+                      <div className="d-flex align-items-start">
+                        <div className="avatar-circle bg-primary text-white me-3">
+                          {getIniciales(comentarioSeleccionado.usuario?.nombre || '??')}
                         </div>
-                      </div>
-                      <div>
-                        <p className="mb-1">
-                          <strong>{comentarioSeleccionado?.usuario?.nombre || 'Usuario anónimo'}</strong>
-                        </p>
-                        <p className="text-muted small mb-0">
-                          {comentarioSeleccionado?.contenido}
-                        </p>
+                        <div className="flex-grow-1">
+                          <div className="d-flex justify-content-between align-items-center mb-1">
+                            <h6 className="mb-0 fw-bold">
+                              {comentarioSeleccionado.usuario?.nombre || 'Usuario anónimo'}
+                            </h6>
+                            <small className="text-muted">
+                              {formatearFecha(comentarioSeleccionado.fecha)}
+                            </small>
+                          </div>
+                          <p className="mb-0">{comentarioSeleccionado.contenido}</p>
+                          
+                          {comentarioSeleccionado.evento?.nombre && (
+                            <div className="mt-2">
+                              <small className="text-muted">
+                                <i className="bi bi-calendar-event me-1"></i>
+                                {comentarioSeleccionado.evento.nombre}
+                              </small>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  
-                  <p className="text-muted mb-4">
-                    ¿Por qué deseas reportar este comentario? Por favor selecciona un motivo.
-                  </p>
                   
                   <div className="mb-4">
                     <label htmlFor="motivo" className="form-label fw-medium">Motivo del reporte</label>
