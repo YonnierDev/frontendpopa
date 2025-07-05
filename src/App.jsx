@@ -45,9 +45,8 @@ import EventosProp from "./pages/propietario/Eventos";
 import ReservasProp from "./pages/propietario/Reservas";
 import CalificacionesProp from "./pages/propietario/Calificaciones";
 import CategoriasProp from "./pages/propietario/Categorias";
-import Perfil from "./pages/propietario/Perfil";
-import Lugares from "./pages/propietario/Lugares";
-
+import Perfil from './pages/propietario/Perfil';
+import Lugares from './pages/propietario/Lugares';
 
 // Mostrar u ocultar Navbar
 const NavbarWrapper = ({ isAuthenticated, rol }) => {

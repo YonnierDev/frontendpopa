@@ -37,6 +37,33 @@ const Reservas = () => {
   // Hook para forzar la actualización del componente
   const [_, forceUpdate] = React.useState({});
   
+  // Estado para el modal de detalle de reserva
+  const [modalShow, setModalShow] = useState(false);
+  const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
+  
+  // Función para abrir el modal con la reserva seleccionada
+  const handleShowModal = (reserva) => {
+    setReservaSeleccionada(reserva);
+    setModalShow(true);
+    document.body.style.overflow = 'hidden';
+  };
+  
+  // Función para cerrar el modal
+  const handleCloseModal = () => {
+    setModalShow(false);
+    document.body.style.overflow = 'auto';
+  };
+  
+  // Efecto para limpiar el estado cuando el modal se cierra
+  useEffect(() => {
+    if (!modalShow) {
+      const timer = setTimeout(() => {
+        setReservaSeleccionada(null);
+      }, 300); // Tiempo para la animación de cierre
+      return () => clearTimeout(timer);
+    }
+  }, [modalShow]);
+  
   const [reservas, setReservas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -484,16 +511,30 @@ const Reservas = () => {
 
   // Función para formatear fechas
   const formatDate = useCallback((dateString) => {
-    if (!dateString) return 'N/A';
-    const options = { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric',
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true
-    };
-    return new Date(dateString).toLocaleDateString('es-ES', options);
+    try {
+      if (!dateString) return 'No especificada';
+      
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.warn('Fecha inválida:', dateString);
+        return 'Fecha no disponible';
+      }
+      
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'America/Bogota' // Ajusta según la zona horaria necesaria
+      };
+      
+      return date.toLocaleDateString('es-ES', options);
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return 'Fecha no disponible';
+    }
   }, []);
 
   // Función para filtrar reservas según el término de búsqueda
@@ -522,8 +563,8 @@ const Reservas = () => {
         draggable
         pauseOnHover
       />
-    <Sidebar />
-    <div className="content">
+      <Sidebar />
+      <div className="content">
       <div className="page-header">
         <h1>Gestión de Reservas</h1>
         <div className="d-flex align-items-center">
@@ -777,13 +818,24 @@ const Reservas = () => {
                       {getEstadoTexto(reserva.aprobacion)}
                     </span>
                     <span className="text-muted">
-                      #{reserva.numero_reserva} • {new Date(reserva.fecha_creacion).toLocaleDateString('es-ES')}
+                      #{reserva.numero_reserva}{reserva.fecha_creacion && (
+                        <>
+                          {' • '}
+                          {new Date(reserva.fecha_creacion).toLocaleDateString('es-ES', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </>
+                      )}
                     </span>
                   </div>
                   <div>
                     <button 
                       className="btn btn-sm btn-outline-primary me-2"
-                      onClick={() => navigate(`/reserva/${reserva.numero_reserva}`)}
+                      onClick={() => handleShowModal(reserva)}
                       title="Ver detalles"
                     >
                       <i className="bi bi-eye"></i>
@@ -867,6 +919,244 @@ const Reservas = () => {
         draggable
         pauseOnHover
       />
+      
+      {/* Modal de Detalle de Reserva */}
+      {modalShow && reservaSeleccionada && (
+        <React.Fragment>
+          <div 
+            className="modal-backdrop fade show"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              zIndex: 1040,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(4px)',
+              transition: 'opacity 0.15s linear'
+            }}
+            onClick={handleCloseModal}
+          />
+          <div 
+            className="modal fade show d-block" 
+            tabIndex="-1" 
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              zIndex: 1050,
+              width: '100%',
+              height: '100%',
+              overflowX: 'hidden',
+              overflowY: 'auto',
+              outline: 0
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-dialog modal-lg modal-dialog-centered" style={{ maxWidth: '800px' }}>
+              <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+              {/* Encabezado del Modal */}
+              <div className="modal-header bg-primary text-white py-3">
+                <div className="d-flex align-items-center">
+                  <i className="bi bi-calendar-check fs-4 me-2"></i>
+                  <h5 className="modal-title mb-0 fw-bold">
+                    Detalles de la Reserva <span className="text-warning">#{reservaSeleccionada.numero_reserva}</span>
+                  </h5>
+                </div>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white" 
+                  onClick={handleCloseModal}
+                  aria-label="Cerrar"
+                ></button>
+              </div>
+              
+              {/* Cuerpo del Modal */}
+              <div className="modal-body p-0">
+                <div className="row g-0">
+                  {/* Sección de Información de la Reserva */}
+                  <div className="col-md-6 p-4">
+                    <div className="d-flex align-items-center mb-3">
+                      <div className="bg-light rounded-circle p-2 me-2">
+                        <i className="bi bi-card-checklist text-primary fs-4"></i>
+                      </div>
+                      <h6 className="mb-0 fw-bold text-uppercase text-muted">Información de la Reserva</h6>
+                    </div>
+                    
+                    <div className="ms-4">
+                      <div className="d-flex align-items-start mb-3">
+                        <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
+                        <div>
+                          <span className="text-muted small">Estado</span>
+                          <div>
+                            <span className={`badge ${getAprobacionBadgeClass(reservaSeleccionada.aprobacion)} px-3 py-2`}>
+                              <i className={`bi ${reservaSeleccionada.aprobacion === 'aceptado' ? 'bi-check-circle' : 
+                                reservaSeleccionada.aprobacion === 'rechazado' ? 'bi-x-circle' : 'bi-hourglass-split'} me-2`}></i>
+                              {getEstadoTexto(reservaSeleccionada.aprobacion)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="d-flex align-items-start mb-3">
+                        <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
+                        <div>
+                          <span className="text-muted small">Fecha de creación</span>
+                          <div className="d-flex align-items-center">
+                            <i className="bi bi-calendar3 me-2 text-primary"></i>
+                            <span>
+                              {reservaSeleccionada.fecha_creacion ? new Date(reservaSeleccionada.fecha_creacion).toLocaleDateString('es-ES', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              }) : 'No especificada'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="d-flex align-items-start mb-3">
+                        <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
+                        <div>
+                          <span className="text-muted small">Cantidad de personas</span>
+                          <div className="d-flex align-items-center">
+                            <i className="bi bi-people me-2 text-primary"></i>
+                            <span>{reservaSeleccionada.cantidad_personas || 'No especificado'}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {reservaSeleccionada.notas && (
+                        <div className="d-flex align-items-start">
+                          <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
+                          <div>
+                            <span className="text-muted small">Notas adicionales</span>
+                            <div className="bg-light p-3 rounded mt-1">
+                              <i className="bi bi-chat-square-text text-muted me-2"></i>
+                              {reservaSeleccionada.notas}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Sección de Información del Evento */}
+                  <div className="col-md-6 bg-light p-4">
+                    <div className="d-flex align-items-center mb-3">
+                      <div className="bg-white rounded-circle p-2 me-2">
+                        <i className="bi bi-calendar-event text-primary fs-4"></i>
+                      </div>
+                      <h6 className="mb-0 fw-bold text-uppercase text-muted">Información del Evento</h6>
+                    </div>
+                    
+                    {reservaSeleccionada.evento ? (
+                      <div className="ms-4">
+                        <div className="d-flex align-items-start mb-3">
+                          <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
+                          <div>
+                            <span className="text-muted small">Nombre del evento</span>
+                            <div className="d-flex align-items-center">
+                              <i className="bi bi-tag me-2 text-primary"></i>
+                              <span className="fw-medium">{reservaSeleccionada.evento.nombre || 'No especificado'}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+
+                        <div className="d-flex align-items-start mb-3">
+                          <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
+                          <div>
+                            <span className="text-muted small">Fecha y hora</span>
+                            <div className="d-flex align-items-center">
+                              <i className="bi bi-clock me-2 text-primary"></i>
+                              <span>{formatDate(reservaSeleccionada.evento.fecha_hora || reservaSeleccionada.fecha_evento)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {reservaSeleccionada.evento.lugar?.nombre && (
+                          <div className="d-flex align-items-start">
+                            <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
+                            <div>
+                              <span className="text-muted small">Lugar</span>
+                              <div className="d-flex align-items-center">
+                                <i className="bi bi-geo-alt me-2 text-primary"></i>
+                                <span>{reservaSeleccionada.evento.lugar.nombre}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="alert alert-warning mb-0" role="alert">
+                        <i className="bi bi-exclamation-triangle me-2"></i>
+                        No hay información del evento disponible
+                      </div>
+                    )}
+                    
+                    {/* Información del Cliente */}
+                    <div className="mt-4 pt-3 border-top">
+                      <div className="d-flex align-items-center mb-3">
+                        <div className="bg-white rounded-circle p-2 me-2">
+                          <i className="bi bi-person text-primary fs-4"></i>
+                        </div>
+                        <h6 className="mb-0 fw-bold text-uppercase text-muted">Información del Cliente</h6>
+                      </div>
+                      
+                      {reservaSeleccionada.usuario ? (
+                        <div className="ms-4">
+                          <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-person-circle me-2 text-primary"></i>
+                            <span className="fw-medium">{reservaSeleccionada.usuario.nombre || 'Nombre no disponible'}</span>
+                          </div>
+                          
+                          <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-envelope me-2 text-primary"></i>
+                            <a href={`mailto:${reservaSeleccionada.usuario.correo}`} className="text-decoration-none">
+                              {reservaSeleccionada.usuario.correo || 'Correo no disponible'}
+                            </a>
+                          </div>
+                          
+                          {reservaSeleccionada.usuario.telefono && (
+                            <div className="d-flex align-items-center">
+                              <i className="bi bi-telephone me-2 text-primary"></i>
+                              <a href={`tel:${reservaSeleccionada.usuario.telefono}`} className="text-decoration-none">
+                                {reservaSeleccionada.usuario.telefono}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="alert alert-warning mb-0" role="alert">
+                          <i className="bi bi-exclamation-triangle me-2"></i>
+                          No hay información del cliente disponible
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Pie del Modal */}
+              <div className="modal-footer bg-light d-flex justify-content-center">
+                <button 
+                  type="button" 
+                  className="btn btn-outline-secondary d-flex align-items-center" 
+                  onClick={handleCloseModal}
+                >
+                  <i className="bi bi-x-lg me-2"></i>
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </React.Fragment>
+      )}
       </div>
     </div>
   );
