@@ -274,7 +274,7 @@ input:checked + .slider:before {
 }
 
 .super-modal-content h2 {
-  color: #000000;
+  color: white;
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
   font-weight: 600;
@@ -344,6 +344,13 @@ input:checked + .slider:before {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(-8px);
+}
+
+.warning-text{
+  color: #000000;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
 }
 
 /* Animaciones */

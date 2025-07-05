@@ -1,23 +1,16 @@
 /* Estilos generales */
 .superadmin-lugares-container {
-  width: 100vw;
-  max-width: 100vw;
-  padding: 1rem 1rem 1rem 0.5rem;
+  padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
-  margin: 0;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  margin-left: -274px;
 }
 
 .lugares-container {
-  width: 100vw;
+  padding: 2rem;
+  background-color: #f8f9fa;
   min-height: 100vh;
-  background: #f8f9fa;
-  padding: 0;
-  margin: 0 auto;
-  box-sizing: border-box;
+  margin-left: -274px;
 }
 
 .super-loading {
@@ -25,6 +18,13 @@
   font-size: 1.4rem;
   color: #666;
   margin-top: 3rem;
+}
+
+.titlelugares {
+  font-size: 2rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1.5rem;
 }
 
 .super-alert {
@@ -386,7 +386,7 @@
   justify-content: flex-start;
 }
 /* Eliminado: gap, min-height, padding duplicados fuera de la regla */
-}
+
 
 .lugar-switch {
   position: relative;
@@ -946,7 +946,7 @@ input:checked + .lugar-slider:before {
 /* Contenido del modal */
 .superadmin-lugares-modal-contenido h2 {
   margin-top: 0;
-  color: #333;
+  color: white;
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -1020,14 +1020,10 @@ input:checked + .lugar-slider:before {
   padding: 1rem 10px 2rem;
   background-color: #ffffff;
   min-height: 100vh;
-  width: calc(100% - 60px);
-  margin: 0 0 0 60px; /* Solo margen izquierdo */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
   position: relative;
-  max-width: 100%;
   overflow-x: hidden;
 }
 
@@ -1377,7 +1373,7 @@ input:checked + .lugar-slider:before {
   margin: 0 0 1.5rem;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #000000;
+  color: white;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
   margin-bottom: 1.5rem;

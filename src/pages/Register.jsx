@@ -31,7 +31,7 @@ const Register = () => {
         contrasena,
         fecha_nacimiento: fechaNacimiento,
         genero,
-        rolid: 4 // Propietario
+        rolid: 3 // Propietario
       });
 
       if (response.data.codigo === "REGISTRO_EXITOSO") {

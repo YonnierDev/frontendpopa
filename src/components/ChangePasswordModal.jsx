@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './ChangePasswordModal.css';
-
 const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -18,22 +17,28 @@ const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError(''); 
+    setSuccess(''); 
 
     if (newPassword !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setError('Las nuevas contraseñas no coinciden.');
       return;
     }
 
     if (!validatePassword(newPassword)) {
-      setError('La nueva contraseña debe tener entre 8 y 20 caracteres, incluir una mayúscula, un número y un símbolo');
+      setError('La nueva contraseña debe tener entre 8 y 20 caracteres, incluir una mayúscula, un número y un símbolo.');
       return;
     }
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.patch('https://popnocturna.vercel.app/api/actualizar/contrasena', 
+      if (!token) {
+        setError('No se encontró el token de autenticación. Por favor, inicie sesión nuevamente.');
+        return;
+      }
+
+      const response = await axios.patch(
+        'https://popnocturna.vercel.app/api/actualizar/contrasena',
         {
           correo: userEmail,
           contrasenaActual: currentPassword,
@@ -48,7 +53,10 @@ const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
       );
 
       if (response.data.mensaje) {
-        setSuccess('Contraseña actualizada correctamente');
+        setSuccess('Contraseña actualizada correctamente.');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
         setTimeout(() => {
           onClose();
         }, 2000);
@@ -58,8 +66,10 @@ const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
       if (err.response) {
         console.error('Detalles del error:', err.response.data);
         setError(err.response.data.mensaje || 'Error al actualizar la contraseña. Por favor, intente nuevamente.');
+      } else if (err.request) {
+        setError('No se pudo conectar con el servidor. Por favor, revise su conexión a internet.');
       } else {
-        setError('Error de conexión. Por favor, intente nuevamente.');
+        setError('Ocurrió un error inesperado. Por favor, intente de nuevo.');
       }
     }
   };
@@ -67,11 +77,22 @@ const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Cambiar Contraseña</h2>
+        <h1 className='title'>Cambiar Contraseña</h1>
+          <div className="password-requirements">
+              <p>La contraseña debe tener:</p>
+              <ul>
+                <li>Entre 8 y 20 caracteres</li>
+                <li>Al menos una mayúscula (A-Z)</li>
+                <li>Al menos un número (0-9)</li>
+                <li>Al menos un símbolo (!@#$%^&*)</li>
+              </ul>
+            </div>
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Contraseña Actual</label>
+            <label htmlFor="current-password">Contraseña Actual</label>
             <input
+              id="current-password"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
@@ -79,26 +100,20 @@ const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
             />
           </div>
           <div className="form-group">
-            <label>Nueva Contraseña</label>
+            <label htmlFor="new-password">Nueva Contraseña</label>
             <input
+              id="new-password"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
             />
-            <div className="password-requirements">
-              <p>La contraseña debe tener:</p>
-              <ul>
-                <li>Entre 8 y 20 caracteres</li>
-                <li>Al menos una mayúscula</li>
-                <li>Al menos un número</li>
-                <li>Al menos un símbolo</li>
-              </ul>
-            </div>
+          
           </div>
           <div className="form-group">
-            <label>Confirmar Nueva Contraseña</label>
+            <label htmlFor="confirm-password">Confirmar Nueva Contraseña</label>
             <input
+              id="confirm-password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -121,4 +136,4 @@ const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
   );
 };
 
-export default ChangePasswordModal; 
+export default ChangePasswordModal;

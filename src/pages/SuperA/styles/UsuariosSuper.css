@@ -25,6 +25,14 @@
   font-weight: 600;
 }
 
+.warning-txt{
+  color: #000000;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+
 /* Botones */
 .super-btn {
   display: inline-flex;
@@ -121,13 +129,12 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
-  background-color: white;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .super-form-select:focus {
-  border-color: #3498db;
+  border-color: white;
   box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
   outline: none;
 }
@@ -268,7 +275,7 @@ input:checked + .slider:before {
 
 .super-modal-content h2 {
   margin: 0 0 1.5rem 0;
-  color: #2c3e50;
+  color: #f8f9fa;
   font-size: 1.5rem;
 }
 
@@ -327,6 +334,8 @@ input:checked + .slider:before {
   font-size: 1.2rem;
   color: #2c3e50;
 }
+
+
 
 .super-alert {
   padding: 1rem;

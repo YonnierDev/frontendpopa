@@ -289,7 +289,7 @@ input:checked + .calificaciones-slider:before {
   margin: 0 0 2rem;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #000000;
+  color: white;
   letter-spacing: 0.5px;
 }
 
