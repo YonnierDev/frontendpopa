@@ -171,7 +171,7 @@ function App() {
             <Route path="/propietario/lugar/:id" element={<LugarDetalle />} />
             <Route path="/propietario/comentarios/:id" element={<ComentariosProp />} />
             <Route path="/propietario/eventos" element={<EventosProp />} />
-            <Route path="/propietario/reservas" element={<ReservasProp />} />
+            <Route path="/propietario/lugar/:id/reservas" element={<ReservasProp />} />
             <Route path="/propietario/calificaciones/:lugarid" element={<CalificacionesProp />} />
             <Route path="/propietario/categorias" element={<CategoriasProp />} />
             <Route path="/propietario/perfil" element={<Perfil />} />

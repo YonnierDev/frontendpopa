@@ -114,13 +114,18 @@ const Sidebar = ({ lugarId: propLugarId }) => {
 
     // Rutas que necesitan el lugarId como query param
     const rutasConQueryParam = [
-      '/propietario/eventos',
-      '/propietario/reservas'
+      '/propietario/eventos'
     ];
+
+    // Ruta especial para reservas que usa un formato diferente
+    const esRutaReservas = basePath.startsWith('/propietario/reservas');
 
     let url = basePath;
     
-    if (rutasConLugarId.some(ruta => basePath.startsWith(ruta))) {
+    if (esRutaReservas) {
+      // Usar el nuevo formato de ruta para reservas: /propietario/lugar/:id/reservas
+      url = `/propietario/lugar/${lugarIdActual}/reservas`;
+    } else if (rutasConLugarId.some(ruta => basePath.startsWith(ruta))) {
       url = `${basePath}/${lugarIdActual}`;
     } else if (rutasConQueryParam.some(ruta => basePath.startsWith(ruta))) {
       const separator = basePath.includes('?') ? '&' : '?';

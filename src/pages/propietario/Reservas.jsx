@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from "../../components/api/api";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import './Reservas.css';
 import Sidebar from '../../components/Sidebar';
 import { ToastContainer, toast } from 'react-toastify';
@@ -54,6 +54,7 @@ const Reservas = () => {
   });
   const navigate = useNavigate();
   const location = useLocation();
+  const { id: lugarId } = useParams(); // Obtener el ID del lugar de la URL
 
   // Estado para controlar si es la carga inicial
   const [cargaInicial, setCargaInicial] = useState(true);
@@ -138,8 +139,15 @@ const Reservas = () => {
       
       console.log('Solicitando reservas con parámetros:', params.toString());
       
+      // Usar el endpoint específico del lugar
+      const endpoint = lugarId 
+        ? `/api/propietario/lugar/${lugarId}/reservas?${params.toString()}`
+        : `/api/reservas?${params.toString()}`;
+      
+      console.log('Solicitando reservas con endpoint:', endpoint);
+      
       // Hacer la petición al backend
-      const response = await api.get(`/api/reservas?${params.toString()}`, {
+      const response = await api.get(endpoint, {
         signal: controller.signal,
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -788,12 +796,9 @@ const Reservas = () => {
                     <div className="info-group">
                       <div className="info-label">Evento</div>
                       <div className="info-value fw-bold">{reserva.evento?.nombre || 'Sin nombre'}</div>
-                      <div className="text-muted small">{reserva.evento?.tipo || 'Sin tipo'}</div>
-                    </div>
-                    
-                    <div className="info-group">
-                      <div className="info-label">Lugar</div>
-                      <div className="info-value">{reserva.evento?.lugar?.nombre || reserva.lugar?.nombre || 'No especificado'}</div>
+                      <div className="text-muted small">
+                        {reserva.evento?.tipo || 'Sin tipo'}
+                      </div>
                     </div>
                     
                     <div className="info-group">
@@ -801,30 +806,32 @@ const Reservas = () => {
                       <div className="info-value">
                         {formatDate(reserva.evento?.fecha_hora || reserva.fecha_evento)}
                       </div>
-                      <button
-                        className={`btn btn-sm ${esAceptada ? 'btn-success' : 'btn-outline-success'} me-2`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAprobarReserva(reserva, 'aceptado');
-                        }}
-                        disabled={cargando || esAceptada}
-                        title={esAceptada ? 'Reserva ya aceptada' : 'Aceptar reserva'}
-                      >
-                        <i className="bi bi-check-circle me-1"></i>
-                        {esAceptada ? 'Aceptada' : 'Aceptar'}
-                      </button>
-                      <button
-                        className={`btn btn-sm ${esRechazada ? 'btn-danger' : 'btn-outline-danger'}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAprobarReserva(reserva, 'rechazado');
-                        }}
-                        disabled={cargando || esRechazada}
-                        title={esRechazada ? 'Reserva rechazada' : 'Rechazar reserva'}
-                      >
-                        <i className="bi bi-x-circle me-1"></i>
-                        {esRechazada ? 'Rechazada' : 'Rechazar'}
-                      </button>
+                      <div className="mt-2">
+                        <button
+                          className={`btn btn-sm ${esAceptada ? 'btn-success' : 'btn-outline-success'} me-2`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAprobarReserva(reserva, 'aceptado');
+                          }}
+                          disabled={cargando || esAceptada}
+                          title={esAceptada ? 'Reserva ya aceptada' : 'Aceptar reserva'}
+                        >
+                          <i className="bi bi-check-circle me-1"></i>
+                          {esAceptada ? 'Aceptada' : 'Aceptar'}
+                        </button>
+                        <button
+                          className={`btn btn-sm ${esRechazada ? 'btn-danger' : 'btn-outline-danger'}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAprobarReserva(reserva, 'rechazado');
+                          }}
+                          disabled={cargando || esRechazada}
+                          title={esRechazada ? 'Reserva rechazada' : 'Rechazar reserva'}
+                        >
+                          <i className="bi bi-x-circle me-1"></i>
+                          {esRechazada ? 'Rechazada' : 'Rechazar'}
+                        </button>
+                      </div>
                     </div>
                     
                     <div className="info-group">
