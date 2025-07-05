@@ -106,12 +106,11 @@ const Calificaciones = () => {
       setCargando(true);
       setError('');
       
-      // Usa el lugarid de los parámetros de la URL
-      const response = await api.get(`/api/calificaciones/lugar/${lugarid}`);
-      const datos = response.data?.datos || {};
-      const calificacionesArray = datos.calificaciones || [];
+      // Usar el endpoint correcto del backend
+      const response = await api.get(`/api/propietario/lugar/${lugarid}/calificaciones`);
       
-      setCalificaciones(calificacionesArray);
+      // El backend devuelve directamente el array de calificaciones
+      setCalificaciones(response.data || []);
       setMensaje('');
     } catch (error) {
       console.error('Error al cargar calificaciones:', error.response || error);
@@ -137,15 +136,19 @@ const Calificaciones = () => {
 
   // Ordenar calificaciones por fecha (más reciente primero)
   const calificacionesOrdenadas = [...calificaciones].sort((a, b) => {
-    const fechaA = a.fecha ? new Date(a.fecha) : new Date(0);
-    const fechaB = b.fecha ? new Date(b.fecha) : new Date(0);
+    const fechaA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+    const fechaB = b.createdAt ? new Date(b.createdAt) : new Date(0);
     return fechaB - fechaA;
   });
 
   const calcularPromedio = () => {
     if (calificaciones.length === 0) return 0;
-    const suma = calificaciones.reduce((total, cal) => total + (parseFloat(cal.puntuacion) || 0), 0);
-    return suma / calificaciones.length;
+    const suma = calificaciones.reduce((total, cal) => {
+      // Usar calificacion.puntuacion si existe, de lo contrario usar calificacion.calificacion
+      const puntuacion = parseFloat(cal.puntuacion) || parseFloat(cal.calificacion) || 0;
+      return total + puntuacion;
+    }, 0);
+    return (suma / calificaciones.length).toFixed(1);
   };
 
   const promedioCalificaciones = calcularPromedio();
@@ -273,7 +276,7 @@ const Calificaciones = () => {
             <div className="estadisticas">
               <div className="estadistica-item">
                 <div className="estadistica-label">Puntuación promedio</div>
-                <div className="estadistica-valor">{promedioCalificaciones.toFixed(1)}</div>
+                <div className="estadistica-valor">{promedioCalificaciones}</div>
                 <div className="estrellas">
                   {'★'.repeat(Math.round(promedioCalificaciones))}
                   {'☆'.repeat(5 - Math.round(promedioCalificaciones))}
@@ -328,8 +331,8 @@ const Calificaciones = () => {
                         <td style={{ padding: '12px 16px', borderBottom: '1px solid #e2e8f0' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span className="estrellas" style={{ color: '#f6ad55' }}>
-                              {'★'.repeat(calificacion.puntuacion)}
-                              {'☆'.repeat(5 - calificacion.puntuacion)}
+                              {'★'.repeat(calificacion.puntuacion || calificacion.calificacion || 0)}
+                              {'☆'.repeat(5 - (calificacion.puntuacion || calificacion.calificacion || 0))}
                             </span>
                             <span style={{ 
                               backgroundColor: '#f6f0e8', 
@@ -339,7 +342,7 @@ const Calificaciones = () => {
                               fontWeight: '600',
                               color: '#805ad5'
                             }}>
-                              {calificacion.puntuacion}.0
+                              {calificacion.puntuacion || calificacion.calificacion || 0}.0
                             </span>
                           </div>
                         </td>
@@ -416,9 +419,10 @@ const Calificaciones = () => {
                   justifyContent: 'center',
                   fontSize: '24px',
                   fontWeight: 'bold',
-                  color: '#4a5568'
+                  color: '#4a5568',
+                  flexShrink: 0
                 }}>
-                  {detalleSeleccionado.usuario?.nombre?.charAt(0) || 'U'}
+                  {detalleSeleccionado.usuario?.nombre?.charAt(0).toUpperCase() || 'U'}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '4px', color: '#2d3748' }}>
@@ -429,8 +433,8 @@ const Calificaciones = () => {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div className="estrellas" style={{ fontSize: '20px', color: '#f6ad55' }}>
-                      {'★'.repeat(detalleSeleccionado.puntuacion)}
-                      {'☆'.repeat(5 - detalleSeleccionado.puntuacion)}
+                      {'★'.repeat(detalleSeleccionado.puntuacion || detalleSeleccionado.calificacion || 0)}
+                      {'☆'.repeat(5 - (detalleSeleccionado.puntuacion || detalleSeleccionado.calificacion || 0))}
                     </div>
                     <span style={{ 
                       backgroundColor: '#f6f0e8',
@@ -440,8 +444,45 @@ const Calificaciones = () => {
                       fontSize: '14px',
                       fontWeight: '600'
                     }}>
-                      {detalleSeleccionado.puntuacion}.0/5.0
+                      {(detalleSeleccionado.puntuacion || detalleSeleccionado.calificacion || 0)}.0/5.0
                     </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Información adicional */}
+              <div style={{ marginBottom: '20px' }}>
+                {detalleSeleccionado.comentario && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '8px', color: '#4a5568' }}>Comentario:</div>
+                    <div style={{ 
+                      backgroundColor: '#f8f9fa', 
+                      padding: '12px', 
+                      borderRadius: '8px',
+                      borderLeft: '3px solid #805ad5'
+                    }}>
+                      {detalleSeleccionado.comentario}
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                  {detalleSeleccionado.evento?.nombre && (
+                    <div>
+                      <div style={{ fontWeight: '600', marginBottom: '4px', color: '#4a5568' }}>Evento:</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <i className="bi bi-calendar-event" style={{ color: '#805ad5' }}></i>
+                        <span>{detalleSeleccionado.evento.nombre}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <div style={{ fontWeight: '600', marginBottom: '4px', color: '#4a5568' }}>Fecha:</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className="bi bi-calendar3" style={{ color: '#805ad5' }}></i>
+                      <span>{formatearFecha(detalleSeleccionado.createdAt || detalleSeleccionado.fecha)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
