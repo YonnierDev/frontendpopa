@@ -575,96 +575,45 @@ const Reservas = () => {
         </div>
       </div>
         
-      {/* Filtros */}
+      {/* Búsqueda mejorada */}
       <div className="filtros-container">
         <div className="filtros-header">
-          <h5>Filtrar reservas</h5>
+          <h5>Buscar reservas</h5>
         </div>
-        <div className="row g-3">
-          <div className="col-md-4">
-            <div className="form-group">
-              <label className="form-label fw-semibold">Búsqueda</label>
-              <div className="input-group">
-                <span className="input-group-text"><i className="bi bi-search"></i></span>
-                <input
-                  type="text"
-                  name="busqueda"
-                  className="form-control"
-                  placeholder="Buscar por nombre o lugar..."
-                  value={filtros.busqueda}
-                  onChange={handleFiltroChange}
-                  onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
-                />
-              </div>
-            </div>
+        <div className="search-container">
+          <div className="search-input-group">
+            <input
+              type="text"
+              name="busqueda"
+              className="search-input"
+              placeholder="Buscar por nombre del evento, lugar o detalles..."
+              value={filtros.busqueda}
+              onChange={handleFiltroChange}
+              onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
+            />
+            <button 
+              className="search-button"
+              onClick={aplicarFiltros}
+              title="Buscar"
+            >
+              <i className="bi bi-search"></i>
+              <span>Buscar</span>
+            </button>
           </div>
-          <div className="col-md-3">
-            <div className="form-group">
-              <label className="form-label fw-semibold">Estado</label>
-              <select 
-                name="estado" 
-                className="form-select" 
-                value={filtros.estado}
-                onChange={handleFiltroChange}
-              >
-                <option value="">Todos los estados</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="aceptado">Aceptado</option>
-                <option value="rechazado">Rechazado</option>
-              </select>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="form-group">
-              <label className="form-label fw-semibold">Fecha desde</label>
-              <div className="input-group">
-                <span className="input-group-text"><i className="bi bi-calendar"></i></span>
-                <DatePicker
-                  selected={filtros.fechaDesde}
-                  onChange={(date) => handleFechaChange(date, 'fechaDesde')}
-                  className="form-control"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="dd/mm/aaaa"
-                  isClearable
-                />
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="form-group">
-              <label className="form-label fw-semibold">Fecha hasta</label>
-              <div className="input-group">
-                <span className="input-group-text"><i className="bi bi-calendar"></i></span>
-                <DatePicker
-                  selected={filtros.fechaHasta}
-                  onChange={(date) => handleFechaChange(date, 'fechaHasta')}
-                  className="form-control"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="dd/mm/aaaa"
-                  minDate={filtros.fechaDesde}
-                  isClearable
-                />
-              </div>
-            </div>
-          </div>
-          <div className="col-md-1 d-flex align-items-end">
-            <div className="d-flex w-100">
+          {filtros.busqueda && (
+            <div className="text-end mt-2">
               <button 
-                className="btn btn-primary me-2 flex-grow-1" 
-                onClick={aplicarFiltros}
-                title="Aplicar filtros"
+                className="btn btn-sm btn-link text-muted"
+                onClick={() => {
+                  setFiltros(prev => ({ ...prev, busqueda: '' }));
+                  aplicarFiltros();
+                }}
               >
-                <i className="bi bi-funnel"></i>
-              </button>
-              <button 
-                className="btn btn-outline-secondary" 
-                onClick={limpiarFiltros}
-                title="Limpiar filtros"
-              >
-                <i className="bi bi-arrow-counterclockwise"></i>
+                <i className="bi bi-x-circle me-1"></i>
+                Limpiar búsqueda
               </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -686,15 +635,13 @@ const Reservas = () => {
           </span>
         </div>
       </div>
-        
-      <div className="card shadow-sm mb-4">
+              <div className="card shadow-sm mb-4">
         <div className="card-header bg-light">
-          <h5 className="mb-0">Filtros de búsqueda</h5>
+          <h5 className="mb-0">Búsqueda</h5>
         </div>
         <div className="card-body">
           <div className="row g-3">
-            <div className="col-md-3">
-              <label className="form-label fw-semibold">Búsqueda</label>
+            <div className="col-md-4">
               <div className="input-group">
                 <span className="input-group-text"><i className="bi bi-search"></i></span>
                 <input
@@ -708,66 +655,14 @@ const Reservas = () => {
                 />
               </div>
             </div>
-            <div className="col-md-2">
-              <label className="form-label fw-semibold">Estado</label>
-              <select 
-                name="estado" 
-                className="form-select" 
-                value={filtros.estado}
-                onChange={handleFiltroChange}
+            <div className="col-md-1">
+              <button 
+                className="btn btn-primary" 
+                onClick={aplicarFiltros}
+                title="Buscar"
               >
-                <option value="">Todos</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="aceptado">Aceptado</option>
-                <option value="rechazado">Rechazado</option>
-              </select>
-            </div>
-            <div className="col-md-3">
-              <label className="form-label fw-semibold">Fecha desde</label>
-              <div className="input-group">
-                <span className="input-group-text"><i className="bi bi-calendar"></i></span>
-                <DatePicker
-                  selected={filtros.fechaDesde}
-                  onChange={(date) => handleFechaChange(date, 'fechaDesde')}
-                  className="form-control"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="dd/mm/aaaa"
-                  isClearable
-                />
-              </div>
-            </div>
-            <div className="col-md-3">
-              <label className="form-label fw-semibold">Fecha hasta</label>
-              <div className="input-group">
-                <span className="input-group-text"><i className="bi bi-calendar"></i></span>
-                <DatePicker
-                  selected={filtros.fechaHasta}
-                  onChange={(date) => handleFechaChange(date, 'fechaHasta')}
-                  className="form-control"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="dd/mm/aaaa"
-                  minDate={filtros.fechaDesde}
-                  isClearable
-                />
-              </div>
-            </div>
-            <div className="col-md-1 d-flex align-items-end">
-              <div className="d-flex w-100">
-                <button 
-                  className="btn btn-primary me-2 flex-grow-1" 
-                  onClick={aplicarFiltros}
-                  title="Aplicar filtros"
-                >
-                  <i className="bi bi-funnel"></i>
-                </button>
-                <button 
-                  className="btn btn-outline-secondary" 
-                  onClick={limpiarFiltros}
-                  title="Limpiar filtros"
-                >
-                  <i className="bi bi-arrow-counterclockwise"></i>
-                </button>
-              </div>
+                <i className="bi bi-search"></i> Buscar
+              </button>
             </div>
           </div>
         </div>
