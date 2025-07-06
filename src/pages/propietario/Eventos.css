@@ -147,12 +147,23 @@ h2 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  background-color: #000;
+  padding: 10px 15px;
+  border-radius: 8px 8px 0 0;
+  color: white;
 }
 
 .item-header h3 {
   margin: 0;
-  color: #333;
+  color: white;
   font-size: 18px;
+  font-weight: 500;
+}
+
+.item-header span {
+  color: white;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
 .estado-badge {
