@@ -43,6 +43,10 @@ const Reservas = () => {
   
   // Función para abrir el modal con la reserva seleccionada
   const handleShowModal = (reserva) => {
+    console.log('Datos de la reserva seleccionada:', reserva);
+    console.log('Fecha de creación (fecha_creacion):', reserva.fecha_creacion);
+    console.log('Fecha de creación (fechaCreacion):', reserva.fechaCreacion);
+    console.log('Todas las propiedades del objeto:', Object.keys(reserva));
     setReservaSeleccionada(reserva);
     setModalShow(true);
     document.body.style.overflow = 'hidden';
@@ -616,9 +620,9 @@ const Reservas = () => {
           )}
         </div>
       </div>
+      {/* Sección de migas de pan y contador */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 className="mb-1">Gestión de Reservas</h1>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-0">
               <li className="breadcrumb-item">
@@ -627,44 +631,6 @@ const Reservas = () => {
               <li className="breadcrumb-item active" aria-current="page">Reservas</li>
             </ol>
           </nav>
-        </div>
-        <div className="d-flex align-items-center">
-          <span className="badge bg-primary me-3">
-            <i className="bi bi-calendar-check me-1"></i>
-            {paginacion.totalItems} {paginacion.totalItems === 1 ? 'reserva' : 'reservas'}
-          </span>
-        </div>
-      </div>
-              <div className="card shadow-sm mb-4">
-        <div className="card-header bg-light">
-          <h5 className="mb-0">Búsqueda</h5>
-        </div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-4">
-              <div className="input-group">
-                <span className="input-group-text"><i className="bi bi-search"></i></span>
-                <input
-                  type="text"
-                  name="busqueda"
-                  className="form-control"
-                  placeholder="Buscar por nombre o lugar..."
-                  value={filtros.busqueda}
-                  onChange={handleFiltroChange}
-                  onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
-                />
-              </div>
-            </div>
-            <div className="col-md-1">
-              <button 
-                className="btn btn-primary" 
-                onClick={aplicarFiltros}
-                title="Buscar"
-              >
-                <i className="bi bi-search"></i> Buscar
-              </button>
-            </div>
-          </div>
         </div>
       </div>
       {cargando ? (
@@ -896,21 +862,24 @@ const Reservas = () => {
                       
                       <div className="d-flex align-items-start mb-3">
                         <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
-                        <div>
-                          <span className="text-muted small">Fecha de creación</span>
-                          <div className="d-flex align-items-center">
-                            <i className="bi bi-calendar3 me-2 text-primary"></i>
-                            <span>
-                              {reservaSeleccionada.fecha_creacion ? new Date(reservaSeleccionada.fecha_creacion).toLocaleDateString('es-ES', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              }) : 'No especificada'}
-                            </span>
-                          </div>
+                      <div>
+                        <span className="text-muted small">Fecha de creación</span>
+                        <div className="d-flex align-items-center">
+                          <i className="bi bi-calendar3 me-2 text-primary"></i>
+                          <span>
+                            {reservaSeleccionada.createdAt
+                              ? new Date(reservaSeleccionada.createdAt).toLocaleDateString('es-ES', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })
+                              : 'No disponible'}
+                          </span>
                         </div>
+                      </div>
                       </div>
                       
                       <div className="d-flex align-items-start mb-3">

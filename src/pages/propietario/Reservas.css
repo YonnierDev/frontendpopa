@@ -41,7 +41,7 @@
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 600;
-  color: var(--dark-color);
+  color: #000000; /* Cambiado de var(--dark-color) a negro */
   margin: 0;
 }
 
@@ -68,7 +68,7 @@
 
 .filtros-header h5 {
   font-weight: 600;
-  color: #2d3748;
+  color: #000000; /* Cambiado de #2d3748 a negro */
   margin: 0;
   font-size: 1.1rem;
   display: flex;
@@ -206,14 +206,14 @@
 .info-label {
   font-size: 0.75rem;
   text-transform: uppercase;
-  color: var(--secondary-color);
+  color: #000000; /* Cambiado de var(--secondary-color) a negro */
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
 .info-value {
   font-size: 0.9rem;
-  color: var(--dark-color);
+  color: #000000; /* Cambiado de var(--dark-color) a negro */
   font-weight: 500;
 }
 
@@ -343,7 +343,7 @@
   align-items: center;
   margin-bottom: 15px;
   font-size: 14px;
-  color: #666;
+  color: #000000; /* Cambiado de #666 (gris) a negro */
 }
 
 .item-content {
@@ -357,7 +357,7 @@
   flex-direction: column;
   gap: 10px;
   font-size: 15px;
-  color: #333;
+  color: #000000; /* Cambiado de #333 (gris oscuro) a negro */
 }
 
 .item-footer {
