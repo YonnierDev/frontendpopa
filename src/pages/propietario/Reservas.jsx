@@ -44,9 +44,8 @@ const Reservas = () => {
   // Función para abrir el modal con la reserva seleccionada
   const handleShowModal = (reserva) => {
     console.log('Datos de la reserva seleccionada:', reserva);
-    console.log('Fecha de creación (fecha_creacion):', reserva.fecha_creacion);
-    console.log('Fecha de creación (fechaCreacion):', reserva.fechaCreacion);
-    console.log('Todas las propiedades del objeto:', Object.keys(reserva));
+    console.log('Datos del evento en la reserva:', reserva.evento);
+    console.log('Propiedades del evento:', reserva.evento ? Object.keys(reserva.evento) : 'No hay datos de evento');
     setReservaSeleccionada(reserva);
     setModalShow(true);
     document.body.style.overflow = 'hidden';
@@ -162,7 +161,8 @@ const Reservas = () => {
       // Construir parámetros de consulta para la API
       const params = new URLSearchParams({
         page: pagina,
-        limit: 10
+        limit: 10,
+        include: 'evento'  // Incluir datos completos del evento
       });
       
       if (estado) params.append('estado', estado);
@@ -885,10 +885,10 @@ const Reservas = () => {
                       <div className="d-flex align-items-start mb-3">
                         <i className="bi bi-circle-fill text-primary me-2 mt-1" style={{ fontSize: '0.5rem' }}></i>
                         <div>
-                          <span className="text-muted small">Cantidad de personas</span>
+                          <span className="text-muted small">Cantidad de entradas</span>
                           <div className="d-flex align-items-center">
-                            <i className="bi bi-people me-2 text-primary"></i>
-                            <span>{reservaSeleccionada.cantidad_personas || 'No especificado'}</span>
+                            <i className="bi bi-ticket-perforated me-2 text-primary"></i>
+                            <span>{reservaSeleccionada.cantidad_entradas || 'No especificado'}</span>
                           </div>
                         </div>
                       </div>
