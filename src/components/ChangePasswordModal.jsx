@@ -16,63 +16,62 @@ const ChangePasswordModal = ({ isOpen, onClose, userEmail }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); 
-    setSuccess(''); 
+  e.preventDefault();
+  setError(''); 
+  setSuccess(''); 
 
-    if (newPassword !== confirmPassword) {
-      setError('Las nuevas contraseñas no coinciden.');
+  if (newPassword !== confirmPassword) {
+    setError('Las nuevas contraseñas no coinciden.');
+    return;
+  }
+
+  if (!validatePassword(newPassword)) {
+    setError('La nueva contraseña debe tener entre 8 y 20 caracteres, incluir una mayúscula, un número y un símbolo.');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No se encontró el token de autenticación. Por favor, inicie sesión nuevamente.');
       return;
     }
 
-    if (!validatePassword(newPassword)) {
-      setError('La nueva contraseña debe tener entre 8 y 20 caracteres, incluir una mayúscula, un número y un símbolo.');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('No se encontró el token de autenticación. Por favor, inicie sesión nuevamente.');
-        return;
-      }
-
-      const response = await axios.patch(
-        'https://popnocturna.vercel.app/api/actualizar/contrasena',
-        {
-          correo: userEmail,
-          contrasenaActual: currentPassword,
-          nuevaContrasena: newPassword
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+    const response = await axios.patch(
+      'https://popnocturna.vercel.app/api/actualizar-contrasena',
+      {
+        nuevaContrasena: newPassword,
+        confirmarContrasena: confirmPassword
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      );
+      }
+    );
 
-      if (response.data.mensaje) {
-        setSuccess('Contraseña actualizada correctamente.');
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setTimeout(() => {
-          onClose();
-        }, 2000);
-      }
-    } catch (err) {
-      console.error('Error al actualizar contraseña:', err);
-      if (err.response) {
-        console.error('Detalles del error:', err.response.data);
-        setError(err.response.data.mensaje || 'Error al actualizar la contraseña. Por favor, intente nuevamente.');
-      } else if (err.request) {
-        setError('No se pudo conectar con el servidor. Por favor, revise su conexión a internet.');
-      } else {
-        setError('Ocurrió un error inesperado. Por favor, intente de nuevo.');
-      }
+    if (response.data.mensaje) {
+      setSuccess('Contraseña actualizada correctamente.');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => {
+        onClose();
+      }, 2000);
     }
-  };
+  } catch (err) {
+    console.error('Error al actualizar contraseña:', err);
+    if (err.response) {
+      console.error('Detalles del error:', err.response.data);
+      setError(err.response.data.mensaje || 'Error al actualizar la contraseña. Por favor, intente nuevamente.');
+    } else if (err.request) {
+      setError('No se pudo conectar con el servidor. Por favor, revise su conexión a internet.');
+    } else {
+      setError('Ocurrió un error inesperado. Por favor, intente de nuevo.');
+    }
+  }
+};
 
   return (
     <div className="modal-overlay">
