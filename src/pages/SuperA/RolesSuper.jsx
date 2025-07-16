@@ -145,7 +145,6 @@ const RolesSuper = () => {
               <th>Nombre</th>
               <th>Usuarios</th>
               <th>Acciones</th>
-            
             </tr>
           </thead>
           <tbody>
