@@ -38,8 +38,21 @@ const UsuariosSuper = () => {
       const response = await api.get('/api/roles');
       setRoles(response.data);
     } catch (error) {
-      console.error('Error al cargar roles:', error);
-      toast.error(error.response?.data?.mensaje || 'Error al cargar los roles');
+      console.error('Error al procesar la solicitud:', error);
+      
+      // Mostrar mensaje de error más detallado
+      const errorMessage = error.response?.data?.mensaje || 
+                         error.response?.data?.message || 
+                         error.message || 
+                         'Error al procesar la solicitud';
+      
+      console.error('Detalles del error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: errorMessage
+      });
+      
+      toast.error(`Error: ${errorMessage}`);
     }
   };
 
@@ -235,17 +248,32 @@ const UsuariosSuper = () => {
           imagen: formData.imagen ? formData.imagen.name : 'Sin imagen'
         });
 
-        response = await api.post('/usuario', formDataToSend);
-        console.log('Respuesta de creación:', response.status, response.data);
+        console.log('Enviando solicitud de creación...');
+        response = await api.post('/api/usuario', formDataToSend);
+        console.log('Respuesta completa del servidor:', response);
         
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200) {
+          const usuarioCreado = response.data;
+          console.log('Usuario creado exitosamente:', usuarioCreado);
           toast.success('Usuario creado correctamente');
-        } else if (response.status === 400) {
-          toast.error(response.data.mensaje || 'Error de validación');
-          console.error('Respuesta de error:', response.data);
-        } else {
-          toast.error('Error al crear el usuario');
-          console.error('Error desconocido:', response.data);
+          
+          // Cerrar el modal y actualizar la lista de usuarios
+          setShowModal(false);
+          fetchUsuarios();
+          
+          // Limpiar el formulario
+          setFormData({
+            nombre: '',
+            apellido: '',
+            correo: '',
+            fecha_nacimiento: '',
+            contrasena: '',
+            genero: '',
+            rolid: '',
+            estado: true,
+            imagen: null
+          });
+          setPreviewImg(null);
         }
       }
       

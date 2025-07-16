@@ -5,31 +5,28 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
     'Accept': 'application/json'
+    // No establecemos Content-Type aquí para que Axios lo maneje automáticamente
   }
 });
 
-// Interceptor para manejar errores
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('usuario');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-
-// Interceptor para agregar el token a las peticiones
+// Interceptor para modificar peticiones antes de enviarlas
 api.interceptors.request.use(
   (config) => {
+    // Solo establecer Content-Type si no es FormData
+    if (!(config.data instanceof FormData)) {
+      config.headers['Content-Type'] = 'application/json';
+    } else {
+      // Eliminar Content-Type para que el navegador establezca el boundary automáticamente
+      delete config.headers['Content-Type'];
+    }
+    
+    // Agregar token de autenticación si existe
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
     return config;
   },
   (error) => {
@@ -37,7 +34,7 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para manejar errores globalmente
+// Interceptor para manejar respuestas y errores
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -58,14 +55,20 @@ api.interceptors.response.use(
       }
       
       // Mostrar mensaje de error del servidor si existe
-      const errorMessage = error.response.data?.message || error.response.data?.error || 'Error en la petición';
+      const errorMessage = error.response.data?.message || 
+                          error.response.data?.error || 
+                          error.response.data?.mensaje || 
+                          'Error en la petición';
+      
       error.message = errorMessage;
       
       console.error('Error de respuesta:', {
         status: error.response.status,
         message: errorMessage,
         url: error.config.url,
-        method: error.config.method
+        method: error.config.method,
+        data: error.config.data,
+        headers: error.config.headers
       });
     } else if (error.request) {
       // La petición fue hecha pero no se recibió respuesta
