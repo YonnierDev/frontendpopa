@@ -294,7 +294,7 @@ const UsuariosSuper = () => {
 
   const handleEstadoChange = async (id, estadoActual) => {
     try {
-      await api.patch(`/usuario/estado/${id}`, {
+      await api.patch(`/api/usuario/estado/${id}`, {
         estado: !estadoActual
       });
       toast.success(`Usuario ${!estadoActual ? 'activado' : 'desactivado'} correctamente`);

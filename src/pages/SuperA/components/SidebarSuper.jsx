@@ -48,7 +48,7 @@ const SidebarSuper = () => {
           navigate('/login');
           return;
         }
-        const adminResponse = await api.get(`/usuario/${usuario.id}`);
+        const adminResponse = await api.get(`/api/usuario/${usuario.id}`);
         setNombreAdmin(adminResponse.data.nombre || "");
         setApellidoAdmin(adminResponse.data.apellido || "");
 
