@@ -32,7 +32,8 @@ const Comentarios = () => {
   };
 
   const toggleEstado = async (id, estadoActual) => {
-    const decision = estadoActual ? "ocultar" : "mantener";
+    const nuevoEstado = !estadoActual;
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -41,8 +42,8 @@ const Comentarios = () => {
       }
 
       await axios.put(
-        `https://popnocturna.vercel.app/api/administracion/procesar/${id}`,
-        { decision },
+        `https://popnocturna.vercel.app/api/comentario/${id}/estado`,
+        { estado: nuevoEstado },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,12 +52,12 @@ const Comentarios = () => {
       );
 
       setComentarios(comentarios.map(c =>
-        c.id === id ? { ...c, estado: decision === "mantener" } : c
+        c.id === id ? { ...c, estado: nuevoEstado } : c
       ));
 
       setMensajesEstado(prev => ({
         ...prev,
-        [id]: decision === "mantener" ? "Activo" : "Inactivo"
+        [id]: nuevoEstado ? "Activo" : "Inactivo"
       }));
     } catch (error) {
       console.error("Error al cambiar estado del comentario:", error);
