@@ -12,7 +12,7 @@ const SolicitudesColaborador = () => {
   const fetchSolicitudes = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/solicitud");
+      const res = await api.get("/api/solicitud");
       setSolicitudes(res.data || []);
     } catch (err) {
       toast.error("Error al cargar las solicitudes");
@@ -23,7 +23,7 @@ const SolicitudesColaborador = () => {
 
   const cambiarEstado = async (id, nuevoEstado) => {
     try {
-      await api.patch(`/solicitud/${id}/estado`, { estado: nuevoEstado });
+      await api.patch(`/api/solicitud/${id}/estado`, { estado: nuevoEstado });
       toast.success(`Solicitud ${nuevoEstado}`);
       fetchSolicitudes();
     } catch (err) {

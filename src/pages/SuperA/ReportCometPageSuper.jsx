@@ -11,7 +11,7 @@ const ReportCometPageSuper = () => {
   useEffect(() => {
     const fetchComentarios = async () => {
       try {
-        const response = await api.get('/administracion/comentarios/reportados');
+        const response = await api.get('/api/administracion/comentarios/reportados');
         setComentarios(response.data.datos);
       } catch (err) {
         setError(err.response?.data?.message || err.message || 'Error al cargar los comentarios');
@@ -25,7 +25,7 @@ const ReportCometPageSuper = () => {
 
   const handleAprobar = async (id) => {
     try {
-      await axios.put(`/administracion/comentarios/${id}/aprobar`);
+      await api.put(`/api/administracion/comentarios/${id}/aprobar`);
       setComentarios(comentarios.filter(com => com.id !== id));
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Error al aprobar el comentario');
@@ -34,7 +34,7 @@ const ReportCometPageSuper = () => {
 
   const handleRechazar = async (id) => {
     try {
-      await axios.put(`/administracion/comentarios/${id}/rechazar`);
+      await api.put(`/api/administracion/comentarios/${id}/rechazar`);
       setComentarios(comentarios.filter(com => com.id !== id));
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Error al rechazar el comentario');
