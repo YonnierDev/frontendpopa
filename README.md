@@ -1,7 +1,5 @@
 # Frontend Pop Nocturna
 
-# Frontend Pop Nocturna
-
 ## 1. Tecnologías Globales y su Implementación
 
 ### Core del Proyecto
